@@ -16,7 +16,7 @@ class SpreadsheetsClient {
     private let provider = MoyaProvider<Spreadsheets>()
     private let reloadQueue = DispatchQueue(label: "com.ianyh.Castle.reload")
     private static let spreadsheetID = "16K1Zryyxrh7vdKVF1f7eRrUAOC5wuzvC3q2gFLch6LQ"
-    private static let ignoredSheets = ["Header", "Calculator"]
+    private static let ignoredSheets = ["Header", "Calculator", "Experience"]
     
     func reload() -> Observable<Void> {
         guard
