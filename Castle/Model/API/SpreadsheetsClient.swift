@@ -76,6 +76,7 @@ class SpreadsheetsClient {
                             try realm.write {
                                 realm.add(sheets)
                             }
+                            try LastUpdateObject.markUpdate()
                         }
                     )
                     .map { _ in }

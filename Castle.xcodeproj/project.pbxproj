@@ -12,6 +12,7 @@
 		40934C00213B6E8E002079B5 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934BFF213B6E8E002079B5 /* Sheet.swift */; };
 		40934C04213B71CF002079B5 /* SpreadsheetsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */; };
 		40B50DE02144B3D700AA5C41 /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B50DDF2144B3D700AA5C41 /* LoadingCell.swift */; };
+		40DCA1632145FE32002DA1E4 /* LastUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DCA1622145FE32002DA1E4 /* LastUpdate.swift */; };
 		40E7AF501F71DFAB0032D4F2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF4F1F71DFAB0032D4F2 /* AppDelegate.swift */; };
 		40E7AF521F71DFAB0032D4F2 /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF511F71DFAB0032D4F2 /* SheetViewController.swift */; };
 		40E7AF571F71DFAB0032D4F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40E7AF551F71DFAB0032D4F2 /* Main.storyboard */; };
@@ -55,6 +56,7 @@
 		40934BFF213B6E8E002079B5 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpreadsheetsClient.swift; sourceTree = "<group>"; };
 		40B50DDF2144B3D700AA5C41 /* LoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
+		40DCA1622145FE32002DA1E4 /* LastUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastUpdate.swift; sourceTree = "<group>"; };
 		40E7AF4C1F71DFAB0032D4F2 /* Castle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Castle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40E7AF4F1F71DFAB0032D4F2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		40E7AF511F71DFAB0032D4F2 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				40934BFF213B6E8E002079B5 /* Sheet.swift */,
+				40DCA1622145FE32002DA1E4 /* LastUpdate.swift */,
 			);
 			path = Objects;
 			sourceTree = "<group>";
@@ -555,6 +558,7 @@
 				40B50DE02144B3D700AA5C41 /* LoadingCell.swift in Sources */,
 				40934C04213B71CF002079B5 /* SpreadsheetsClient.swift in Sources */,
 				40E7AF521F71DFAB0032D4F2 /* SheetViewController.swift in Sources */,
+				40DCA1632145FE32002DA1E4 /* LastUpdate.swift in Sources */,
 				4037B19B21442C66008EB089 /* SheetCell.swift in Sources */,
 				40E7AF871F76C8C80032D4F2 /* SheetsListViewController.swift in Sources */,
 				404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */,
