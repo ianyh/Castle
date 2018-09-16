@@ -7,10 +7,19 @@
 //
 
 import Foundation
+import Kingfisher
 import Moya
 import RealmSwift
 import Result
 import RxSwift
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
+    }
+}
 
 class SpreadsheetsClient {
     private let provider = MoyaProvider<Spreadsheets>()
@@ -81,6 +90,55 @@ class SpreadsheetsClient {
                     )
                     .map { _ in }
             }
+    }
+    
+    func preloadImages() -> Observable<String> {
+        do {
+            let realm = try Realm()
+            let urls = Array(
+                realm.objects(RowValue.self).filter("imageURL != nil")
+                    .compactMap { $0.imageURL }
+                    .sorted()
+                    .compactMap { imageURL -> URL? in
+                        var components = URLComponents(string: imageURL)
+                        components?.scheme = "https"
+                        return components?.url
+                    }
+            )
+            let urlCount = urls.count
+            let urlChunks = urls.chunked(into: 5)
+            let downloads = Observable.concat(urlChunks.map { chunk in
+                return Observable.merge(chunk.map { self.preloadImage(with: $0) })
+            })
+            
+            return downloads
+                .scan(0) { count, _ -> Int in count + 1 }
+                .map { "\($0)/\(urlCount)" }
+                .startWith("0/\(urlCount)")
+        } catch {
+            return .error(error)
+        }
+    }
+    
+    func preloadImage(with url: URL) -> Observable<Void> {
+        return Observable<Void>.create { observer in
+            guard KingfisherManager.shared.cache.imageCachedType(forKey: url.absoluteString) != .disk else {
+                DispatchQueue.main.async {
+                    observer.on(.next(()))
+                    observer.on(.completed)
+                }
+                return Disposables.create()
+            }
+            
+            let task = KingfisherManager.shared.retrieveImage(with: url, options: nil, progressBlock: nil) { _, _, _, _ in
+                observer.on(.next(()))
+                observer.on(.completed)
+            }
+            
+            return Disposables.create {
+                task.cancel()
+            }
+        }
     }
     
     func object(for sheet: Sheet, responses: (Response, Response)) throws -> SpreadsheetObject {

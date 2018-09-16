@@ -26,7 +26,13 @@ class SettingsViewController: UITableViewController {
     private let disposeBag = DisposeBag()
     private let dateFormatter = DateFormatter()
     
-    private var isLoading = false {
+    private var isReloading = false {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+    
+    private var imageLoadProgress: String? = nil {
         didSet {
             tableView.reloadData()
         }
@@ -51,7 +57,7 @@ class SettingsViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -64,10 +70,15 @@ class SettingsViewController: UITableViewController {
             cell.detailTextLabel?.text = try! LastUpdateObject.lastUpdate().flatMap { dateFormatter.string(from: $0) }
             cell.selectionStyle = .none
         case 1:
-            cell.textLabel?.text = isLoading ? "Reloading..." : "Reload all data from spreadsheet..."
-            cell.textLabel?.textColor = .blue
+            cell.textLabel?.text = isReloading ? "Reloading..." : "Reload all data from spreadsheet..."
+            cell.textLabel?.textColor = isReloading ? .lightGray : .blue
             cell.detailTextLabel?.text = nil
-            cell.selectionStyle = .default
+            cell.selectionStyle = isReloading ? .none : .default
+        case 2:
+            cell.textLabel?.text = imageLoadProgress != nil ? "Loading..." : "Preload all images..."
+            cell.textLabel?.textColor = imageLoadProgress != nil ? .lightGray : .blue
+            cell.detailTextLabel?.text = imageLoadProgress
+            cell.selectionStyle = imageLoadProgress != nil ? .none : .default
         default:
             break
         }
@@ -80,11 +91,18 @@ class SettingsViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        guard indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 else {
+        guard indexPath.row > 0 else {
             return nil
         }
         
-        return indexPath
+        switch indexPath.row {
+        case 1:
+            return isReloading ? nil : indexPath
+        case 2:
+            return imageLoadProgress != nil ? nil : indexPath
+        default:
+            return nil
+        }
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -92,7 +110,14 @@ class SettingsViewController: UITableViewController {
 
         let alertController = UIAlertController(title: "Are you sure?", message: "The reload may take a while.", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "Confirm", style: .destructive, handler: { [weak self] _ in
-            self?.refreshData()
+            switch indexPath.row {
+            case 1:
+                self?.refreshData()
+            case 2:
+                self?.loadImages()
+            default:
+                return
+            }
         })
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
@@ -103,17 +128,36 @@ class SettingsViewController: UITableViewController {
     }
     
     private func refreshData() {
-        isLoading = true
+        isReloading = true
 
         client.reload()
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onError: { [weak self] error in
                     self?.present(error: error)
-                    self?.isLoading = false
+                    self?.isReloading = false
                 },
                 onCompleted: { [weak self] in
-                    self?.isLoading = false
+                    self?.isReloading = false
+                }
+            )
+            .disposed(by: disposeBag)
+    }
+    
+    private func loadImages() {
+        imageLoadProgress = ""
+        
+        client.preloadImages()
+            .subscribe(
+                onNext: { [weak self] progress in
+                    self?.imageLoadProgress = progress
+                },
+                onError: { [weak self] error in
+                    self?.present(error: error)
+                    self?.imageLoadProgress = nil
+                },
+                onCompleted: { [weak self] in
+                    self?.imageLoadProgress = nil
                 }
             )
             .disposed(by: disposeBag)
