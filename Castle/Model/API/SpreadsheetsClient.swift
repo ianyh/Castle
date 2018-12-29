@@ -22,9 +22,11 @@ extension Array {
 }
 
 class SpreadsheetsClient {
-    private let provider = MoyaProvider<Spreadsheets>()
     private let reloadQueue = DispatchQueue(label: "com.ianyh.Castle.reload")
-    private static let spreadsheetID = "16K1Zryyxrh7vdKVF1f7eRrUAOC5wuzvC3q2gFLch6LQ"
+    private lazy var provider: MoyaProvider<Spreadsheets> = {
+        return MoyaProvider<Spreadsheets>(callbackQueue: self.reloadQueue)
+    }()
+    private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
     private static let ignoredSheets = ["Header", "Calculator", "Experience"]
     
     func reload() -> Observable<Void> {
