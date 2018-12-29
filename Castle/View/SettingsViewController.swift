@@ -70,7 +70,7 @@ class SettingsViewController: UITableViewController {
             cell.detailTextLabel?.text = try! LastUpdateObject.lastUpdate().flatMap { dateFormatter.string(from: $0) }
             cell.selectionStyle = .none
         case 1:
-            cell.textLabel?.text = isReloading ? "Reloading..." : "Reload all data from spreadsheet..."
+            cell.textLabel?.text = isReloading ? "Syncing..." : "Sync from spreadsheet..."
             cell.textLabel?.textColor = isReloading ? .lightGray : .blue
             cell.detailTextLabel?.text = nil
             cell.selectionStyle = isReloading ? .none : .default
@@ -108,7 +108,7 @@ class SettingsViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let alertController = UIAlertController(title: "Are you sure?", message: "The reload may take a while.", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Are you sure?", message: "This may take a while.", preferredStyle: .alert)
         let confirmAction = UIAlertAction(title: "Confirm", style: .destructive, handler: { [weak self] _ in
             switch indexPath.row {
             case 1:
