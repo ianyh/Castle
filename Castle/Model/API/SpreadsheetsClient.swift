@@ -121,7 +121,7 @@ class SpreadsheetsClient {
     
     func preloadImage(with url: URL) -> Observable<Void> {
         return Observable<Void>.create { observer in
-            guard KingfisherManager.shared.cache.imageCachedType(forKey: url.absoluteString) != .disk else {
+            guard KingfisherManager.shared.cache.imageCachedType(forKey: url.cacheKey) != .disk else {
                 DispatchQueue.main.async {
                     observer.on(.next(()))
                     observer.on(.completed)
@@ -130,12 +130,14 @@ class SpreadsheetsClient {
             }
             
             let task = KingfisherManager.shared.retrieveImage(with: url, options: nil, progressBlock: nil) { _, _, _, _ in
-                observer.on(.next(()))
-                observer.on(.completed)
+                DispatchQueue.main.async {
+                    observer.on(.next(()))
+                    observer.on(.completed)
+                }
             }
             
             return Disposables.create {
-                task.cancel()
+                task?.cancel()
             }
         }
     }

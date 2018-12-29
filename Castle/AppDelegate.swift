@@ -6,6 +6,7 @@
 //  Copyright © 2017 Ian Ynda-Hummel. All rights reserved.
 //
 
+import Kingfisher
 import Moya
 import RealmSwift
 import UIKit
@@ -16,6 +17,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         Realm.Configuration.defaultConfiguration.deleteRealmIfMigrationNeeded = true
+        
+        ImageCache.default.diskStorage.config.expiration = .never
+        ImageCache.default.diskStorage.config.sizeLimit = 0
 
         let tabBarController = window!.rootViewController as! UITabBarController
         let splitViewController = UISplitViewController()

@@ -398,7 +398,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Anchorage/Anchorage.framework",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
@@ -425,7 +425,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		724A3C8D516A9774A59A848E /* [CP] Check Pods Manifest.lock */ = {

@@ -6,7 +6,7 @@ target 'Castle' do
   use_frameworks!
 
   pod 'Anchorage'
-  pod 'Kingfisher', '~> 4.0'
+  pod 'Kingfisher', '~> 5.0'
   pod 'Moya/RxSwift'
   pod 'RealmSwift'
   pod 'Reveal-SDK', configurations: ['Debug']
