@@ -98,11 +98,7 @@ class SpreadsheetsClient {
                 realm.objects(RowValueObject.self).filter("imageURL != nil")
                     .compactMap { $0.imageURL }
                     .sorted()
-                    .compactMap { imageURL -> URL? in
-                        var components = URLComponents(string: imageURL)
-                        components?.scheme = "https"
-                        return components?.url
-                    }
+                    .compactMap { URL(string: $0)?.cleaned() }
             )
             let urlCount = urls.count
             let urlChunks = urls.chunked(into: urlCount / 10)
@@ -121,7 +117,7 @@ class SpreadsheetsClient {
     
     func preloadImage(with url: URL) -> Observable<Void> {
         return Observable<Void>.create { observer in
-            guard KingfisherManager.shared.cache.imageCachedType(forKey: url.cacheKey) != .disk else {
+            guard KingfisherManager.shared.cache.imageCachedType(forKey: url.cleaned().cacheKey) != .disk else {
                 DispatchQueue.main.async {
                     observer.on(.next(()))
                     observer.on(.completed)

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4009880821D8014F00EEDC30 /* URL+Clean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4009880721D8014F00EEDC30 /* URL+Clean.swift */; };
 		4037B19B21442C66008EB089 /* SheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4037B19A21442C66008EB089 /* SheetCell.swift */; };
 		404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404DACA220634C85000C7C9A /* SheetRowCell.swift */; };
 		40934C00213B6E8E002079B5 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934BFF213B6E8E002079B5 /* Sheet.swift */; };
@@ -50,6 +51,7 @@
 /* Begin PBXFileReference section */
 		1C507CE911B29E68CEDBB839 /* Pods-Castle.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle.release.xcconfig"; path = "Pods/Target Support Files/Pods-Castle/Pods-Castle.release.xcconfig"; sourceTree = "<group>"; };
 		36BFE94BEEAC8DBCBC82F1DF /* Pods_CastleUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CastleUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4009880721D8014F00EEDC30 /* URL+Clean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Clean.swift"; sourceTree = "<group>"; };
 		4037B19A21442C66008EB089 /* SheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCell.swift; sourceTree = "<group>"; };
 		404DACA220634C85000C7C9A /* SheetRowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetRowCell.swift; sourceTree = "<group>"; };
 		406BF460201541A600FE9A85 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Castle.entitlements; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 		40934BFD213B6D2A002079B5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4009880721D8014F00EEDC30 /* URL+Clean.swift */,
 				40934C01213B6F90002079B5 /* API */,
 				40934BFE213B6E70002079B5 /* Objects */,
 			);
@@ -477,6 +480,7 @@
 				40B50DE02144B3D700AA5C41 /* LoadingCell.swift in Sources */,
 				40934C04213B71CF002079B5 /* SpreadsheetsClient.swift in Sources */,
 				40E7AF521F71DFAB0032D4F2 /* SheetViewController.swift in Sources */,
+				4009880821D8014F00EEDC30 /* URL+Clean.swift in Sources */,
 				40DCA1632145FE32002DA1E4 /* LastUpdate.swift in Sources */,
 				4037B19B21442C66008EB089 /* SheetCell.swift in Sources */,
 				40E7AF871F76C8C80032D4F2 /* SheetsListViewController.swift in Sources */,

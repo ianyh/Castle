@@ -94,7 +94,9 @@ class SheetViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SheetCell
-        let imageValue = filteredResults[indexPath.section].values.first { $0.imageURL != nil }?.imageURL.flatMap { URL(string: $0) }
+        let imageValue = filteredResults[indexPath.section].values
+            .first { $0.imageURL != nil }?.imageURL
+            .flatMap { URL(string: $0)?.cleaned() }
         let indexedRowValues = sheet.frozenColumns.map { column in
             return self.filteredResults[indexPath.section].values.filter("column == %@", column).first!
         }
