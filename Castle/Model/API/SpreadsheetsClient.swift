@@ -105,9 +105,9 @@ class SpreadsheetsClient {
                     }
             )
             let urlCount = urls.count
-            let urlChunks = urls.chunked(into: 5)
-            let downloads = Observable.concat(urlChunks.map { chunk in
-                return Observable.merge(chunk.map { self.preloadImage(with: $0) })
+            let urlChunks = urls.chunked(into: urlCount / 10)
+            let downloads = Observable.merge(urlChunks.map { chunk in
+                return Observable.concat(chunk.map { self.preloadImage(with: $0) })
             })
             
             return downloads
