@@ -65,7 +65,7 @@ class SheetViewController: UITableViewController {
         
         tableView.estimatedRowHeight = 50
         tableView.keyboardDismissMode = .interactive
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .singleLine
         tableView.register(SheetCell.self, forCellReuseIdentifier: "Cell")
         
