@@ -19,19 +19,14 @@ class SheetViewController: UITableViewController {
     let sheet: SpreadsheetObject
     let searchController = UISearchController(searchResultsController: nil)
 
-    private var filteredResults: Results<Row> {
+    private var filteredResults: Results<RowObject> {
         didSet {
             tableView?.reloadData()
         }
     }
     private var searchQuery: String? {
         didSet {
-            updateFilters(searchQuery: searchQuery, filter: filter)
-        }
-    }
-    private var filter: Filter? {
-        didSet {
-            updateFilters(searchQuery: searchQuery, filter: filter)
+            updateFilters(searchQuery: searchQuery)
         }
     }
 
@@ -44,29 +39,19 @@ class SheetViewController: UITableViewController {
         title = sheet.title
     }
     
-    private func updateFilters(searchQuery: String?, filter: Filter?) {
+    private func updateFilters(searchQuery: String?) {
         var filterPredicates: [NSPredicate] = []
-        
-        if let filter = filter {
-            filterPredicates.append(contentsOf: filter.columnFilters.map { column -> NSPredicate in
-                return NSPredicate(
-                    format: "SUBQUERY(values, $value, $value.key == %@ AND $value.value in %@).@count > 0",
-                    column.key,
-                    column.value
-                )
-            })
-        }
-        
+
         if let query = searchQuery {
-            let index = sheet.indexingColumns.count > 1 ? searchController.searchBar.selectedScopeButtonIndex : 0
+            let index = sheet.frozenColumns.count > 1 ? searchController.searchBar.selectedScopeButtonIndex : 0
             filterPredicates.append(NSPredicate(
-                format: "SUBQUERY(values, $value, $value.key == %@ AND $value.value CONTAINS[c] %@).@count > 0",
-                sheet.indexingColumns[index].key,
+                format: "SUBQUERY(values, $value, $value.column == %@ AND $value.value CONTAINS[c] %@).@count > 0",
+                sheet.frozenColumns[index],
                 query
             ))
         }
         
-        filteredResults = filterPredicates.reduce(sheet.rows.filter(NSPredicate(value: true))) { results, predicate -> Results<Row> in
+        filteredResults = filterPredicates.reduce(sheet.rows.filter(NSPredicate(value: true))) { results, predicate -> Results<RowObject> in
             return results.filter(predicate)
         }
     }
@@ -87,7 +72,7 @@ class SheetViewController: UITableViewController {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
-        searchController.searchBar.scopeButtonTitles = sheet.indexingColumns.count > 1 ? sheet.indexingColumns.map { $0.title } : []
+        searchController.searchBar.scopeButtonTitles = sheet.frozenColumns.count > 1 ? sheet.frozenColumns.map { $0.title } : []
         navigationItem.searchController = searchController
         definesPresentationContext = true
     }
@@ -110,8 +95,8 @@ class SheetViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SheetCell
         let imageValue = filteredResults[indexPath.section].values.first { $0.imageURL != nil }?.imageURL.flatMap { URL(string: $0) }
-        let indexedRowValues = sheet.indexingColumns.map { column in
-            return self.filteredResults[indexPath.section].values.filter("key == %@", column.key).first!
+        let indexedRowValues = sheet.frozenColumns.map { column in
+            return self.filteredResults[indexPath.section].values.filter("column == %@", column).first!
         }
         let primaryRowValue = indexedRowValues[0]
         cell.titleLabel.text = primaryRowValue.title
@@ -140,7 +125,7 @@ class SheetViewController: UITableViewController {
 
 extension SheetViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        updateFilters(searchQuery: searchQuery, filter: filter)
+        updateFilters(searchQuery: searchQuery)
     }
 }
 

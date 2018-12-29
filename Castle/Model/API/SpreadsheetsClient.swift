@@ -29,7 +29,7 @@ class SpreadsheetsClient {
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
     private static let ignoredSheets = ["Header", "Calculator", "Experience"]
     
-    func reload() -> Observable<Void> {
+    func sync() -> Observable<Void> {
         guard
             let infoPath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
             let info = NSDictionary(contentsOf: URL(fileURLWithPath: infoPath)),
@@ -82,10 +82,7 @@ class SpreadsheetsClient {
                         onNext: { sheets in
                             let realm = try Realm()
                             try realm.write {
-                                realm.deleteAll()
-                            }
-                            try realm.write {
-                                realm.add(sheets)
+                                realm.add(sheets, update: true)
                             }
                             try LastUpdateObject.markUpdate()
                         }
@@ -98,7 +95,7 @@ class SpreadsheetsClient {
         do {
             let realm = try Realm()
             let urls = Array(
-                realm.objects(RowValue.self).filter("imageURL != nil")
+                realm.objects(RowValueObject.self).filter("imageURL != nil")
                     .compactMap { $0.imageURL }
                     .sorted()
                     .compactMap { imageURL -> URL? in
@@ -150,26 +147,24 @@ class SpreadsheetsClient {
         let rawValues = try JSONDecoder().decode(SheetsRawValues.self, from: rawResponse.data)
         let headers = values.rows[0]
         let frozenColumnCount = sheet.properties.gridProperties.frozenColumnCount ?? 0
-        
-        let indexingColumns = (0..<frozenColumnCount).compactMap { index -> IndexingColumn? in
-            let value = headers[index]
-            
+        let columns = headers.enumerated().compactMap { index, value -> ColumnObject? in
             guard value != "Img" else {
                 return nil
             }
 
-            let indexingColumn = IndexingColumn()
-            indexingColumn.key = "\(sheet.properties.id)-\(value)"
-            indexingColumn.title = value
-            return indexingColumn
+            let column = ColumnObject()
+            column.key = "\(sheet.properties.id)-\(value)"
+            column.isFrozen = index < frozenColumnCount
+            column.title = value
+            return column
         }
-        let indexedNameColumn = indexingColumns.first { $0.title == "Name" }
-        let otherIndexedColumns = indexingColumns.filter { $0 != indexedNameColumn }
-        let sortedIndexingColumns = indexedNameColumn.flatMap { [$0] + otherIndexedColumns } ?? otherIndexedColumns
+        let nameColumn = columns.first { $0.title == "Name" }
+        let otherColumns = columns.filter { $0 != nameColumn }
+        let sortedColumns = nameColumn.flatMap { [$0] + otherColumns } ?? otherColumns
         
-        let rows = zip(values.rows[1...], rawValues.rows[1...]).map { (row, rawRow) -> Row in
-            let rowObject = Row()
-            let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValue in
+        let rows = zip(values.rows[1...], rawValues.rows[1...]).map { (row, rawRow) -> RowObject in
+            let rowObject = RowObject()
+            let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValueObject in
                 let normalized = value.1
                 var imageURL: String? = nil
                 
@@ -182,8 +177,8 @@ class SpreadsheetsClient {
                     }
                 }
                 
-                let rowValue = RowValue()
-                rowValue.key = "\(sheet.properties.id)-\(headers[index])"
+                let rowValue = RowValueObject()
+                rowValue.column = columns.first { $0.title == headers[index] }
                 rowValue.title = headers[index]
                 rowValue.value = value.0
                 rowValue.imageURL = imageURL
@@ -196,7 +191,7 @@ class SpreadsheetsClient {
         }
         let sheetObject = SpreadsheetObject()
         sheetObject.title = sheet.properties.title
-        sheetObject.indexingColumns.append(objectsIn: sortedIndexingColumns)
+        sheetObject.columns.append(objectsIn: sortedColumns)
         sheetObject.rows.append(objectsIn: rows)
         
         return sheetObject

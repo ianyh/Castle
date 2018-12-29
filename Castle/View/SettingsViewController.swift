@@ -130,7 +130,7 @@ class SettingsViewController: UITableViewController {
     private func refreshData() {
         isReloading = true
 
-        client.reload()
+        client.sync()
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onError: { [weak self] error in

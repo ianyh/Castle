@@ -19,9 +19,9 @@ class RowViewController: UITableViewController {
         }
     }
     
-    let row: Row
+    let row: RowObject
     
-    init(row: Row) {
+    init(row: RowObject) {
         self.row = row
         super.init(style: .plain)
     }
