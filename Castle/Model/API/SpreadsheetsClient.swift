@@ -125,7 +125,7 @@ class SpreadsheetsClient {
                 return Disposables.create()
             }
             
-            let task = KingfisherManager.shared.retrieveImage(with: url, options: nil, progressBlock: nil) { _, _, _, _ in
+            let task = KingfisherManager.shared.retrieveImage(with: url, options: nil, progressBlock: nil) { _ in
                 DispatchQueue.main.async {
                     observer.on(.next(()))
                     observer.on(.completed)
@@ -156,7 +156,7 @@ class SpreadsheetsClient {
             column.title = value
             return column
         }
-        let nameColumn = columns.first { $0.title == "Name" }
+        let nameColumn = columns.first { $0.title.hasSuffix("Name") }
         let otherColumns = columns.filter { $0 != nameColumn }
         let sortedColumns = nameColumn.flatMap { [$0] + otherColumns } ?? otherColumns
         
