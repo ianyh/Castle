@@ -34,12 +34,22 @@ class ColumnObject: Object {
 }
 
 class RowValueObject: Object {
+    @objc dynamic var id: String = ""
     @objc dynamic var column: ColumnObject?
     @objc dynamic var title: String = ""
     @objc dynamic var value: String = ""
     @objc dynamic var imageURL: String?
+    
+    override static func primaryKey() -> String? {
+        return "id"
+    }
 }
 
 class RowObject: Object {
+    @objc dynamic var id: String = ""
     let values = List<RowValueObject>()
+    
+    override static func primaryKey() -> String? {
+        return "id"
+    }
 }

@@ -182,11 +182,19 @@ class SpreadsheetsClient {
                 rowValue.imageURL = imageURL
                 return rowValue
             }
-            
+
             rowObject.values.append(objectsIn: rowValues)
             
             return rowObject
         }
+        
+        rows.enumerated().forEach { index, row in
+            row.id = "\(sheet.properties.title)-\(index)"
+            row.values.enumerated().forEach { valueIndex, value in
+                value.id = "\(row.id)-\(valueIndex)"
+            }
+        }
+        
         let sheetObject = SpreadsheetObject()
         sheetObject.title = sheet.properties.title
         sheetObject.columns.append(objectsIn: sortedColumns)
