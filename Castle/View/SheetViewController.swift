@@ -17,6 +17,7 @@ struct Filter {
 
 class SheetViewController: UITableViewController {
     let sheet: SpreadsheetObject
+    let explicitRows: [RowObject]
     let searchController = UISearchController(searchResultsController: nil)
 
     private var filteredResults: Results<RowObject> {
@@ -30,8 +31,9 @@ class SheetViewController: UITableViewController {
         }
     }
 
-    init(sheet: SpreadsheetObject) {
+    init(sheet: SpreadsheetObject, explicitRows: [RowObject] = []) {
         self.sheet = sheet
+        self.explicitRows = explicitRows
         self.filteredResults = sheet.rows.filter(NSPredicate(value: true))
         super.init(style: .grouped)
         hidesBottomBarWhenPushed = true
@@ -51,7 +53,9 @@ class SheetViewController: UITableViewController {
             ))
         }
         
-        filteredResults = filterPredicates.reduce(sheet.rows.filter(NSPredicate(value: true))) { results, predicate -> Results<RowObject> in
+        let rows = explicitRows.isEmpty ? sheet.rows.filter(NSPredicate(value: true)) : sheet.rows.filter("id IN %@", self.explicitRows.map { $0.id })
+        
+        filteredResults = filterPredicates.reduce(rows) { results, predicate -> Results<RowObject> in
             return results.filter(predicate)
         }
     }
@@ -75,6 +79,8 @@ class SheetViewController: UITableViewController {
         searchController.searchBar.scopeButtonTitles = sheet.frozenColumns.count > 1 ? sheet.frozenColumns.map { $0.title } : []
         navigationItem.searchController = searchController
         definesPresentationContext = true
+        
+        updateFilters(searchQuery: searchQuery)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -119,7 +125,7 @@ class SheetViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let row = filteredResults[indexPath.section]
-        let rowViewController = RowViewController(row: row)
+        let rowViewController = RowViewController(sheet: sheet, row: row)
         
         splitViewController?.showDetailViewController(rowViewController, sender: self)
     }
