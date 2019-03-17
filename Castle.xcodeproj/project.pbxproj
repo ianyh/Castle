@@ -12,6 +12,7 @@
 		404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404DACA220634C85000C7C9A /* SheetRowCell.swift */; };
 		40934C00213B6E8E002079B5 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934BFF213B6E8E002079B5 /* Sheet.swift */; };
 		40934C04213B71CF002079B5 /* SpreadsheetsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */; };
+		4094FB8B21E56A9E00B1A258 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4094FB8A21E56A9E00B1A258 /* SearchViewController.swift */; };
 		40B50DE02144B3D700AA5C41 /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B50DDF2144B3D700AA5C41 /* LoadingCell.swift */; };
 		40DCA1632145FE32002DA1E4 /* LastUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DCA1622145FE32002DA1E4 /* LastUpdate.swift */; };
 		40E7AF501F71DFAB0032D4F2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF4F1F71DFAB0032D4F2 /* AppDelegate.swift */; };
@@ -57,6 +58,7 @@
 		406BF460201541A600FE9A85 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Castle.entitlements; sourceTree = "<group>"; };
 		40934BFF213B6E8E002079B5 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpreadsheetsClient.swift; sourceTree = "<group>"; };
+		4094FB8A21E56A9E00B1A258 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		40B50DDF2144B3D700AA5C41 /* LoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
 		40DCA1622145FE32002DA1E4 /* LastUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastUpdate.swift; sourceTree = "<group>"; };
 		40E7AF4C1F71DFAB0032D4F2 /* Castle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Castle.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,6 +150,7 @@
 			children = (
 				40B50DDF2144B3D700AA5C41 /* LoadingCell.swift */,
 				40E7AF881F76CE5B0032D4F2 /* RowViewController.swift */,
+				4094FB8A21E56A9E00B1A258 /* SearchViewController.swift */,
 				40E7AF8A1F783F5F0032D4F2 /* SettingsViewController.swift */,
 				4037B19A21442C66008EB089 /* SheetCell.swift */,
 				404DACA220634C85000C7C9A /* SheetRowCell.swift */,
@@ -484,6 +487,7 @@
 				40E7AF521F71DFAB0032D4F2 /* SheetViewController.swift in Sources */,
 				4009880821D8014F00EEDC30 /* URL+Clean.swift in Sources */,
 				40DCA1632145FE32002DA1E4 /* LastUpdate.swift in Sources */,
+				4094FB8B21E56A9E00B1A258 /* SearchViewController.swift in Sources */,
 				4037B19B21442C66008EB089 /* SheetCell.swift in Sources */,
 				40E7AF871F76C8C80032D4F2 /* SheetsListViewController.swift in Sources */,
 				404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */,

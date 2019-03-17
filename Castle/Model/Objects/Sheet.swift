@@ -21,6 +21,10 @@ class SpreadsheetObject: Object {
     override static func primaryKey() -> String? {
         return "title"
     }
+    
+    func normalizedName() -> String {
+        return title.hasSuffix("s") ? String(title.dropLast()) : title
+    }
 }
 
 class ColumnObject: Object {
@@ -51,5 +55,9 @@ class RowObject: Object {
     
     override static func primaryKey() -> String? {
         return "id"
+    }
+    
+    func normalizedName() -> String? {
+        return values.first(where: { $0.column?.title.hasSuffix("Name") ?? false })?.value
     }
 }

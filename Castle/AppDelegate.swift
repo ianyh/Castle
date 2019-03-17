@@ -33,6 +33,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         splitViewController.viewControllers = [UINavigationController(rootViewController: sheetsViewController)]
         splitViewController.preferredDisplayMode = .allVisible
         
+        let searchViewController = SearchViewController()
+        
+        searchViewController.tabBarItem = UITabBarItem(title: "Search", image: nil, selectedImage: nil)
+        
         let settingsViewController = SettingsViewController()
         let settingsNavigationController = UINavigationController(rootViewController: settingsViewController)
         
@@ -42,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             selectedImage: UIImage(named: "settings-selected")
         )
 
-        tabBarController.viewControllers = [splitViewController, settingsNavigationController]
+        tabBarController.viewControllers = [splitViewController, searchViewController, settingsNavigationController]
         
         return true
     }

@@ -127,15 +127,17 @@ class RowViewController: UITableViewController {
     }
     
     private func loadRelationships() {
-        guard let normalizedName = row.values.first(where: { $0.column?.title.hasSuffix("Name") ?? false })?.value else {
+        guard let normalizedName = row.normalizedName() else {
             return
         }
 
-        let normalizedSheetTitle = sheet.title.hasSuffix("s") ? String(sheet.title.dropLast()) : sheet.title
+        let normalizedSheetTitle = sheet.normalizedName()
 
         DispatchQueue.global(qos: .userInteractive).async {
             let realm = try! Realm()
-            let relatedSheets = realm.objects(SpreadsheetObject.self).filter("SUBQUERY(columns, $column, $column.title == %@).@count > 0", normalizedSheetTitle)
+            let relatedSheets = realm
+                .objects(SpreadsheetObject.self)
+                .filter("SUBQUERY(columns, $column, $column.title == %@).@count > 0", normalizedSheetTitle)
             let relationships = Array(relatedSheets.map { relatedSheet -> Relationship in
                 let relatedRows = relatedSheet.rows.filter { row in
                     return row.values.first { $0.column?.title == normalizedSheetTitle && $0.value == normalizedName } != nil
