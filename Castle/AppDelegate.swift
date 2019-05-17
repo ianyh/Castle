@@ -22,21 +22,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         ImageCache.default.diskStorage.config.sizeLimit = 0
 
         let tabBarController = window!.rootViewController as! UITabBarController
-        let splitViewController = UISplitViewController()
+        
         let sheetsViewController = SheetsListViewController()
+        let sheetsNavigationController = UINavigationController(rootViewController: sheetsViewController)
 
-        splitViewController.tabBarItem = UITabBarItem(
+        sheetsNavigationController.tabBarItem = UITabBarItem(
             title: "Archive",
             image: UIImage(named: "categories"),
             selectedImage: UIImage(named: "categories-selected")
         )
-        splitViewController.viewControllers = [UINavigationController(rootViewController: sheetsViewController)]
-        splitViewController.preferredDisplayMode = .allVisible
         
         let searchViewController = SearchViewController()
         let searchNavigationController = UINavigationController(rootViewController: searchViewController)
         
-        searchViewController.tabBarItem = UITabBarItem(title: "Search", image: nil, selectedImage: nil)
+        searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
         
         let settingsViewController = SettingsViewController()
         let settingsNavigationController = UINavigationController(rootViewController: settingsViewController)
@@ -47,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             selectedImage: UIImage(named: "settings-selected")
         )
 
-        tabBarController.viewControllers = [splitViewController, searchNavigationController, settingsNavigationController]
+        tabBarController.viewControllers = [searchNavigationController, sheetsNavigationController, settingsNavigationController]
         
         return true
     }
