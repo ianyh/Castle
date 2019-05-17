@@ -34,6 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         splitViewController.preferredDisplayMode = .allVisible
         
         let searchViewController = SearchViewController()
+        let searchNavigationController = UINavigationController(rootViewController: searchViewController)
         
         searchViewController.tabBarItem = UITabBarItem(title: "Search", image: nil, selectedImage: nil)
         
@@ -46,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             selectedImage: UIImage(named: "settings-selected")
         )
 
-        tabBarController.viewControllers = [splitViewController, searchViewController, settingsNavigationController]
+        tabBarController.viewControllers = [splitViewController, searchNavigationController, settingsNavigationController]
         
         return true
     }
