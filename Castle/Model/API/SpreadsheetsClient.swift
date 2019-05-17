@@ -6,6 +6,7 @@
 //  Copyright © 2018 Ian Ynda-Hummel. All rights reserved.
 //
 
+import CouchbaseLiteSwift
 import Foundation
 import Kingfisher
 import Moya
@@ -85,6 +86,35 @@ class SpreadsheetsClient {
                                 realm.add(sheets, update: true)
                             }
                             try LastUpdateObject.markUpdate()
+                            
+                            var ftsIndices = Set(["Effects", "Element"])
+                            do {
+                                try Database(name: "search").delete()
+                            } catch {
+                                print("failed to delete")
+                            }
+                            
+                            let database = try Database(name: "search")
+                            try database.inBatch {
+                                for sheet in sheets where ["Characters", "Abilities", "Soul Breaks", "Status", "Other"].contains(sheet.title)  {
+                                    for row in sheet.rows {
+                                        let document = database.document(withID: row.id)?.toMutable() ?? MutableDocument(id: row.id)
+                                        document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
+                                        document.setString(sheet.title, forKey: "_sheetTitle")
+                                        for value in row.values {
+                                            document.setString(value.value, forKey: value.title)
+                                        }
+                                        try database.saveDocument(document)
+                                    }
+                                    
+                                    for column in sheet.columns.filter({ $0.isFrozen == true }) {
+                                        ftsIndices.insert(column.title)
+                                    }
+                                }
+                            }
+                            
+                            let index = IndexBuilder.fullTextIndex(items: ftsIndices.map { FullTextIndexItem.property($0) })
+                            try database.createIndex(index, withName: "search")
                         }
                     )
                     .map { _ in }
