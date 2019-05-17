@@ -87,7 +87,7 @@ class SpreadsheetsClient {
                             }
                             try LastUpdateObject.markUpdate()
                             
-                            var ftsIndices = Set(["Effects", "Element"])
+                            var ftsIndices = Set(["Effects", "Element", "Tier"])
                             do {
                                 try Database(name: "search").delete()
                             } catch {
