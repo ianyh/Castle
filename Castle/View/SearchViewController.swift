@@ -56,6 +56,25 @@ class SearchViewController: UITableViewController {
         cell.detailTextLabel?.text = row.type
         return cell
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let row = rows[indexPath.row]
+        do {
+            let realm = try Realm()
+            
+            guard let rowObject = realm.object(ofType: RowObject.self, forPrimaryKey: row.id) else {
+                return
+            }
+            guard let spreadsheetObject = realm.object(ofType: SpreadsheetObject.self, forPrimaryKey: row.type) else {
+                return
+            }
+            
+            let rowViewController = RowViewController(sheet: spreadsheetObject, row: rowObject)
+            navigationController?.pushViewController(rowViewController, animated: true)
+        } catch {
+            print(error)
+        }
+    }
 }
 
 extension SearchViewController: UISearchResultsUpdating {
