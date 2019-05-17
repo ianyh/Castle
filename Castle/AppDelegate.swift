@@ -23,6 +23,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
         let tabBarController = window!.rootViewController as! UITabBarController
         
+        let searchViewController = SearchViewController()
+        let searchNavigationController = UINavigationController(rootViewController: searchViewController)
+        
+        searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
+        
         let sheetsViewController = SheetsListViewController()
         let sheetsNavigationController = UINavigationController(rootViewController: sheetsViewController)
 
@@ -31,11 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             image: UIImage(named: "categories"),
             selectedImage: UIImage(named: "categories-selected")
         )
-        
-        let searchViewController = SearchViewController()
-        let searchNavigationController = UINavigationController(rootViewController: searchViewController)
-        
-        searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
         
         let settingsViewController = SettingsViewController()
         let settingsNavigationController = UINavigationController(rootViewController: settingsViewController)

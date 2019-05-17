@@ -27,22 +27,29 @@ class SearchViewController: UITableViewController {
         let type: String
     }
     
-    private lazy var searchController = UISearchController(searchResultsController: nil)
+    private let searchController = UISearchController(searchResultsController: nil)
     private var rows: [Row] = []
+    
+    init() {
+        super.init(style: .plain)
+        title = "Search"
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        definesPresentationContext = true
+        
+        searchController.hidesNavigationBarDuringPresentation = false
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchResultsUpdater = self
         navigationItem.searchController = searchController
-        definesPresentationContext = true
         
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

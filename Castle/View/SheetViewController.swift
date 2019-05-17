@@ -126,8 +126,7 @@ class SheetViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let row = filteredResults[indexPath.section]
         let rowViewController = RowViewController(sheet: sheet, row: row)
-        
-        splitViewController?.showDetailViewController(rowViewController, sender: self)
+        navigationController?.pushViewController(rowViewController, animated: true)
     }
 }
 

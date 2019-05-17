@@ -10,21 +10,17 @@ import Anchorage
 import UIKit
 
 class SheetRowCell: UITableViewCell {
-    let iconImageView = UIImageView()
     let titleLabel = UILabel()
     let valueLabel = UILabel()
     
-    var hasImage: Bool = true {
+    var isFrozen: Bool = false {
         didSet {
-            iconImageView.isHidden = !hasImage
-            leadingConstraint?.constant = hasImage ? 8 : -42
-            
-            verticalConstraintPair?.first.isActive = hasImage
-            verticalConstraintPair?.second.isActive = hasImage
+            titleLabel.textAlignment = isFrozen ? .center : .left
+            titleLabel.font = .preferredFont(forTextStyle: .footnote)
+            valueLabel.textAlignment = isFrozen ? .center : .left
+            valueLabel.font = isFrozen ? .preferredFont(forTextStyle: .title3) : .preferredFont(forTextStyle: .body)
         }
     }
-    private var leadingConstraint: NSLayoutConstraint?
-    private var verticalConstraintPair: ConstraintPair?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -36,28 +32,29 @@ class SheetRowCell: UITableViewCell {
         valueLabel.font = .preferredFont(forTextStyle: .body)
         valueLabel.numberOfLines = 0
         
-        contentView.addSubview(iconImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(valueLabel)
         
-        iconImageView.widthAnchor == 50
-        iconImageView.heightAnchor == 50
-        iconImageView.centerYAnchor == contentView.safeAreaLayoutGuide.centerYAnchor
-        leadingConstraint = (iconImageView.leadingAnchor == contentView.safeAreaLayoutGuide.leadingAnchor + 8)
-        verticalConstraintPair = (iconImageView.verticalAnchors >= contentView.safeAreaLayoutGuide.verticalAnchors + 12)
-        
-        titleLabel.leadingAnchor == iconImageView.trailingAnchor + 8
+        titleLabel.leadingAnchor == contentView.safeAreaLayoutGuide.leadingAnchor + 16
         titleLabel.trailingAnchor == contentView.safeAreaLayoutGuide.trailingAnchor - 16
         titleLabel.topAnchor >= contentView.safeAreaLayoutGuide.topAnchor + 8
         titleLabel.bottomAnchor == valueLabel.topAnchor - 2
         
-        valueLabel.leadingAnchor == iconImageView.trailingAnchor + 8
+        valueLabel.leadingAnchor == contentView.safeAreaLayoutGuide.leadingAnchor + 16
         valueLabel.trailingAnchor == contentView.safeAreaLayoutGuide.trailingAnchor - 16
         valueLabel.centerYAnchor == contentView.safeAreaLayoutGuide.centerYAnchor + 6
         valueLabel.bottomAnchor <= contentView.safeAreaLayoutGuide.bottomAnchor - 8
+        
+        isFrozen = false
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        accessoryType = .none
+        isFrozen = false
     }
 }

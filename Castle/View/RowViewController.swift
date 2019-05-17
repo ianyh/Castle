@@ -16,16 +16,6 @@ private struct Relationship {
 }
 
 class RowViewController: UITableViewController {
-    class SubtitledCell: UITableViewCell {
-        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-            super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-        }
-        
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-    }
-    
     let sheet: SpreadsheetObject
     let row: RowObject
     
@@ -50,7 +40,9 @@ class RowViewController: UITableViewController {
         
         tableView.allowsSelection = true
         tableView.tableFooterView = UIView()
-        tableView.register(SheetRowCell.self, forCellReuseIdentifier: "Cell")
+        tableView.register(IconCell.self, forCellReuseIdentifier: "Icon")
+        tableView.register(SheetRowCell.self, forCellReuseIdentifier: "SheetRow")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         loadRelationships()
     }
 
@@ -74,25 +66,22 @@ class RowViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SheetRowCell
         let frozenCount = row.values.filter { $0.column?.isFrozen ?? true }.count
         
         switch indexPath.section {
         case 0:
-            fill(cell: cell, with: row.values[indexPath.row])
+            return cell(for: row.values[indexPath.row], at: indexPath, tableView: tableView)
         case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
             let relationship = relationships[indexPath.row]
-            cell.iconImageView.kf.cancelDownloadTask()
-            cell.hasImage = false
-            cell.titleLabel.text = relationship.title
-            cell.valueLabel.text = nil
+            cell.accessoryType = .disclosureIndicator
+            cell.textLabel?.text = relationship.title
+            return cell
         case 2:
-            fill(cell: cell, with: row.values[indexPath.row + frozenCount])
+            return cell(for: row.values[indexPath.row + frozenCount], at: indexPath, tableView: tableView)
         default:
-            break
+            fatalError()
         }
-
-        return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -111,18 +100,26 @@ class RowViewController: UITableViewController {
         }
     }
     
-    private func fill(cell: SheetRowCell, with value: RowValueObject) {
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard indexPath.section == 1 else {
+            return nil
+        }
+        
+        return indexPath
+    }
+    
+    private func cell(for value: RowValueObject, at indexPath: IndexPath, tableView: UITableView) -> UITableViewCell {
         let imageValue = value.imageURL.flatMap { URL(string: $0) }
         if let image = imageValue {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Icon", for: indexPath) as! IconCell
             cell.iconImageView.kf.setImage(with: image)
-            cell.hasImage = true
-            cell.titleLabel.text = nil
-            cell.valueLabel.text = nil
+            return cell
         } else {
-            cell.iconImageView.kf.cancelDownloadTask()
-            cell.hasImage = false
+            let cell = tableView.dequeueReusableCell(withIdentifier: "SheetRow", for: indexPath) as! SheetRowCell
+            cell.isFrozen = value.column?.isFrozen ?? false
             cell.titleLabel.text = value.title
             cell.valueLabel.text = value.value
+            return cell
         }
     }
     
