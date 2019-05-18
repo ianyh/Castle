@@ -28,7 +28,7 @@ class RowViewController: UITableViewController {
     init(sheet: SpreadsheetObject, row: RowObject) {
         self.sheet = sheet
         self.row = row
-        super.init(style: .plain)
+        super.init(style: .grouped)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,7 +45,35 @@ class RowViewController: UITableViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         loadRelationships()
     }
+    
+    private func loadRelationships() {
+        guard let normalizedName = row.normalizedName() else {
+            return
+        }
+        
+        let normalizedSheetTitle = sheet.normalizedName()
+        
+        DispatchQueue.global(qos: .userInteractive).async {
+            let realm = try! Realm()
+            let relatedSheets = realm
+                .objects(SpreadsheetObject.self)
+                .filter("SUBQUERY(columns, $column, $column.title == %@).@count > 0", normalizedSheetTitle)
+            let relationships = Array(relatedSheets.map { relatedSheet -> Relationship in
+                let relatedRows = relatedSheet.rows.filter { row in
+                    return row.values.first { $0.column?.title == normalizedSheetTitle && $0.value == normalizedName } != nil
+                }
+                let rowIDs = relatedRows.map { $0.id }
+                return Relationship(title: relatedSheet.title, sheetID: relatedSheet.title, rowIDs: Array(rowIDs))
+            })
+            
+            DispatchQueue.main.async {
+                self.relationships = relationships
+            }
+        }
+    }
+}
 
+extension RowViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
@@ -84,6 +112,33 @@ class RowViewController: UITableViewController {
         }
     }
     
+    private func cell(for value: RowValueObject, at indexPath: IndexPath, tableView: UITableView) -> UITableViewCell {
+        let imageValue = value.imageURL.flatMap { URL(string: $0) }
+        if let image = imageValue {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Icon", for: indexPath) as! IconCell
+            cell.selectionStyle = .none
+            cell.iconImageView.kf.setImage(with: image)
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "SheetRow", for: indexPath) as! SheetRowCell
+            cell.selectionStyle = .none
+            cell.isFrozen = value.column?.isFrozen ?? false
+            cell.titleLabel.text = value.title
+            cell.valueLabel.text = value.value
+            return cell
+        }
+    }
+}
+
+extension RowViewController {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard section == 1 && !relationships.isEmpty else {
+            return nil
+        }
+        
+        return "Relationships"
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0, 2:
@@ -106,46 +161,5 @@ class RowViewController: UITableViewController {
         }
         
         return indexPath
-    }
-    
-    private func cell(for value: RowValueObject, at indexPath: IndexPath, tableView: UITableView) -> UITableViewCell {
-        let imageValue = value.imageURL.flatMap { URL(string: $0) }
-        if let image = imageValue {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "Icon", for: indexPath) as! IconCell
-            cell.iconImageView.kf.setImage(with: image)
-            return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "SheetRow", for: indexPath) as! SheetRowCell
-            cell.isFrozen = value.column?.isFrozen ?? false
-            cell.titleLabel.text = value.title
-            cell.valueLabel.text = value.value
-            return cell
-        }
-    }
-    
-    private func loadRelationships() {
-        guard let normalizedName = row.normalizedName() else {
-            return
-        }
-
-        let normalizedSheetTitle = sheet.normalizedName()
-
-        DispatchQueue.global(qos: .userInteractive).async {
-            let realm = try! Realm()
-            let relatedSheets = realm
-                .objects(SpreadsheetObject.self)
-                .filter("SUBQUERY(columns, $column, $column.title == %@).@count > 0", normalizedSheetTitle)
-            let relationships = Array(relatedSheets.map { relatedSheet -> Relationship in
-                let relatedRows = relatedSheet.rows.filter { row in
-                    return row.values.first { $0.column?.title == normalizedSheetTitle && $0.value == normalizedName } != nil
-                }
-                let rowIDs = relatedRows.map { $0.id }
-                return Relationship(title: relatedSheet.title, sheetID: relatedSheet.title, rowIDs: Array(rowIDs))
-            })
-            
-            DispatchQueue.main.async {
-                self.relationships = relationships
-            }
-        }
     }
 }
