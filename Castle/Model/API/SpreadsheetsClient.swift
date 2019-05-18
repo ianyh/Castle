@@ -96,7 +96,7 @@ class SpreadsheetsClient {
                             
                             let database = try Database(name: "search")
                             try database.inBatch {
-                                for sheet in sheets where ["Characters", "Abilities", "Soul Breaks", "Status", "Other"].contains(sheet.title)  {
+                                for sheet in sheets {
                                     for row in sheet.rows {
                                         let document = database.document(withID: row.id)?.toMutable() ?? MutableDocument(id: row.id)
                                         document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")

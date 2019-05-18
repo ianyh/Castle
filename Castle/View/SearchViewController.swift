@@ -100,6 +100,7 @@ extension SearchViewController: UISearchResultsUpdating {
             }
             
             let database = try! Database(name: "search")
+            let searchableSheets = ["Characters", "Abilities", "Soul Breaks", "Status", "Other"].map { Expression.string($0) }
             let fulltextSearch = FullTextExpression.index("search").match("(Name:'\(text)*') OR '\(text)'")
             let query = QueryBuilder
                 .select(
@@ -108,7 +109,7 @@ extension SearchViewController: UISearchResultsUpdating {
                     SelectResult.property("_sheetTitle")
                 )
                 .from(DataSource.database(database))
-                .where(fulltextSearch)
+                .where(Expression.property("_sheetTitle").in(searchableSheets).and(fulltextSearch))
                 .orderBy(Ordering.expression(FullTextFunction.rank("search")).descending())
                 .limit(Expression.int(50))
             

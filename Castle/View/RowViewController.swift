@@ -6,6 +6,7 @@
 //  Copyright © 2017 Ian Ynda-Hummel. All rights reserved.
 //
 
+import CouchbaseLiteSwift
 import RealmSwift
 import UIKit
 
@@ -54,20 +55,33 @@ class RowViewController: UITableViewController {
         let normalizedSheetTitle = sheet.normalizedName()
         
         DispatchQueue.global(qos: .userInteractive).async {
-            let realm = try! Realm()
-            let relatedSheets = realm
-                .objects(SpreadsheetObject.self)
-                .filter("SUBQUERY(columns, $column, $column.title == %@).@count > 0", normalizedSheetTitle)
-            let relationships = Array(relatedSheets.map { relatedSheet -> Relationship in
-                let relatedRows = relatedSheet.rows.filter { row in
-                    return row.values.first { $0.column?.title == normalizedSheetTitle && $0.value == normalizedName } != nil
+            do {
+                let database = try Database(name: "search")
+                let query = QueryBuilder
+                    .select(
+                        SelectResult.expression(Meta.id),
+                        SelectResult.property("_sheetTitle")
+                    )
+                    .from(DataSource.database(database))
+                    .where(
+                        Expression.property(normalizedSheetTitle).equalTo(Expression.string(normalizedName))
+                    )
+
+                var relationships: [String: [String]] = [:]
+                for result in try query.execute() {
+                    let id = result.string(at: 0)!
+                    let sheetTitle = result.string(at: 1)!
+                    var sheetRelationships = relationships[sheetTitle] ?? []
+                    sheetRelationships.append(id)
+                    relationships[sheetTitle] = sheetRelationships
                 }
-                let rowIDs = relatedRows.map { $0.id }
-                return Relationship(title: relatedSheet.title, sheetID: relatedSheet.title, rowIDs: Array(rowIDs))
-            })
-            
-            DispatchQueue.main.async {
-                self.relationships = relationships
+                
+                let flattenedRelationships = relationships.map { Relationship(title: $0, sheetID: $0, rowIDs: $1) }
+                DispatchQueue.main.async {
+                    self.relationships = flattenedRelationships
+                }
+            } catch {
+                print(error)
             }
         }
     }
