@@ -198,7 +198,9 @@ class SpreadsheetsClient {
                 
                 if case let .some(normalized) = normalized {
                     let imageURLStartRange = normalized.lowercased().range(of: "=image(\"")
-                    let imageURLEndRange = normalized.lowercased().range(of: "\")") ?? normalized.lowercased().range(of: "\";")
+                    let imageURLEndRange = normalized.lowercased().range(of: "\")") ??
+                        normalized.lowercased().range(of: "\";") ??
+                        normalized.lowercased().range(of: "\",")
 
                     if let startRange = imageURLStartRange, let endRange = imageURLEndRange {
                         imageURL = String(normalized[startRange.upperBound..<endRange.lowerBound])
