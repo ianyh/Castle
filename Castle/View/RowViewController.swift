@@ -53,10 +53,17 @@ class RowViewController: UITableViewController {
         }
         
         let normalizedSheetTitle = sheet.normalizedName()
-        
         DispatchQueue.global(qos: .userInteractive).async {
             do {
                 let database = try Database(name: "search")
+                var relationExpression = Expression.property(normalizedSheetTitle).equalTo(Expression.string(normalizedName))
+                
+                if normalizedSheetTitle == "Soul Break" {
+                    relationExpression = relationExpression.or(
+                        Expression.property("Source").equalTo(Expression.string(normalizedName))
+                    )
+                }
+
                 let query = QueryBuilder
                     .select(
                         SelectResult.expression(Meta.id),
@@ -64,7 +71,7 @@ class RowViewController: UITableViewController {
                     )
                     .from(DataSource.database(database))
                     .where(
-                        Expression.property(normalizedSheetTitle).equalTo(Expression.string(normalizedName))
+                        relationExpression
                     )
 
                 var relationships: [String: [String]] = [:]
