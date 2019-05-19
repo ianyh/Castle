@@ -47,7 +47,9 @@ class SearchViewController: UITableViewController {
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchResultsUpdater = self
+        
         navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
     }
