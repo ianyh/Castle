@@ -103,11 +103,12 @@ extension SearchViewController: UISearchResultsUpdating {
             
             let database = try! Database(name: "search")
             let searchableSheets = ["Characters", "Abilities", "Soul Breaks", "Status", "Other"].map { Expression.string($0) }
-            let fulltextSearch = FullTextExpression.index("search").match("(Name:'\(text)*') OR '\(text)'")
+            let fulltextSearch = FullTextExpression.index("search").match("(Name:'\(text)*') OR (Common Name:'\(text)*') OR '\(text)'")
             let query = QueryBuilder
                 .select(
                     SelectResult.expression(Meta.id),
                     SelectResult.property("Name"),
+                    SelectResult.property("Common Name"),
                     SelectResult.property("_sheetTitle")
                 )
                 .from(DataSource.database(database))
@@ -117,8 +118,11 @@ extension SearchViewController: UISearchResultsUpdating {
             
             do {
                 var rows: [Row] = []
-                for result in try query.execute() where result.string(forKey: "Name") != nil {
-                    rows.append(Row(id: result.string(at: 0)!, name: result.string(at: 1)!, type: result.string(at: 2)!))
+                for result in try query.execute() {
+                    guard let name = (result.string(at: 1) ?? result.string(at: 2)) else {
+                        continue
+                    }
+                    rows.append(Row(id: result.string(at: 0)!, name: name, type: result.string(at: 3)!))
                 }
                 
                 self.rows = rows
