@@ -2,7 +2,7 @@ PODS:
   - Alamofire (4.8.2)
   - Anchorage (4.3)
   - CouchbaseLite-Swift (2.5.1)
-  - Kingfisher (5.4.0)
+  - Kingfisher (5.5.0)
   - Moya/Core (13.0.1):
     - Alamofire (~> 4.1)
     - Result (~> 4.1)
@@ -43,7 +43,7 @@ SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   Anchorage: 21a98675245188427f0bcea21404d42a824a766f
   CouchbaseLite-Swift: 89876f4656ef16945aea554127755ee40855af12
-  Kingfisher: 9c8f2cc6710334e06f32ba2b45e77707d5e2f0c9
+  Kingfisher: 6fe5e67a90fd335e49b0f5c075ff55ac5ebedd94
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
   Realm: 9b834e1be6062f544805252c812348872dc5d4ed
   RealmSwift: 8a41886f8ab6efef9eb8df97de2f2bb911561a79
