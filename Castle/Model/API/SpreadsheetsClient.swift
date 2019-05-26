@@ -28,7 +28,7 @@ class SpreadsheetsClient {
         return MoyaProvider<Spreadsheets>(callbackQueue: self.reloadQueue)
     }()
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
-    private static let ignoredSheets = ["Header", "Calculator", "Experience"]
+    private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions"]
     
     func sync() -> Observable<Void> {
         guard
