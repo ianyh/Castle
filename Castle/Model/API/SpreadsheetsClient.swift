@@ -168,6 +168,10 @@ class SpreadsheetsClient {
         }
     }
     
+    func clearImageCache() {
+        KingfisherManager.shared.cache.clearDiskCache()
+    }
+    
     func object(for sheet: Sheet, responses: (Response, Response)) throws -> SpreadsheetObject {
         let response = responses.0
         let rawResponse = responses.1
