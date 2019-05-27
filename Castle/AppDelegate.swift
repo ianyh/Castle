@@ -9,11 +9,15 @@
 import Kingfisher
 import Moya
 import RealmSwift
+import RxSwift
 import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
     var window: UIWindow?
+    
+    private let client = SpreadsheetsClient()
+    private let disposeBag = DisposeBag()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         Realm.Configuration.defaultConfiguration.deleteRealmIfMigrationNeeded = true
@@ -48,6 +52,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
         tabBarController.viewControllers = [searchNavigationController, sheetsNavigationController, settingsNavigationController]
         
+        DispatchQueue.main.async {
+            guard (try? LastUpdateObject.lastUpdate()) == nil else {
+                return
+            }
+            
+            self.presentFirstTimeSync()
+        }
+        
         return true
+    }
+    
+    private func presentFirstTimeSync() {
+        let alertController = UIAlertController(title: nil, message: "Looks like this is your first time in the app. We need to sync the database to get you started.", preferredStyle: .alert)
+        let confirmAction = UIAlertAction(title: "Sync", style: .default) { [weak self] _ in
+            guard let `self` = self else {
+                return
+            }
+            
+            self.client.sync().subscribe().disposed(by: self.disposeBag)
+        }
+        
+        alertController.addAction(confirmAction)
+        
+        window?.rootViewController?.present(alertController, animated: true, completion: nil)
     }
 }
