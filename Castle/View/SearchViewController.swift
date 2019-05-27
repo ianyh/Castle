@@ -47,6 +47,7 @@ class SearchViewController: UITableViewController {
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchResultsUpdater = self
+        searchController.searchBar.autocapitalizationType = .words
         
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
