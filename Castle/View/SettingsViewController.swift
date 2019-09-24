@@ -223,7 +223,7 @@ class SettingsViewController: UITableViewController {
             
             present(alertController, animated: true, completion: nil)
         case .goToArchive:
-            let url = URL(string: "https://docs.google.com/spreadsheets/d/1UgcNTy_jumFEKTZasNJhy33totwoMqjHkFSrjYZZ2WM/edit#gid=0")!
+            let url = URL(string: "https://docs.google.com/spreadsheets/d/1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk/")!
             UIApplication.shared.open(url, options: [:]) { _ in
                 tableView.deselectRow(at: indexPath, animated: true)
             }
