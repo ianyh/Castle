@@ -1,0 +1,2 @@
+binary "https://packages.couchbase.com/releases/couchbase-lite-ios/carthage/CouchbaseLite-Community.json"
+github "realm/realm-cocoa"

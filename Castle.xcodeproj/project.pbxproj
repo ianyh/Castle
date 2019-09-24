@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		4009880821D8014F00EEDC30 /* URL+Clean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4009880721D8014F00EEDC30 /* URL+Clean.swift */; };
 		4037B19B21442C66008EB089 /* SheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4037B19A21442C66008EB089 /* SheetCell.swift */; };
+		40467D3B2339B2C9001E913A /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40467D392339B2C8001E913A /* Realm.framework */; };
+		40467D3C2339B2C9001E913A /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40467D3A2339B2C8001E913A /* RealmSwift.framework */; };
 		404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404DACA220634C85000C7C9A /* SheetRowCell.swift */; };
 		40934C00213B6E8E002079B5 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934BFF213B6E8E002079B5 /* Sheet.swift */; };
 		40934C04213B71CF002079B5 /* SpreadsheetsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */; };
@@ -16,10 +18,11 @@
 		40B50DE02144B3D700AA5C41 /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B50DDF2144B3D700AA5C41 /* LoadingCell.swift */; };
 		40BD52FF228F796800A00C85 /* IconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD52FE228F796800A00C85 /* IconCell.swift */; };
 		40DCA1632145FE32002DA1E4 /* LastUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DCA1622145FE32002DA1E4 /* LastUpdate.swift */; };
+		40E158712339B038006AA996 /* CouchbaseLiteSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40E158702339B038006AA996 /* CouchbaseLiteSwift.framework */; };
+		40E755582339B7B900E58F58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40E755572339B7B900E58F58 /* Assets.xcassets */; };
 		40E7AF501F71DFAB0032D4F2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF4F1F71DFAB0032D4F2 /* AppDelegate.swift */; };
 		40E7AF521F71DFAB0032D4F2 /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF511F71DFAB0032D4F2 /* SheetViewController.swift */; };
 		40E7AF571F71DFAB0032D4F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40E7AF551F71DFAB0032D4F2 /* Main.storyboard */; };
-		40E7AF591F71DFAB0032D4F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40E7AF581F71DFAB0032D4F2 /* Assets.xcassets */; };
 		40E7AF5C1F71DFAB0032D4F2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40E7AF5A1F71DFAB0032D4F2 /* LaunchScreen.storyboard */; };
 		40E7AF671F71DFAC0032D4F2 /* CastleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF661F71DFAC0032D4F2 /* CastleTests.swift */; };
 		40E7AF721F71DFAC0032D4F2 /* CastleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF711F71DFAC0032D4F2 /* CastleUITests.swift */; };
@@ -55,6 +58,8 @@
 		36BFE94BEEAC8DBCBC82F1DF /* Pods_CastleUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CastleUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4009880721D8014F00EEDC30 /* URL+Clean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Clean.swift"; sourceTree = "<group>"; };
 		4037B19A21442C66008EB089 /* SheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCell.swift; sourceTree = "<group>"; };
+		40467D392339B2C8001E913A /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
+		40467D3A2339B2C8001E913A /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Carthage/Build/iOS/RealmSwift.framework; sourceTree = "<group>"; };
 		404DACA220634C85000C7C9A /* SheetRowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetRowCell.swift; sourceTree = "<group>"; };
 		406BF460201541A600FE9A85 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Castle.entitlements; sourceTree = "<group>"; };
 		40934BFF213B6E8E002079B5 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
@@ -63,11 +68,12 @@
 		40B50DDF2144B3D700AA5C41 /* LoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
 		40BD52FE228F796800A00C85 /* IconCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconCell.swift; sourceTree = "<group>"; };
 		40DCA1622145FE32002DA1E4 /* LastUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastUpdate.swift; sourceTree = "<group>"; };
+		40E158702339B038006AA996 /* CouchbaseLiteSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CouchbaseLiteSwift.framework; path = Carthage/Build/iOS/CouchbaseLiteSwift.framework; sourceTree = "<group>"; };
+		40E755572339B7B900E58F58 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40E7AF4C1F71DFAB0032D4F2 /* Castle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Castle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40E7AF4F1F71DFAB0032D4F2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		40E7AF511F71DFAB0032D4F2 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		40E7AF561F71DFAB0032D4F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		40E7AF581F71DFAB0032D4F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40E7AF5B1F71DFAB0032D4F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		40E7AF5D1F71DFAC0032D4F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		40E7AF621F71DFAC0032D4F2 /* CastleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CastleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,6 +103,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BFA010CFC90F4ADABCA3B1A /* Pods_Castle.framework in Frameworks */,
+				40E158712339B038006AA996 /* CouchbaseLiteSwift.framework in Frameworks */,
+				40467D3B2339B2C9001E913A /* Realm.framework in Frameworks */,
+				40467D3C2339B2C9001E913A /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,13 +197,13 @@
 		40E7AF4E1F71DFAB0032D4F2 /* Castle */ = {
 			isa = PBXGroup;
 			children = (
+				40E755572339B7B900E58F58 /* Assets.xcassets */,
 				40934C02213B6FBC002079B5 /* View */,
 				40934BFD213B6D2A002079B5 /* Model */,
 				406BF460201541A600FE9A85 /* Castle.entitlements */,
 				40E7AF821F7308B40032D4F2 /* GoogleService-Info.plist */,
 				40E7AF4F1F71DFAB0032D4F2 /* AppDelegate.swift */,
 				40E7AF551F71DFAB0032D4F2 /* Main.storyboard */,
-				40E7AF581F71DFAB0032D4F2 /* Assets.xcassets */,
 				40E7AF5A1F71DFAB0032D4F2 /* LaunchScreen.storyboard */,
 				40E7AF5D1F71DFAC0032D4F2 /* Info.plist */,
 				40E7AF7F1F7308090032D4F2 /* Castle-Bridging-Header.h */,
@@ -236,6 +245,9 @@
 		D90EA95045369E40FD5C0CCB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				40467D392339B2C8001E913A /* Realm.framework */,
+				40467D3A2339B2C8001E913A /* RealmSwift.framework */,
+				40E158702339B038006AA996 /* CouchbaseLiteSwift.framework */,
 				DF88BBC5956B2E402A105264 /* Pods_Castle.framework */,
 				48379328F6CBD019AA4A9D7E /* Pods_CastleTests.framework */,
 				36BFE94BEEAC8DBCBC82F1DF /* Pods_CastleUITests.framework */,
@@ -255,6 +267,7 @@
 				40E7AF491F71DFAB0032D4F2 /* Frameworks */,
 				40E7AF4A1F71DFAB0032D4F2 /* Resources */,
 				635A9AAAAA2F5C789E800825 /* [CP] Embed Pods Frameworks */,
+				40E158722339B0A6006AA996 /* [Carthage] Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -363,7 +376,7 @@
 			files = (
 				40E7AF5C1F71DFAB0032D4F2 /* LaunchScreen.storyboard in Resources */,
 				40E7AF831F7308B40032D4F2 /* GoogleService-Info.plist in Resources */,
-				40E7AF591F71DFAB0032D4F2 /* Assets.xcassets in Resources */,
+				40E755582339B7B900E58F58 /* Assets.xcassets in Resources */,
 				40E7AF571F71DFAB0032D4F2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -385,6 +398,30 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		40E158722339B0A6006AA996 /* [Carthage] Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/CouchbaseLiteSwift.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Realm.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework",
+			);
+			name = "[Carthage] Copy Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/CouchbaseLiteSwift.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Realm.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RealmSwift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
 		5B33D1EE9A69DFEA857EA31D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -412,12 +449,8 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Anchorage/Anchorage.framework",
-				"${PODS_ROOT}/CouchbaseLite-Swift/iOS/CouchbaseLiteSwift.framework",
-				"${PODS_ROOT}/CouchbaseLite-Swift/iOS/CouchbaseLiteSwift.framework.dSYM",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/Moya/Moya.framework",
-				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
-				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/Result/Result.framework",
 				"${PODS_ROOT}/Reveal-SDK/RevealServer-11/iOS/RevealServer.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
@@ -426,12 +459,8 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Anchorage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CouchbaseLiteSwift.framework",
-				"${DWARF_DSYM_FOLDER_PATH}/CouchbaseLiteSwift.framework.dSYM",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Moya.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Result.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RevealServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
@@ -674,6 +703,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = Castle/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.Castle;
@@ -692,6 +725,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = Castle/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.Castle;

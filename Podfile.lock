@@ -1,7 +1,6 @@
 PODS:
   - Alamofire (4.8.2)
   - Anchorage (4.3)
-  - CouchbaseLite-Swift (2.5.1)
   - Kingfisher (5.5.0)
   - Moya/Core (13.0.1):
     - Alamofire (~> 4.1)
@@ -9,32 +8,22 @@ PODS:
   - Moya/RxSwift (13.0.1):
     - Moya/Core
     - RxSwift (~> 4.0)
-  - Realm (3.15.0):
-    - Realm/Headers (= 3.15.0)
-  - Realm/Headers (3.15.0)
-  - RealmSwift (3.15.0):
-    - Realm (= 3.15.0)
   - Result (4.1.0)
   - Reveal-SDK (11)
   - RxSwift (4.5.0)
 
 DEPENDENCIES:
   - Anchorage
-  - CouchbaseLite-Swift (~> 2.5.1)
   - Kingfisher (~> 5.0)
   - Moya/RxSwift
-  - RealmSwift
   - Reveal-SDK
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Alamofire
     - Anchorage
-    - CouchbaseLite-Swift
     - Kingfisher
     - Moya
-    - Realm
-    - RealmSwift
     - Result
     - Reveal-SDK
     - RxSwift
@@ -42,15 +31,12 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   Anchorage: 21a98675245188427f0bcea21404d42a824a766f
-  CouchbaseLite-Swift: 89876f4656ef16945aea554127755ee40855af12
   Kingfisher: 6fe5e67a90fd335e49b0f5c075ff55ac5ebedd94
   Moya: f4a4b80ff2f8a4ffc208dfb31cd91636622fee6e
-  Realm: 9b834e1be6062f544805252c812348872dc5d4ed
-  RealmSwift: 8a41886f8ab6efef9eb8df97de2f2bb911561a79
   Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
   Reveal-SDK: 7fa13d04bb55db61ff2342a990cf731d5159361d
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
 
-PODFILE CHECKSUM: 54d93f93b6404a3fb9b4b1124f5413cbfb30384a
+PODFILE CHECKSUM: 3f957f38002446f8edf6a3070b690f9434be394d
 
-COCOAPODS: 1.6.2
+COCOAPODS: 1.8.0
