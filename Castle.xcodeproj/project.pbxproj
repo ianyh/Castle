@@ -12,6 +12,12 @@
 		40467D3B2339B2C9001E913A /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40467D392339B2C8001E913A /* Realm.framework */; };
 		40467D3C2339B2C9001E913A /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40467D3A2339B2C8001E913A /* RealmSwift.framework */; };
 		404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404DACA220634C85000C7C9A /* SheetRowCell.swift */; };
+		40672C92233AE98900FC721B /* Anchorage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40672C91233AE98900FC721B /* Anchorage.framework */; };
+		407B9BB4233C56D400AF2E1B /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407B9BB3233C56D400AF2E1B /* Alamofire.framework */; };
+		407B9BB5233C585B00AF2E1B /* Moya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E86A233C4B8F0008E2D9 /* Moya.framework */; };
+		4089E869233C4B750008E2D9 /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E868233C4B750008E2D9 /* Kingfisher.framework */; };
+		4089E86D233C4BB90008E2D9 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E86C233C4BB90008E2D9 /* RxSwift.framework */; };
+		4089E86F233C4BEF0008E2D9 /* RxMoya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E86E233C4BEF0008E2D9 /* RxMoya.framework */; };
 		40934C00213B6E8E002079B5 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934BFF213B6E8E002079B5 /* Sheet.swift */; };
 		40934C04213B71CF002079B5 /* SpreadsheetsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */; };
 		4094FB8B21E56A9E00B1A258 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4094FB8A21E56A9E00B1A258 /* SearchViewController.swift */; };
@@ -19,7 +25,7 @@
 		40BD52FF228F796800A00C85 /* IconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD52FE228F796800A00C85 /* IconCell.swift */; };
 		40DCA1632145FE32002DA1E4 /* LastUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DCA1622145FE32002DA1E4 /* LastUpdate.swift */; };
 		40E158712339B038006AA996 /* CouchbaseLiteSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40E158702339B038006AA996 /* CouchbaseLiteSwift.framework */; };
-		40E755582339B7B900E58F58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40E755572339B7B900E58F58 /* Assets.xcassets */; };
+		40E5CD1023410F92009E0372 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40E755572339B7B900E58F58 /* Assets.xcassets */; };
 		40E7AF501F71DFAB0032D4F2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF4F1F71DFAB0032D4F2 /* AppDelegate.swift */; };
 		40E7AF521F71DFAB0032D4F2 /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF511F71DFAB0032D4F2 /* SheetViewController.swift */; };
 		40E7AF571F71DFAB0032D4F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40E7AF551F71DFAB0032D4F2 /* Main.storyboard */; };
@@ -31,9 +37,6 @@
 		40E7AF871F76C8C80032D4F2 /* SheetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF861F76C8C80032D4F2 /* SheetsListViewController.swift */; };
 		40E7AF891F76CE5B0032D4F2 /* RowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF881F76CE5B0032D4F2 /* RowViewController.swift */; };
 		40E7AF8B1F783F5F0032D4F2 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF8A1F783F5F0032D4F2 /* SettingsViewController.swift */; };
-		6CE297C4DF9D7462CD2EED1E /* Pods_CastleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48379328F6CBD019AA4A9D7E /* Pods_CastleTests.framework */; };
-		7BFA010CFC90F4ADABCA3B1A /* Pods_Castle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF88BBC5956B2E402A105264 /* Pods_Castle.framework */; };
-		A49AD0130C6DA6A3522458B2 /* Pods_CastleUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36BFE94BEEAC8DBCBC82F1DF /* Pods_CastleUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,14 +57,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1C507CE911B29E68CEDBB839 /* Pods-Castle.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle.release.xcconfig"; path = "Pods/Target Support Files/Pods-Castle/Pods-Castle.release.xcconfig"; sourceTree = "<group>"; };
-		36BFE94BEEAC8DBCBC82F1DF /* Pods_CastleUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CastleUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4009880721D8014F00EEDC30 /* URL+Clean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Clean.swift"; sourceTree = "<group>"; };
 		4037B19A21442C66008EB089 /* SheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCell.swift; sourceTree = "<group>"; };
 		40467D392339B2C8001E913A /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		40467D3A2339B2C8001E913A /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Carthage/Build/iOS/RealmSwift.framework; sourceTree = "<group>"; };
 		404DACA220634C85000C7C9A /* SheetRowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetRowCell.swift; sourceTree = "<group>"; };
+		40672C91233AE98900FC721B /* Anchorage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Anchorage.framework; path = Carthage/Build/iOS/Anchorage.framework; sourceTree = "<group>"; };
 		406BF460201541A600FE9A85 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Castle.entitlements; sourceTree = "<group>"; };
+		407B9BB3233C56D400AF2E1B /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		4089E868233C4B750008E2D9 /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
+		4089E86A233C4B8F0008E2D9 /* Moya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Moya.framework; path = Carthage/Build/iOS/Moya.framework; sourceTree = "<group>"; };
+		4089E86C233C4BB90008E2D9 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		4089E86E233C4BEF0008E2D9 /* RxMoya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxMoya.framework; path = Carthage/Build/iOS/RxMoya.framework; sourceTree = "<group>"; };
 		40934BFF213B6E8E002079B5 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpreadsheetsClient.swift; sourceTree = "<group>"; };
 		4094FB8A21E56A9E00B1A258 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -88,13 +95,6 @@
 		40E7AF861F76C8C80032D4F2 /* SheetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetsListViewController.swift; sourceTree = "<group>"; };
 		40E7AF881F76CE5B0032D4F2 /* RowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowViewController.swift; sourceTree = "<group>"; };
 		40E7AF8A1F783F5F0032D4F2 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		48379328F6CBD019AA4A9D7E /* Pods_CastleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CastleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		7887D71BE02165AEB156F717 /* Pods-CastleUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CastleUITests/Pods-CastleUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		97F663C4C85F27D7AFC597D3 /* Pods-CastleUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CastleUITests/Pods-CastleUITests.release.xcconfig"; sourceTree = "<group>"; };
-		B28732FFD0F94E7DA6D69891 /* Pods-CastleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CastleTests/Pods-CastleTests.release.xcconfig"; sourceTree = "<group>"; };
-		C1405651FF06356A07C15B43 /* Pods-Castle.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Castle/Pods-Castle.debug.xcconfig"; sourceTree = "<group>"; };
-		CAC75A7A72AD35261488C227 /* Pods-CastleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CastleTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CastleTests/Pods-CastleTests.debug.xcconfig"; sourceTree = "<group>"; };
-		DF88BBC5956B2E402A105264 /* Pods_Castle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Castle.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,10 +102,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BFA010CFC90F4ADABCA3B1A /* Pods_Castle.framework in Frameworks */,
 				40E158712339B038006AA996 /* CouchbaseLiteSwift.framework in Frameworks */,
 				40467D3B2339B2C9001E913A /* Realm.framework in Frameworks */,
 				40467D3C2339B2C9001E913A /* RealmSwift.framework in Frameworks */,
+				40672C92233AE98900FC721B /* Anchorage.framework in Frameworks */,
+				4089E869233C4B750008E2D9 /* Kingfisher.framework in Frameworks */,
+				407B9BB5233C585B00AF2E1B /* Moya.framework in Frameworks */,
+				4089E86D233C4BB90008E2D9 /* RxSwift.framework in Frameworks */,
+				4089E86F233C4BEF0008E2D9 /* RxMoya.framework in Frameworks */,
+				407B9BB4233C56D400AF2E1B /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,7 +118,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6CE297C4DF9D7462CD2EED1E /* Pods_CastleTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +125,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A49AD0130C6DA6A3522458B2 /* Pods_CastleUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,7 +182,6 @@
 				40E7AF651F71DFAC0032D4F2 /* CastleTests */,
 				40E7AF701F71DFAC0032D4F2 /* CastleUITests */,
 				40E7AF4D1F71DFAB0032D4F2 /* Products */,
-				9A639E17940E197E6F379E06 /* Pods */,
 				D90EA95045369E40FD5C0CCB /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -229,28 +231,18 @@
 			path = CastleUITests;
 			sourceTree = "<group>";
 		};
-		9A639E17940E197E6F379E06 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				C1405651FF06356A07C15B43 /* Pods-Castle.debug.xcconfig */,
-				1C507CE911B29E68CEDBB839 /* Pods-Castle.release.xcconfig */,
-				CAC75A7A72AD35261488C227 /* Pods-CastleTests.debug.xcconfig */,
-				B28732FFD0F94E7DA6D69891 /* Pods-CastleTests.release.xcconfig */,
-				7887D71BE02165AEB156F717 /* Pods-CastleUITests.debug.xcconfig */,
-				97F663C4C85F27D7AFC597D3 /* Pods-CastleUITests.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		D90EA95045369E40FD5C0CCB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				407B9BB3233C56D400AF2E1B /* Alamofire.framework */,
+				4089E86E233C4BEF0008E2D9 /* RxMoya.framework */,
+				4089E86C233C4BB90008E2D9 /* RxSwift.framework */,
+				4089E86A233C4B8F0008E2D9 /* Moya.framework */,
+				4089E868233C4B750008E2D9 /* Kingfisher.framework */,
+				40672C91233AE98900FC721B /* Anchorage.framework */,
 				40467D392339B2C8001E913A /* Realm.framework */,
 				40467D3A2339B2C8001E913A /* RealmSwift.framework */,
 				40E158702339B038006AA996 /* CouchbaseLiteSwift.framework */,
-				DF88BBC5956B2E402A105264 /* Pods_Castle.framework */,
-				48379328F6CBD019AA4A9D7E /* Pods_CastleTests.framework */,
-				36BFE94BEEAC8DBCBC82F1DF /* Pods_CastleUITests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -262,11 +254,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 40E7AF761F71DFAC0032D4F2 /* Build configuration list for PBXNativeTarget "Castle" */;
 			buildPhases = (
-				A08E670313C941C69E4CDC12 /* [CP] Check Pods Manifest.lock */,
 				40E7AF481F71DFAB0032D4F2 /* Sources */,
 				40E7AF491F71DFAB0032D4F2 /* Frameworks */,
 				40E7AF4A1F71DFAB0032D4F2 /* Resources */,
-				635A9AAAAA2F5C789E800825 /* [CP] Embed Pods Frameworks */,
 				40E158722339B0A6006AA996 /* [Carthage] Copy Frameworks */,
 			);
 			buildRules = (
@@ -282,7 +272,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 40E7AF791F71DFAC0032D4F2 /* Build configuration list for PBXNativeTarget "CastleTests" */;
 			buildPhases = (
-				5B33D1EE9A69DFEA857EA31D /* [CP] Check Pods Manifest.lock */,
 				40E7AF5E1F71DFAC0032D4F2 /* Sources */,
 				40E7AF5F1F71DFAC0032D4F2 /* Frameworks */,
 				40E7AF601F71DFAC0032D4F2 /* Resources */,
@@ -301,7 +290,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 40E7AF7C1F71DFAC0032D4F2 /* Build configuration list for PBXNativeTarget "CastleUITests" */;
 			buildPhases = (
-				724A3C8D516A9774A59A848E /* [CP] Check Pods Manifest.lock */,
 				40E7AF691F71DFAC0032D4F2 /* Sources */,
 				40E7AF6A1F71DFAC0032D4F2 /* Frameworks */,
 				40E7AF6B1F71DFAC0032D4F2 /* Resources */,
@@ -376,7 +364,7 @@
 			files = (
 				40E7AF5C1F71DFAB0032D4F2 /* LaunchScreen.storyboard in Resources */,
 				40E7AF831F7308B40032D4F2 /* GoogleService-Info.plist in Resources */,
-				40E755582339B7B900E58F58 /* Assets.xcassets in Resources */,
+				40E5CD1023410F92009E0372 /* Assets.xcassets in Resources */,
 				40E7AF571F71DFAB0032D4F2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -409,6 +397,12 @@
 				"$(SRCROOT)/Carthage/Build/iOS/CouchbaseLiteSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Realm.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Anchorage.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Moya.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RxMoya.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputFileListPaths = (
@@ -417,94 +411,16 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/CouchbaseLiteSwift.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Realm.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RealmSwift.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Anchorage.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Moya.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxMoya.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
-		5B33D1EE9A69DFEA857EA31D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-CastleTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		635A9AAAAA2F5C789E800825 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
-				"${BUILT_PRODUCTS_DIR}/Anchorage/Anchorage.framework",
-				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
-				"${BUILT_PRODUCTS_DIR}/Moya/Moya.framework",
-				"${BUILT_PRODUCTS_DIR}/Result/Result.framework",
-				"${PODS_ROOT}/Reveal-SDK/RevealServer-11/iOS/RevealServer.framework",
-				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Anchorage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Moya.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Result.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RevealServer.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		724A3C8D516A9774A59A848E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-CastleUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A08E670313C941C69E4CDC12 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Castle-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -697,7 +613,6 @@
 		};
 		40E7AF771F71DFAC0032D4F2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C1405651FF06356A07C15B43 /* Pods-Castle.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -719,7 +634,6 @@
 		};
 		40E7AF781F71DFAC0032D4F2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C507CE911B29E68CEDBB839 /* Pods-Castle.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -740,7 +654,6 @@
 		};
 		40E7AF7A1F71DFAC0032D4F2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CAC75A7A72AD35261488C227 /* Pods-CastleTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -757,7 +670,6 @@
 		};
 		40E7AF7B1F71DFAC0032D4F2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B28732FFD0F94E7DA6D69891 /* Pods-CastleTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -774,7 +686,6 @@
 		};
 		40E7AF7D1F71DFAC0032D4F2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7887D71BE02165AEB156F717 /* Pods-CastleUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -790,7 +701,6 @@
 		};
 		40E7AF7E1F71DFAC0032D4F2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97F663C4C85F27D7AFC597D3 /* Pods-CastleUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

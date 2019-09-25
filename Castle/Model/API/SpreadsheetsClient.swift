@@ -12,6 +12,7 @@ import Kingfisher
 import Moya
 import RealmSwift
 import Result
+import RxMoya
 import RxSwift
 
 extension Array {

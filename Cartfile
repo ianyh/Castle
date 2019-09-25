@@ -1,2 +1,6 @@
 binary "https://packages.couchbase.com/releases/couchbase-lite-ios/carthage/CouchbaseLite-Community.json"
+
+github "Moya/Moya" "14.0.0-beta.3"
+github "onevcat/Kingfisher"
 github "realm/realm-cocoa"
+github "Rightpoint/Anchorage"
