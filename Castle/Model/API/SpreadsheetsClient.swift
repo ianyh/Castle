@@ -24,6 +24,10 @@ extension Array {
 }
 
 class SpreadsheetsClient {
+    enum Error: Swift.Error {
+        case failedSync
+    }
+    
     private let reloadQueue = DispatchQueue(label: "com.ianyh.Castle.reload")
     private lazy var provider: MoyaProvider<Spreadsheets> = {
         return MoyaProvider<Spreadsheets>(callbackQueue: self.reloadQueue)
@@ -52,52 +56,49 @@ class SpreadsheetsClient {
                 }
                 
                 let spreadsheet = try JSONDecoder().decode(Spreadsheet.self, from: response.data)
-                let loads = spreadsheet.sheets
-                    .filter { $0.properties.gridProperties.columnCount > 1 }
-                    .map { sheet -> Observable<SpreadsheetObject?> in
-                        let valuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheet: sheet, key: key, raw: false)
-                        let rawValuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheet: sheet, key: key, raw: true)
-                        let valuesRequests = Observable.zip([
-                            self.provider.rx.request(valuesTarget).asObservable().observeOn(scheduler),
-                            self.provider.rx.request(rawValuesTarget).asObservable().observeOn(scheduler)
-                        ]) { ($0[0], $0[1]) }
-                        
-                        return valuesRequests
-                            .map { [weak self] responses -> SpreadsheetObject? in
-                                guard let `self` = self else {
-                                    return nil
-                                }
-                                
-                                let object = try self.object(for: sheet, responses: responses)
-                                
-                                guard !SpreadsheetsClient.ignoredSheets.contains(object.title) else {
-                                    return nil
-                                }
-                                
-                                return object
-                            }
-                    }
+                let sheets = spreadsheet.sheets.filter { $0.properties.gridProperties.columnCount > 1 && !SpreadsheetsClient.ignoredSheets.contains($0.properties.title) }
+                let valuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheets: sheets, key: key, raw: false)
+                let rawValuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheets: sheets, key: key, raw: true)
+                let valuesRequests = Observable.zip([
+                    self.provider.rx.request(valuesTarget).asObservable().observeOn(scheduler),
+                    self.provider.rx.request(rawValuesTarget).asObservable().observeOn(scheduler)
+                ]) { ($0[0], $0[1]) }
 
-                return Observable.zip(loads)
-                    .map { $0.compactMap { $0 } }
+
+                return valuesRequests
+                    .map { [weak self] responses -> [SpreadsheetObject] in
+                        guard let `self` = self else {
+                            throw Error.failedSync
+                        }
+                        
+                        let ranges = try JSONDecoder().decode(SpreadsheetValues.self, from: responses.0.data).ranges
+                        let rawRanges = try JSONDecoder().decode(SpreadsheetRawValues.self, from: responses.1.data).ranges
+
+                        return try zip(ranges, rawRanges).compactMap { range, rawRange -> SpreadsheetObject? in
+                            guard let sheet = sheets.first(where: { range.range.hasPrefix($0.properties.title) || range.range.hasPrefix("'\($0.properties.title)'") }) else {
+                                return nil
+                            }
+                            return try self.object(for: sheet, values: range, rawValues: rawRange)
+                        }
+                    }
                     .do(
-                        onNext: { sheets in
+                        onNext: { spreadsheets in
                             let realm = try Realm()
                             try realm.write {
-                                realm.add(sheets, update: true)
+                                realm.add(spreadsheets, update: .modified)
                             }
                             try LastUpdateObject.markUpdate()
-                            
+
                             var ftsIndices = Set(["Effects", "Element", "Tier"])
                             do {
                                 try Database(name: "search").delete()
                             } catch {
                                 print("failed to delete")
                             }
-                            
+
                             let database = try Database(name: "search")
                             try database.inBatch {
-                                for sheet in sheets {
+                                for sheet in spreadsheets {
                                     for row in sheet.rows {
                                         let document = database.document(withID: row.id)?.toMutable() ?? MutableDocument(id: row.id)
                                         document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
@@ -107,13 +108,13 @@ class SpreadsheetsClient {
                                         }
                                         try database.saveDocument(document)
                                     }
-                                    
+
                                     for column in sheet.columns.filter({ $0.isFrozen == true }) {
                                         ftsIndices.insert(column.title)
                                     }
                                 }
                             }
-                            
+
                             let index = IndexBuilder.fullTextIndex(items: ftsIndices.map { FullTextIndexItem.property($0) })
                             try database.createIndex(index, withName: "search")
                         }
@@ -173,11 +174,7 @@ class SpreadsheetsClient {
         KingfisherManager.shared.cache.clearDiskCache()
     }
     
-    func object(for sheet: Sheet, responses: (Response, Response)) throws -> SpreadsheetObject {
-        let response = responses.0
-        let rawResponse = responses.1
-        let values = try JSONDecoder().decode(SheetsValues.self, from: response.data)
-        let rawValues = try JSONDecoder().decode(SheetsRawValues.self, from: rawResponse.data)
+    func object(for sheet: Sheet, values: SpreadsheetRange, rawValues: SpreadsheetRawRange) throws -> SpreadsheetObject {
         let headers = values.rows[0]
         let frozenColumnCount = sheet.properties.gridProperties.frozenColumnCount ?? 0
         let columns = headers.enumerated().compactMap { index, value -> ColumnObject? in

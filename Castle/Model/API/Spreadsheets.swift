@@ -9,14 +9,6 @@
 import Foundation
 import Moya
 
-struct SheetsValues: Decodable {
-    let rows: [[String]]
-    
-    enum CodingKeys: String, CodingKey {
-        case rows = "values"
-    }
-}
-
 enum RawValue: Decodable {
     case some(String)
     case none
@@ -29,14 +21,6 @@ enum RawValue: Decodable {
         } catch {
             self = .none
         }
-    }
-}
-
-struct SheetsRawValues: Decodable {
-    let rows: [[RawValue]]
-    
-    enum CodingKeys: String, CodingKey {
-        case rows = "values"
     }
 }
 
@@ -67,9 +51,45 @@ struct Spreadsheet: Decodable {
     let sheets: [Sheet]
 }
 
+struct SpreadsheetValues: Decodable {
+    let ranges: [SpreadsheetRange]
+    
+    enum CodingKeys: String, CodingKey {
+        case ranges = "valueRanges"
+    }
+}
+
+struct SpreadsheetRawValues: Decodable {
+    let ranges: [SpreadsheetRawRange]
+    
+    enum CodingKeys: String, CodingKey {
+        case ranges = "valueRanges"
+    }
+}
+
+struct SpreadsheetRange: Decodable {
+    let range: String
+    let rows: [[String]]
+    
+    enum CodingKeys: String, CodingKey {
+        case range
+        case rows = "values"
+    }
+}
+
+struct SpreadsheetRawRange: Decodable {
+    let range: String
+    let rows: [[RawValue]]
+    
+    enum CodingKeys: String, CodingKey {
+        case range
+        case rows = "values"
+    }
+}
+
 enum Spreadsheets: TargetType {
     case spreadsheets(spreadsheetID: String, key: String)
-    case values(spreadsheetID: String, sheet: Sheet, key: String, raw: Bool)
+    case values(spreadsheetID: String, sheets: [Sheet], key: String, raw: Bool)
     
     var baseURL: URL {
         return URL(string: "https://sheets.googleapis.com")!
@@ -79,8 +99,8 @@ enum Spreadsheets: TargetType {
         switch self {
         case let .spreadsheets(spreadsheetID, _):
             return "/v4/spreadsheets/\(spreadsheetID)"
-        case let .values(spreadsheetID, sheet, _, _):
-            return "/v4/spreadsheets/\(spreadsheetID)/values/\(sheet.properties.title)"
+        case let .values(spreadsheetID, _, _, _):
+            return "/v4/spreadsheets/\(spreadsheetID)/values:batchGet"
         }
     }
     
@@ -95,10 +115,16 @@ enum Spreadsheets: TargetType {
     var task: Task {
         switch self {
         case let .spreadsheets(_, key):
-            return .requestParameters(parameters: ["key": key], encoding: URLEncoding.default)
-        case let .values(_, _, key, raw):
-            let renderOption = raw ? "FORMULA" : "FORMATTED_VALUE"
-            return .requestParameters(parameters: ["valueRenderOption": renderOption, "key": key], encoding: URLEncoding.default)
+            return .requestParameters(parameters: ["fields": "sheets.properties", "key": key], encoding: URLEncoding.default)
+        case let .values(_, sheets, key, raw):
+            return .requestParameters(
+                parameters: [
+                    "ranges": sheets.map { $0.properties.title },
+                    "valueRenderOption": raw ? "FORMULA" : "FORMATTED_VALUE",
+                    "key": key
+                ],
+                encoding: URLEncoding(arrayEncoding: .noBrackets)
+            )
         }
     }
     
