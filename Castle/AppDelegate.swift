@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         ImageCache.default.diskStorage.config.expiration = .never
         ImageCache.default.diskStorage.config.sizeLimit = 0
 
-        let tabBarController = window!.rootViewController as! UITabBarController
+        let tabBarController = window!.rootViewController!.children[0] as! UITabBarController
         
         let sheetsViewController = SheetsListViewController()
         let sheetsNavigationController = UINavigationController(rootViewController: sheetsViewController)
@@ -45,7 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             selectedImage: UIImage(named: "settings-selected")
         )
 
-        tabBarController.view.backgroundColor = .white
         tabBarController.viewControllers = [sheetsNavigationController, settingsNavigationController]
         
         DispatchQueue.main.async {
