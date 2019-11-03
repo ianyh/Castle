@@ -50,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             selectedImage: UIImage(named: "settings-selected")
         )
 
+        tabBarController.view.backgroundColor = .white
         tabBarController.viewControllers = [searchNavigationController, sheetsNavigationController, settingsNavigationController]
         
         DispatchQueue.main.async {
