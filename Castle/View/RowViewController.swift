@@ -85,7 +85,7 @@ class RowViewController: UITableViewController {
                 
                 let flattenedRelationships = relationships.map { Relationship(title: $0, sheetID: $0, rowIDs: $1) }
                 DispatchQueue.main.async {
-                    self.relationships = flattenedRelationships
+                    self.relationships = flattenedRelationships.sorted { $0.title < $1.title }
                 }
             } catch {
                 print(error)
