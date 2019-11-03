@@ -27,11 +27,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
         let tabBarController = window!.rootViewController as! UITabBarController
         
-        let searchViewController = SearchViewController()
-        let searchNavigationController = UINavigationController(rootViewController: searchViewController)
-        
-        searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
-        
         let sheetsViewController = SheetsListViewController()
         let sheetsNavigationController = UINavigationController(rootViewController: sheetsViewController)
 
@@ -51,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         )
 
         tabBarController.view.backgroundColor = .white
-        tabBarController.viewControllers = [searchNavigationController, sheetsNavigationController, settingsNavigationController]
+        tabBarController.viewControllers = [sheetsNavigationController, settingsNavigationController]
         
         DispatchQueue.main.async {
             guard (try? LastUpdateObject.lastUpdate()) == nil else {

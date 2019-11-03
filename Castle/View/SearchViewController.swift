@@ -27,31 +27,10 @@ class SearchViewController: UITableViewController {
         let type: String
     }
     
-    private let searchController = UISearchController(searchResultsController: nil)
     private var rows: [Row] = []
-    
-    init() {
-        super.init(style: .plain)
-        title = "Search"
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        definesPresentationContext = true
-        
-        searchController.hidesNavigationBarDuringPresentation = false
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.autocapitalizationType = .words
-        
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
-        
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
     }
     
@@ -80,7 +59,7 @@ class SearchViewController: UITableViewController {
             }
             
             let rowViewController = RowViewController(sheet: spreadsheetObject, row: rowObject)
-            navigationController?.pushViewController(rowViewController, animated: true)
+            parent?.presentingViewController?.navigationController?.pushViewController(rowViewController, animated: true)
         } catch {
             print(error)
         }

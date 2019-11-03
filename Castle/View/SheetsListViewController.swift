@@ -11,19 +11,33 @@ import RealmSwift
 import UIKit
 
 class SheetsListViewController: UITableViewController {
-    lazy var realm: Realm = {
-        return try! Realm()
-    }()
-    lazy var sheets: Results<SpreadsheetObject> = {
+    private lazy var realm = try! Realm()
+    private lazy var sheets: Results<SpreadsheetObject> = {
         return self.realm.objects(SpreadsheetObject.self).sorted(byKeyPath: "title")
     }()
-    
-    var sheetObjects: [SpreadsheetObject] = [] {
+    private var sheetObjects: [SpreadsheetObject] = [] {
         didSet {
             tableView.reloadData()
         }
     }
-    var token: NotificationToken?
+    private var token: NotificationToken?
+    
+    private let searchViewController = SearchViewController()
+    private lazy var searchController = UISearchController(searchResultsController: self.searchViewController)
+        
+    init() {
+        super.init(style: .plain)
+        
+        searchController.searchBar.autocapitalizationType = .words
+        searchController.searchResultsUpdater = searchViewController
+        
+        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.searchController = searchController
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
