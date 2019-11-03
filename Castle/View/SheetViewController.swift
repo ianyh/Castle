@@ -36,7 +36,6 @@ class SheetViewController: UITableViewController {
         self.explicitRows = explicitRows
         self.filteredResults = sheet.rows.filter(NSPredicate(value: true))
         super.init(style: .grouped)
-        hidesBottomBarWhenPushed = true
         navigationItem.hidesSearchBarWhenScrolling = false
         title = sheet.title
     }
