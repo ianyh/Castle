@@ -6,12 +6,12 @@
 //  Copyright © 2018 Ian Ynda-Hummel. All rights reserved.
 //
 
+import Alamofire
 import CouchbaseLiteSwift
 import Foundation
 import Kingfisher
 import Moya
 import RealmSwift
-import Result
 import RxMoya
 import RxSwift
 
@@ -29,11 +29,17 @@ class SpreadsheetsClient {
     }
     
     private let reloadQueue = DispatchQueue(label: "com.ianyh.Castle.reload")
+    private let session = Alamofire.Session()
     private lazy var provider: MoyaProvider<Spreadsheets> = {
-        return MoyaProvider<Spreadsheets>(callbackQueue: self.reloadQueue)
+        return MoyaProvider<Spreadsheets>(callbackQueue: self.reloadQueue, session: self.session)
     }()
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
     private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions"]
+    
+    init() {
+        session.sessionConfiguration.timeoutIntervalForRequest = 120
+        session.sessionConfiguration.timeoutIntervalForResource = 120
+    }
     
     func sync() -> Observable<Void> {
         guard
