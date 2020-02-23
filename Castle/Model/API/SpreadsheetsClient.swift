@@ -62,7 +62,11 @@ class SpreadsheetsClient {
                 }
                 
                 let spreadsheet = try JSONDecoder().decode(Spreadsheet.self, from: response.data)
-                let sheets = spreadsheet.sheets.filter { $0.properties.gridProperties.columnCount > 1 && !SpreadsheetsClient.ignoredSheets.contains($0.properties.title) }
+                let sheets = spreadsheet.sheets.filter {
+                    $0.properties.gridProperties.columnCount > 1
+                        && !SpreadsheetsClient.ignoredSheets.contains($0.properties.title)
+                        && !$0.properties.title.lowercased().contains("(old)")
+                }
                 let valuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheets: sheets, key: key, raw: false)
                 let rawValuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheets: sheets, key: key, raw: true)
                 let valuesRequests = Observable.zip([
