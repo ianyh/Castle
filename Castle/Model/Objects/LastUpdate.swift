@@ -29,7 +29,7 @@ class LastUpdateObject: Object {
         object.date = Date()
         
         try realm.write {
-            realm.add(object, update: true)
+            realm.add(object, update: .all)
         }
     }
 }

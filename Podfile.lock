@@ -1,0 +1,16 @@
+PODS:
+  - CouchbaseLite-Swift (2.7.0)
+
+DEPENDENCIES:
+  - CouchbaseLite-Swift
+
+SPEC REPOS:
+  trunk:
+    - CouchbaseLite-Swift
+
+SPEC CHECKSUMS:
+  CouchbaseLite-Swift: fc942af766946a7b1efbee2cc9b72ae04ec632e1
+
+PODFILE CHECKSUM: f11ab0e6f50a017f24290c7eb5e00f1f097c04c4
+
+COCOAPODS: 1.8.4
