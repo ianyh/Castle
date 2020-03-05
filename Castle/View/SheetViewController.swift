@@ -102,12 +102,12 @@ class SheetViewController: UITableViewController {
         let imageValue = filteredResults[indexPath.section].values
             .first { $0.imageURL != nil }?.imageURL
             .flatMap { URL(string: $0)?.cleaned() }
-        let indexedRowValues = sheet.frozenColumns.map { column in
-            return self.filteredResults[indexPath.section].values.filter("column == %@", column).first!
+        let indexedRowValues = sheet.frozenColumns.compactMap { column in
+            return self.filteredResults[indexPath.section].values.filter("column == %@", column).first
         }
-        let primaryRowValue = indexedRowValues[0]
-        cell.titleLabel.text = primaryRowValue.title
-        cell.valueLabel.text = primaryRowValue.value
+        let primaryRowValue = indexedRowValues.first ?? filteredResults[indexPath.section].values.first
+        cell.titleLabel.text = primaryRowValue?.title
+        cell.valueLabel.text = primaryRowValue?.value
         cell.accessoryType = indexPath.row == 0 ? .disclosureIndicator : .none
         cell.set(valuePairs: indexedRowValues.dropFirst().map { ($0.title, $0.value) })
         
