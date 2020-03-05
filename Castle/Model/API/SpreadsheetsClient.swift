@@ -34,7 +34,7 @@ class SpreadsheetsClient {
         return MoyaProvider<Spreadsheets>(callbackQueue: self.reloadQueue, session: self.session)
     }()
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
-    private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions"]
+    private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions", "Crystal Reqs"]
     
     init() {
         session.sessionConfiguration.timeoutIntervalForRequest = 120
