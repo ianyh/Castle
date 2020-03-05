@@ -82,7 +82,15 @@ extension SearchViewController: UISearchResultsUpdating {
             }
             
             let database = try! Database(name: "search")
-            let searchableSheets = ["Characters", "Abilities", "Soul Breaks", "Status", "Other", "Magicite"].map { Expression.string($0) }
+            let searchableSheets = [
+                "Characters",
+                "Abilities",
+                "Soul Breaks",
+                "Limit Breaks",
+                "Status",
+                "Other",
+                "Magicite"
+            ].map { Expression.string($0) }
             let fulltextSearch = FullTextExpression.index("search").match("(Name:'\(text)*') OR (Common Name:'\(text)*') OR '\(text)'")
             let query = QueryBuilder
                 .select(
