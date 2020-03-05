@@ -202,19 +202,18 @@ class SpreadsheetsClient {
         let otherColumns = columns.filter { $0 != nameColumn }
         let sortedColumns = nameColumn.flatMap { [$0] + otherColumns } ?? otherColumns
         
+        let pattern = ".*=image\\(\"(.+?)\".*\\).*"
+        let embeddedPattern = ".*=image\\(\"(.+?)\".*?&.*?(\\w+).*?&.*?\"(.+?)\"\\).*"
+        let regex = try! NSRegularExpression(pattern: pattern, options: [])
+        let embeddedRegex = try! NSRegularExpression(pattern: embeddedPattern, options: [])
+
         let rows = zip(values.rows[1...], rawValues.rows[1...]).map { (row, rawRow) -> RowObject in
             let rowObject = RowObject()
             let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValueObject in
                 let normalized = value.1
                 var imageURL: String? = nil
-                let pattern = ".*=image\\(\"(.+?)\".*\\).*"
-                let embeddedPattern = ".*=image\\(\"(.+?)\".*?&.*?(\\w+).*?&.*?\"(.+?)\"\\).*"
 
-                if
-                    case let .some(normalized) = normalized,
-                    let regex = try? NSRegularExpression(pattern: pattern, options: []),
-                    let embeddedRegex = try? NSRegularExpression(pattern: embeddedPattern, options: [])
-                {
+                if case let .some(normalized) = normalized, normalized.lowercased().hasPrefix("=image") {
                     let lowerNormalized = normalized.lowercased()
                     let range = NSRange(lowerNormalized.startIndex..<lowerNormalized.endIndex, in: lowerNormalized)
                     let embeddedMatches = embeddedRegex.matches(in: lowerNormalized, options: [], range: range)
