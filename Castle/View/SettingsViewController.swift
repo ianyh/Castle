@@ -159,6 +159,7 @@ class SettingsViewController: UITableViewController {
             if isReloading {
                 let activityIndicator = UIActivityIndicatorView()
                 activityIndicator.startAnimating()
+                activityIndicator.sizeToFit()
                 cell.accessoryView = activityIndicator
             }
         case .goToArchive:
