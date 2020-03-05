@@ -207,7 +207,7 @@ class SpreadsheetsClient {
             let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValueObject in
                 let normalized = value.1
                 var imageURL: String? = nil
-                let pattern = ".*=image\\(\"(.+?)\"\\).*"
+                let pattern = ".*=image\\(\"(.+?)\".*\\).*"
                 let embeddedPattern = ".*=image\\(\"(.+?)\".*?&.*?(\\w+).*?&.*?\"(.+?)\"\\).*"
 
                 if
@@ -232,7 +232,7 @@ class SpreadsheetsClient {
                         }
                     } else if let match = matches.first, match.numberOfRanges == 2 {
                         let range = match.range(at: 1)
-                        imageURL = Range(range, in: normalized).flatMap { String(normalized[$0]) }
+                        imageURL = Range(range, in: lowerNormalized).flatMap { String(normalized[$0]) }
                     }
                 }
                 
