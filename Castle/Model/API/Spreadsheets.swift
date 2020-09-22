@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Moya
 
 enum RawValue: Decodable {
     case some(String)
@@ -84,51 +83,5 @@ struct SpreadsheetRawRange: Decodable {
     enum CodingKeys: String, CodingKey {
         case range
         case rows = "values"
-    }
-}
-
-enum Spreadsheets: TargetType {
-    case spreadsheets(spreadsheetID: String, key: String)
-    case values(spreadsheetID: String, sheets: [Sheet], key: String, raw: Bool)
-    
-    var baseURL: URL {
-        return URL(string: "https://sheets.googleapis.com")!
-    }
-    
-    var path: String {
-        switch self {
-        case let .spreadsheets(spreadsheetID, _):
-            return "/v4/spreadsheets/\(spreadsheetID)"
-        case let .values(spreadsheetID, _, _, _):
-            return "/v4/spreadsheets/\(spreadsheetID)/values:batchGet"
-        }
-    }
-    
-    var method: Moya.Method {
-        return .get
-    }
-    
-    var sampleData: Data {
-        return Data()
-    }
-    
-    var task: Task {
-        switch self {
-        case let .spreadsheets(_, key):
-            return .requestParameters(parameters: ["fields": "sheets.properties", "key": key], encoding: URLEncoding.default)
-        case let .values(_, sheets, key, raw):
-            return .requestParameters(
-                parameters: [
-                    "ranges": sheets.map { $0.properties.title },
-                    "valueRenderOption": raw ? "FORMULA" : "FORMATTED_VALUE",
-                    "key": key
-                ],
-                encoding: URLEncoding(arrayEncoding: .noBrackets)
-            )
-        }
-    }
-    
-    var headers: [String : String]? {
-        return nil
     }
 }

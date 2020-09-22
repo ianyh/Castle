@@ -13,12 +13,12 @@ class SheetRowCell: UITableViewCell {
     let titleLabel = UILabel()
     let valueLabel = UILabel()
     
-    var isFrozen: Bool = false {
+    var isColumnFrozen: Bool = false {
         didSet {
-            titleLabel.textAlignment = isFrozen ? .center : .left
+            titleLabel.textAlignment = isColumnFrozen ? .center : .left
             titleLabel.font = .preferredFont(forTextStyle: .footnote)
-            valueLabel.textAlignment = isFrozen ? .center : .left
-            valueLabel.font = isFrozen ? .preferredFont(forTextStyle: .title3) : .preferredFont(forTextStyle: .body)
+            valueLabel.textAlignment = isColumnFrozen ? .center : .left
+            valueLabel.font = isColumnFrozen ? .preferredFont(forTextStyle: .title3) : .preferredFont(forTextStyle: .body)
         }
     }
     
@@ -45,7 +45,7 @@ class SheetRowCell: UITableViewCell {
         valueLabel.centerYAnchor == contentView.safeAreaLayoutGuide.centerYAnchor + 6
         valueLabel.bottomAnchor <= contentView.safeAreaLayoutGuide.bottomAnchor - 8
         
-        isFrozen = false
+        isColumnFrozen = false
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -55,6 +55,6 @@ class SheetRowCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         accessoryType = .none
-        isFrozen = false
+        isColumnFrozen = false
     }
 }

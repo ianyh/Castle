@@ -100,7 +100,7 @@ extension RowViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let frozenCount = row.values.filter { $0.column?.isFrozen ?? true }.count
+        let frozenCount = row.values.filter { $0.column?.isColumnFrozen ?? true }.count
         
         switch section {
         case 0:
@@ -115,7 +115,7 @@ extension RowViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let frozenCount = row.values.filter { $0.column?.isFrozen ?? true }.count
+        let frozenCount = row.values.filter { $0.column?.isColumnFrozen ?? true }.count
         
         switch indexPath.section {
         case 0:
@@ -143,7 +143,7 @@ extension RowViewController {
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "SheetRow", for: indexPath) as! SheetRowCell
             cell.selectionStyle = .none
-            cell.isFrozen = value.column?.isFrozen ?? false
+            cell.isColumnFrozen = value.column?.isColumnFrozen ?? false
             cell.titleLabel.text = value.title
             cell.valueLabel.text = value.value
             return cell

@@ -6,7 +6,6 @@
 //  Copyright © 2017 Ian Ynda-Hummel. All rights reserved.
 //
 
-import Anchorage
 import Kingfisher
 import RealmSwift
 import UIKit

@@ -9,15 +9,7 @@
 /* Begin PBXBuildFile section */
 		4009880821D8014F00EEDC30 /* URL+Clean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4009880721D8014F00EEDC30 /* URL+Clean.swift */; };
 		4037B19B21442C66008EB089 /* SheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4037B19A21442C66008EB089 /* SheetCell.swift */; };
-		40467D3B2339B2C9001E913A /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40467D392339B2C8001E913A /* Realm.framework */; };
-		40467D3C2339B2C9001E913A /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40467D3A2339B2C8001E913A /* RealmSwift.framework */; };
 		404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404DACA220634C85000C7C9A /* SheetRowCell.swift */; };
-		40672C92233AE98900FC721B /* Anchorage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40672C91233AE98900FC721B /* Anchorage.framework */; };
-		407B9BB4233C56D400AF2E1B /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 407B9BB3233C56D400AF2E1B /* Alamofire.framework */; };
-		407B9BB5233C585B00AF2E1B /* Moya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E86A233C4B8F0008E2D9 /* Moya.framework */; };
-		4089E869233C4B750008E2D9 /* Kingfisher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E868233C4B750008E2D9 /* Kingfisher.framework */; };
-		4089E86D233C4BB90008E2D9 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E86C233C4BB90008E2D9 /* RxSwift.framework */; };
-		4089E86F233C4BEF0008E2D9 /* RxMoya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4089E86E233C4BEF0008E2D9 /* RxMoya.framework */; };
 		40934C00213B6E8E002079B5 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934BFF213B6E8E002079B5 /* Sheet.swift */; };
 		40934C04213B71CF002079B5 /* SpreadsheetsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */; };
 		4094FB8B21E56A9E00B1A258 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4094FB8A21E56A9E00B1A258 /* SearchViewController.swift */; };
@@ -61,16 +53,8 @@
 		3BFA289C120DE1943654A504 /* Pods_Castle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Castle.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4009880721D8014F00EEDC30 /* URL+Clean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Clean.swift"; sourceTree = "<group>"; };
 		4037B19A21442C66008EB089 /* SheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCell.swift; sourceTree = "<group>"; };
-		40467D392339B2C8001E913A /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
-		40467D3A2339B2C8001E913A /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Carthage/Build/iOS/RealmSwift.framework; sourceTree = "<group>"; };
 		404DACA220634C85000C7C9A /* SheetRowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetRowCell.swift; sourceTree = "<group>"; };
-		40672C91233AE98900FC721B /* Anchorage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Anchorage.framework; path = Carthage/Build/iOS/Anchorage.framework; sourceTree = "<group>"; };
 		406BF460201541A600FE9A85 /* Castle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Castle.entitlements; sourceTree = "<group>"; };
-		407B9BB3233C56D400AF2E1B /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		4089E868233C4B750008E2D9 /* Kingfisher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kingfisher.framework; path = Carthage/Build/iOS/Kingfisher.framework; sourceTree = "<group>"; };
-		4089E86A233C4B8F0008E2D9 /* Moya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Moya.framework; path = Carthage/Build/iOS/Moya.framework; sourceTree = "<group>"; };
-		4089E86C233C4BB90008E2D9 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
-		4089E86E233C4BEF0008E2D9 /* RxMoya.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxMoya.framework; path = Carthage/Build/iOS/RxMoya.framework; sourceTree = "<group>"; };
 		40934BFF213B6E8E002079B5 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		40934C03213B71CF002079B5 /* SpreadsheetsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpreadsheetsClient.swift; sourceTree = "<group>"; };
 		4094FB8A21E56A9E00B1A258 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -104,14 +88,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40467D3B2339B2C9001E913A /* Realm.framework in Frameworks */,
-				40467D3C2339B2C9001E913A /* RealmSwift.framework in Frameworks */,
-				40672C92233AE98900FC721B /* Anchorage.framework in Frameworks */,
-				4089E869233C4B750008E2D9 /* Kingfisher.framework in Frameworks */,
-				407B9BB5233C585B00AF2E1B /* Moya.framework in Frameworks */,
-				4089E86D233C4BB90008E2D9 /* RxSwift.framework in Frameworks */,
-				4089E86F233C4BEF0008E2D9 /* RxMoya.framework in Frameworks */,
-				407B9BB4233C56D400AF2E1B /* Alamofire.framework in Frameworks */,
 				BDBE1FDB20B3182DD3FD12F3 /* Pods_Castle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -246,14 +222,6 @@
 		D90EA95045369E40FD5C0CCB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				407B9BB3233C56D400AF2E1B /* Alamofire.framework */,
-				4089E86E233C4BEF0008E2D9 /* RxMoya.framework */,
-				4089E86C233C4BB90008E2D9 /* RxSwift.framework */,
-				4089E86A233C4B8F0008E2D9 /* Moya.framework */,
-				4089E868233C4B750008E2D9 /* Kingfisher.framework */,
-				40672C91233AE98900FC721B /* Anchorage.framework */,
-				40467D392339B2C8001E913A /* Realm.framework */,
-				40467D3A2339B2C8001E913A /* RealmSwift.framework */,
 				3BFA289C120DE1943654A504 /* Pods_Castle.framework */,
 			);
 			name = Frameworks;
@@ -270,7 +238,6 @@
 				40E7AF481F71DFAB0032D4F2 /* Sources */,
 				40E7AF491F71DFAB0032D4F2 /* Frameworks */,
 				40E7AF4A1F71DFAB0032D4F2 /* Resources */,
-				40E158722339B0A6006AA996 /* [Carthage] Copy Frameworks */,
 				E4E2DFEF04BB87F38494041B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
@@ -400,40 +367,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		40E158722339B0A6006AA996 /* [Carthage] Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Realm.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Anchorage.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Moya.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxMoya.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
-			);
-			name = "[Carthage] Copy Frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Realm.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RealmSwift.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Anchorage.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Kingfisher.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Moya.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxMoya.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
 		823D0B388598932FF1825FAB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -463,13 +396,29 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/Anchorage/Anchorage.framework",
 				"${PODS_ROOT}/CouchbaseLite-Swift/iOS/CouchbaseLiteSwift.framework",
 				"${PODS_ROOT}/CouchbaseLite-Swift/iOS/CouchbaseLiteSwift.framework.dSYM",
+				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
+				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
+				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
+				"${BUILT_PRODUCTS_DIR}/RxRelay/RxRelay.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Anchorage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CouchbaseLiteSwift.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/CouchbaseLiteSwift.framework.dSYM",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxRelay.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -672,7 +621,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 40;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -695,7 +644,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
-				CURRENT_PROJECT_VERSION = 38;
+				CURRENT_PROJECT_VERSION = 40;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

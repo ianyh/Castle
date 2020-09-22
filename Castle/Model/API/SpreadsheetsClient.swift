@@ -10,9 +10,8 @@ import Alamofire
 import CouchbaseLiteSwift
 import Foundation
 import Kingfisher
-import Moya
 import RealmSwift
-import RxMoya
+import RxCocoa
 import RxSwift
 
 extension Array {
@@ -29,16 +28,13 @@ class SpreadsheetsClient {
     }
     
     private let reloadQueue = DispatchQueue(label: "com.ianyh.Castle.reload")
-    private let session = Alamofire.Session()
-    private lazy var provider: MoyaProvider<Spreadsheets> = {
-        return MoyaProvider<Spreadsheets>(callbackQueue: self.reloadQueue, session: self.session)
-    }()
+    private let session = URLSession(configuration: URLSession.shared.configuration)
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
     private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions", "Crystal Reqs"]
     
     init() {
-        session.sessionConfiguration.timeoutIntervalForRequest = 120
-        session.sessionConfiguration.timeoutIntervalForResource = 120
+        session.configuration.timeoutIntervalForRequest = 120
+        session.configuration.timeoutIntervalForResource = 120
     }
     
     func sync() -> Observable<Void> {
@@ -52,28 +48,48 @@ class SpreadsheetsClient {
         
         let spreadsheetID = SpreadsheetsClient.spreadsheetID
         let scheduler = SerialDispatchQueueScheduler(queue: reloadQueue, internalSerialQueueName: reloadQueue.label)
-        
-        return provider.rx.request(.spreadsheets(spreadsheetID: spreadsheetID, key: key))
-            .asObservable()
+        var urlComponents = URLComponents(string: "https://sheets.googleapis.com/v4/spreadsheets/\(spreadsheetID)")!
+        urlComponents.queryItems = [
+            URLQueryItem(name: "key", value: key),
+            URLQueryItem(name: "fields", value: "sheets.properties")
+        ]
+        let request = URLRequest(url: urlComponents.url!)
+
+        return session.rx.data(request: request)
             .observeOn(scheduler)
             .flatMap { [weak self] response -> Observable<Void> in
                 guard let `self` = self else {
                     return .just(())
                 }
                 
-                let spreadsheet = try JSONDecoder().decode(Spreadsheet.self, from: response.data)
+                let spreadsheet = try JSONDecoder().decode(Spreadsheet.self, from: response)
                 let sheets = spreadsheet.sheets.filter {
                     $0.properties.gridProperties.columnCount > 1
                         && !SpreadsheetsClient.ignoredSheets.contains($0.properties.title)
                         && !$0.properties.title.lowercased().contains("(old)")
                 }
-                let valuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheets: sheets, key: key, raw: false)
-                let rawValuesTarget: Spreadsheets = .values(spreadsheetID: spreadsheetID, sheets: sheets, key: key, raw: true)
-                let valuesRequests = Observable.zip([
-                    self.provider.rx.request(valuesTarget).asObservable().observeOn(scheduler),
-                    self.provider.rx.request(rawValuesTarget).asObservable().observeOn(scheduler)
-                ]) { ($0[0], $0[1]) }
+                let encoder = URLEncodedFormParameterEncoder(encoder: URLEncodedFormEncoder(arrayEncoding: .noBrackets))
+                let urlComponents = URLComponents(
+                    string: "https://sheets.googleapis.com/v4/spreadsheets/\(spreadsheetID)/values:batchGet"
+                )!
+                let request = try! encoder.encode(["ranges": sheets.map { $0.properties.title }], into: URLRequest(url: urlComponents.url!))
 
+                let valuesParameters = [
+                    "valueRenderOption": "FORMATTED_VALUE",
+                    "key": key
+                ]
+                let valuesRequest = try! encoder.encode(valuesParameters, into: request)
+                
+                let rawValuesParameters = [
+                    "valueRenderOption": "FORMULA",
+                    "key": key
+                ]
+                let rawValuesRequest = try! encoder.encode(rawValuesParameters, into: request)
+
+                let valuesRequests = Observable.zip([
+                    self.session.rx.data(request: valuesRequest),
+                    self.session.rx.data(request: rawValuesRequest)
+                ]) { ($0[0], $0[1]) }
 
                 return valuesRequests
                     .map { [weak self] responses -> [SpreadsheetObject] in
@@ -81,8 +97,8 @@ class SpreadsheetsClient {
                             throw Error.failedSync
                         }
                         
-                        let ranges = try JSONDecoder().decode(SpreadsheetValues.self, from: responses.0.data).ranges
-                        let rawRanges = try JSONDecoder().decode(SpreadsheetRawValues.self, from: responses.1.data).ranges
+                        let ranges = try JSONDecoder().decode(SpreadsheetValues.self, from: responses.0).ranges
+                        let rawRanges = try JSONDecoder().decode(SpreadsheetRawValues.self, from: responses.1).ranges
 
                         return try zip(ranges, rawRanges).compactMap { range, rawRange -> SpreadsheetObject? in
                             guard let sheet = sheets.first(where: { range.range.hasPrefix($0.properties.title) || range.range.hasPrefix("'\($0.properties.title)'") }) else {
@@ -119,7 +135,7 @@ class SpreadsheetsClient {
                                         try database.saveDocument(document)
                                     }
 
-                                    for column in sheet.columns.filter({ $0.isFrozen == true }) {
+                                    for column in sheet.columns.filter({ $0.isColumnFrozen == true }) {
                                         ftsIndices.insert(column.title)
                                     }
                                 }
@@ -194,7 +210,7 @@ class SpreadsheetsClient {
 
             let column = ColumnObject()
             column.key = "\(sheet.properties.id)-\(value)"
-            column.isFrozen = index < frozenColumnCount
+            column.isColumnFrozen = index < frozenColumnCount
             column.title = value
             return column
         }
@@ -226,7 +242,7 @@ class SpreadsheetsClient {
                         let suffix = Range(match.range(at: 3), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) })
                     {
                         let columnIndex = Int(column.first!.asciiValue! - Character("a").asciiValue!)
-                        if case let .some(columnValue) = rawRow[columnIndex] {
+                        if columnIndex < rawRow.count, case let .some(columnValue) = rawRow[columnIndex] {
                             imageURL = "\(prefix)\(columnValue)\(suffix)"
                         }
                     } else if let match = matches.first, match.numberOfRanges == 2 {

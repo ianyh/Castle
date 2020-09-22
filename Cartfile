@@ -1,4 +1,0 @@
-github "Moya/Moya" ~> 14.0.0
-github "onevcat/Kingfisher"
-github "realm/realm-cocoa"
-github "Rightpoint/Anchorage"

@@ -7,7 +7,6 @@
 //
 
 import Kingfisher
-import Moya
 import RealmSwift
 import RxSwift
 import UIKit
@@ -64,7 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             guard let `self` = self else {
                 return
             }
-            
+    
             self.client.sync().subscribe().disposed(by: self.disposeBag)
         }
         

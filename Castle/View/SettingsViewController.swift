@@ -6,7 +6,6 @@
 //  Copyright © 2017 Ian Ynda-Hummel. All rights reserved.
 //
 
-import Moya
 import RealmSwift
 import RxSwift
 import UIKit

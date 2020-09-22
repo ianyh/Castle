@@ -1,8 +1,0 @@
-binary "https://packages.couchbase.com/releases/couchbase-lite-ios/carthage/CouchbaseLite-Community.json" "2.6.1"
-github "Alamofire/Alamofire" "5.0.0"
-github "Moya/Moya" "14.0.0"
-github "ReactiveCocoa/ReactiveSwift" "6.2.0"
-github "ReactiveX/RxSwift" "5.0.1"
-github "Rightpoint/Anchorage" "4.3.1"
-github "onevcat/Kingfisher" "5.13.1"
-github "realm/realm-cocoa" "v4.3.2"

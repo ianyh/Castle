@@ -15,7 +15,7 @@ class SpreadsheetObject: Object {
     let rows = List<RowObject>()
     
     var frozenColumns: Results<ColumnObject> {
-        return columns.filter("isFrozen == true")
+        return columns.filter("isColumnFrozen == true")
     }
     
     override static func primaryKey() -> String? {
@@ -29,7 +29,7 @@ class SpreadsheetObject: Object {
 
 class ColumnObject: Object {
     @objc dynamic var key: String = ""
-    @objc dynamic var isFrozen: Bool = false
+    @objc dynamic var isColumnFrozen: Bool = false
     @objc dynamic var title: String = ""
     
     override static func primaryKey() -> String? {
