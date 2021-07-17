@@ -5,11 +5,11 @@ PODS:
   - Kingfisher (5.14.1):
     - Kingfisher/Core (= 5.14.1)
   - Kingfisher/Core (5.14.1)
-  - Realm (5.4.2):
-    - Realm/Headers (= 5.4.2)
-  - Realm/Headers (5.4.2)
-  - RealmSwift (5.4.2):
-    - Realm (= 5.4.2)
+  - Realm (10.10.0):
+    - Realm/Headers (= 10.10.0)
+  - Realm/Headers (10.10.0)
+  - RealmSwift (10.10.0):
+    - Realm (= 10.10.0)
   - RxCocoa (5.1.1):
     - RxRelay (~> 5)
     - RxSwift (~> 5)
@@ -43,12 +43,12 @@ SPEC CHECKSUMS:
   Anchorage: d7f02c4f9425b537053237aab11ae97e59b55f36
   CouchbaseLite-Swift: 02012c1d5715106b349fb16fbcf88266d8f457c4
   Kingfisher: 8050bc6f7f68cbf3908bd04df7ccbac188f6d6d6
-  Realm: ced868eb0254f8d33a21c06981355e5aa33bc005
-  RealmSwift: aedc4363150f3c61f91ae0537ed116d2d080a4dd
+  Realm: f501df41a4222c67850c77cf135d472192ecf294
+  RealmSwift: c69aadfc7db0d60075178d037c2f34ada73d5201
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
   RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
 
 PODFILE CHECKSUM: cbb50cdab26e6e52cc07c59adee1303d1322bbb3
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.1
