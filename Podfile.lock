@@ -1,21 +1,19 @@
 PODS:
-  - Alamofire (5.2.2)
-  - Anchorage (4.4.0)
-  - CouchbaseLite-Swift (2.7.1)
-  - Kingfisher (5.14.1):
-    - Kingfisher/Core (= 5.14.1)
-  - Kingfisher/Core (5.14.1)
+  - Alamofire (5.4.3)
+  - Anchorage (4.5.0)
+  - CouchbaseLite-Swift (2.8.4)
+  - Kingfisher (6.3.0)
   - Realm (10.10.0):
     - Realm/Headers (= 10.10.0)
   - Realm/Headers (10.10.0)
   - RealmSwift (10.10.0):
     - Realm (= 10.10.0)
-  - RxCocoa (5.1.1):
-    - RxRelay (~> 5)
-    - RxSwift (~> 5)
-  - RxRelay (5.1.1):
-    - RxSwift (~> 5)
-  - RxSwift (5.1.1)
+  - RxCocoa (6.2.0):
+    - RxRelay (= 6.2.0)
+    - RxSwift (= 6.2.0)
+  - RxRelay (6.2.0):
+    - RxSwift (= 6.2.0)
+  - RxSwift (6.2.0)
 
 DEPENDENCIES:
   - Alamofire
@@ -23,8 +21,8 @@ DEPENDENCIES:
   - CouchbaseLite-Swift
   - Kingfisher
   - RealmSwift
-  - RxCocoa
-  - RxSwift
+  - RxCocoa (~> 6.0)
+  - RxSwift (~> 6.0)
 
 SPEC REPOS:
   trunk:
@@ -39,16 +37,16 @@ SPEC REPOS:
     - RxSwift
 
 SPEC CHECKSUMS:
-  Alamofire: 814429acc853c6c54ff123fc3d2ef66803823ce0
-  Anchorage: d7f02c4f9425b537053237aab11ae97e59b55f36
-  CouchbaseLite-Swift: 02012c1d5715106b349fb16fbcf88266d8f457c4
-  Kingfisher: 8050bc6f7f68cbf3908bd04df7ccbac188f6d6d6
+  Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
+  Anchorage: 1961bc81c84aeed54ad7ffc697c50cd9de748ba6
+  CouchbaseLite-Swift: a25971eb557d646359581371e559333a386a5701
+  Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
   Realm: f501df41a4222c67850c77cf135d472192ecf294
   RealmSwift: c69aadfc7db0d60075178d037c2f34ada73d5201
-  RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
-  RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
-  RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
+  RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
+  RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
+  RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
 
-PODFILE CHECKSUM: cbb50cdab26e6e52cc07c59adee1303d1322bbb3
+PODFILE CHECKSUM: 33d1574d5e1eba5b859f090a1406a31c1d528d72
 
 COCOAPODS: 1.10.1

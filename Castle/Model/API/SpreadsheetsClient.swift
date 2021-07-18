@@ -56,7 +56,7 @@ class SpreadsheetsClient {
         let request = URLRequest(url: urlComponents.url!)
 
         return session.rx.data(request: request)
-            .observeOn(scheduler)
+            .observe(on: scheduler)
             .flatMap { [weak self] response -> Observable<Void> in
                 guard let `self` = self else {
                     return .just(())

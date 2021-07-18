@@ -237,7 +237,7 @@ class SettingsViewController: UITableViewController {
         isReloading = true
 
         client.sync()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onError: { [weak self] error in
                     self?.present(error: error)
