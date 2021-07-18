@@ -621,10 +621,7 @@
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Castle/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.Castle;
@@ -644,10 +641,7 @@
 				CODE_SIGN_ENTITLEMENTS = Castle/Castle.entitlements;
 				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Castle/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.Castle;

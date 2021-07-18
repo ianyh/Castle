@@ -10,7 +10,7 @@ import Anchorage
 import UIKit
 
 class LoadingCell: UITableViewCell {
-    private let activityIndicatorView = UIActivityIndicatorView(style: .gray)
+    private let activityIndicatorView = UIActivityIndicatorView(style: .medium)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
