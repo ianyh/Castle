@@ -7,6 +7,7 @@
 //
 
 import CouchbaseLiteSwift
+import Kingfisher
 import RealmSwift
 import UIKit
 
@@ -25,8 +26,17 @@ class SearchViewController: UITableViewController {
         let id: String
         let name: String
         let type: String
+        let imageURL: URL?
     }
     
+    private static let iconSize = CGSize(width: 64, height: 64)
+    private static let placeholder: UIImage? = {
+        UIGraphicsBeginImageContext(iconSize)
+        let placeholder = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return placeholder
+    }()
+
     private var rows: [Row] = []
         
     override func viewDidLoad() {
@@ -43,6 +53,14 @@ class SearchViewController: UITableViewController {
         let row = rows[indexPath.row]
         cell.textLabel?.text = row.name
         cell.detailTextLabel?.text = row.type
+        cell.imageView?.kf.cancelDownloadTask()
+        cell.imageView?.image = nil
+        if let imageURL = row.imageURL {
+            cell.imageView?.kf.setImage(
+                with: imageURL,
+                placeholder: SearchViewController.placeholder
+            )
+        }
         return cell
     }
     
@@ -54,10 +72,11 @@ class SearchViewController: UITableViewController {
             guard let rowObject = realm.object(ofType: RowObject.self, forPrimaryKey: row.id) else {
                 return
             }
+
             guard let spreadsheetObject = realm.object(ofType: SpreadsheetObject.self, forPrimaryKey: row.type) else {
                 return
             }
-            
+
             let rowViewController = RowViewController(sheet: spreadsheetObject, row: rowObject)
             parent?.presentingViewController?.navigationController?.pushViewController(rowViewController, animated: true)
         } catch {
@@ -97,7 +116,8 @@ extension SearchViewController: UISearchResultsUpdating {
                     SelectResult.expression(Meta.id),
                     SelectResult.property("Name"),
                     SelectResult.property("Common Name"),
-                    SelectResult.property("_sheetTitle")
+                    SelectResult.property("_sheetTitle"),
+                    SelectResult.property("_imageURL")
                 )
                 .from(DataSource.database(database))
                 .where(Expression.property("_sheetTitle").in(searchableSheets).and(fulltextSearch))
@@ -110,7 +130,9 @@ extension SearchViewController: UISearchResultsUpdating {
                     guard let name = (result.string(at: 1) ?? result.string(at: 2)) else {
                         continue
                     }
-                    rows.append(Row(id: result.string(at: 0)!, name: name, type: result.string(at: 3)!))
+
+                    let imageURL = result.string(at: 4).flatMap { URL(string: $0) }
+                    rows.append(Row(id: result.string(at: 0)!, name: name, type: result.string(at: 3)!, imageURL: imageURL))
                 }
                 
                 self.rows = rows
