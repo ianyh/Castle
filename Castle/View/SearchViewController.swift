@@ -110,7 +110,7 @@ extension SearchViewController: UISearchResultsUpdating {
                 "Other",
                 "Magicite"
             ].map { Expression.string($0) }
-            let fulltextSearch = FullTextExpression.index("search").match("(Name:'\(text)*') OR (Common Name:'\(text)*') OR '\(text)'")
+            let search = FullTextFunction.match(indexName: "searchIndex", query: "(Name:'\(text)*') OR (Common Name:'\(text)*') OR '\(text)'")
             let query = QueryBuilder
                 .select(
                     SelectResult.expression(Meta.id),
@@ -120,8 +120,8 @@ extension SearchViewController: UISearchResultsUpdating {
                     SelectResult.property("_imageURL")
                 )
                 .from(DataSource.database(database))
-                .where(Expression.property("_sheetTitle").in(searchableSheets).and(fulltextSearch))
-                .orderBy(Ordering.expression(FullTextFunction.rank("search")).descending())
+                .where(Expression.property("_sheetTitle").in(searchableSheets).and(search))
+                .orderBy(Ordering.expression(FullTextFunction.rank("searchIndex")).descending())
                 .limit(Expression.int(50))
             
             do {

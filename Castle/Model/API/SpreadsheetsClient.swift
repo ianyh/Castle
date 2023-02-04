@@ -123,26 +123,36 @@ class SpreadsheetsClient {
                             }
 
                             let database = try Database(name: "search")
-                            try database.inBatch {
-                                for sheet in spreadsheets {
-                                    for row in sheet.rows {
-                                        let document = database.document(withID: row.id)?.toMutable() ?? MutableDocument(id: row.id)
-                                        document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
-                                        document.setString(sheet.title, forKey: "_sheetTitle")
-                                        for value in row.values {
-                                            document.setString(value.value, forKey: value.title)
+                            do {
+                                try database.inBatch {
+                                    for sheet in spreadsheets {
+                                        for row in sheet.rows {
+                                            let document = database.document(withID: row.id)?.toMutable() ?? MutableDocument(id: row.id)
+                                            document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
+                                            document.setString(sheet.title, forKey: "_sheetTitle")
+                                            for value in row.values where !value.value.isEmpty && !value.title.isEmpty {
+                                                document.setString(value.value, forKey: value.title)
+                                            }
+                                            try database.saveDocument(document)
                                         }
-                                        try database.saveDocument(document)
-                                    }
-
-                                    for column in sheet.columns.filter({ $0.isColumnFrozen == true }) {
-                                        ftsIndices.insert(column.title)
+                                        
+                                        for column in sheet.columns.filter({ $0.isColumnFrozen == true }) where !column.title.isEmpty {
+                                            ftsIndices.insert(column.title)
+                                        }
                                     }
                                 }
+                            } catch {
+                                print(error)
+                                throw error
                             }
 
                             let index = IndexBuilder.fullTextIndex(items: ftsIndices.map { FullTextIndexItem.property($0) })
-                            try database.createIndex(index, withName: "search")
+                            do {
+                                try database.createIndex(index, withName: "searchIndex")
+                            } catch {
+                                print(error)
+                                throw error
+                            }
                         }
                     )
                     .map { _ in }
