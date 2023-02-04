@@ -60,4 +60,8 @@ class RowObject: Object {
     func normalizedName() -> String? {
         return values.first(where: { $0.column?.title.hasSuffix("Name") ?? false })?.value
     }
+    
+    func effect() -> String? {
+        return values.first { $0.column?.title == "Effects" }?.value
+    }
 }

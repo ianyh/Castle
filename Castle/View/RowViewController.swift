@@ -52,7 +52,9 @@ class RowViewController: UITableViewController {
             return
         }
         
+        let effect = row.effect()
         let normalizedSheetTitle = sheet.normalizedName()
+
         DispatchQueue.global(qos: .userInteractive).async {
             do {
                 let database = try Database(name: "search")
@@ -81,6 +83,49 @@ class RowViewController: UITableViewController {
                     var sheetRelationships = relationships[sheetTitle] ?? []
                     sheetRelationships.append(id)
                     relationships[sheetTitle] = sheetRelationships
+                }
+                
+                if let effect = effect {
+                    let statusRegex = try NSRegularExpression(pattern: "\\[(.+?)\\]")
+                    for match in statusRegex.matches(in: effect, range: NSMakeRange(0, effect.count)) {
+                        let status = effect[Range(match.range(at: 1), in: effect)!]
+                        let statusExpression = Expression.string(String(status))
+                        let statusQuery = QueryBuilder
+                            .select(
+                                SelectResult.expression(Meta.id),
+                                SelectResult.property("_sheetTitle")
+                            )
+                            .from(DataSource.database(database))
+                            .where(
+                                Expression.property("Common Name").equalTo(statusExpression)
+                                    .or(Expression.property("Name").equalTo(statusExpression))
+                            )
+                        for result in try statusQuery.execute() {
+                            let id = result.string(at: 0)!
+                            let sheetTitle = result.string(at: 1)!
+                            var sheetRelationships = relationships[sheetTitle] ?? []
+                            sheetRelationships.append(id)
+                            relationships[sheetTitle] = sheetRelationships
+                        }
+                    }
+                    
+                    let castRegex = try NSRegularExpression(pattern: "[Cc]asts (.+?) after")
+                    for match in castRegex.matches(in: effect, range: NSMakeRange(0, effect.count)) {
+                        let other = effect[Range(match.range(at: 1), in: effect)!]
+                        let otherExpression = Expression.string(String(other))
+                        let otherQuery = QueryBuilder
+                            .select(SelectResult.expression(Meta.id))
+                            .from(DataSource.database(database))
+                            .where(Expression.property("_sheetTitle").equalTo(Expression.string("Other"))
+                                .and(Expression.property("Name").equalTo(otherExpression))
+                            )
+                        for result in try otherQuery.execute() {
+                            let id = result.string(at: 0)!
+                            var sheetRelationships = relationships["Other"] ?? []
+                            sheetRelationships.append(id)
+                            relationships["Other"] = sheetRelationships
+                        }
+                    }
                 }
                 
                 let flattenedRelationships = relationships.map { Relationship(title: $0, sheetID: $0, rowIDs: $1) }
