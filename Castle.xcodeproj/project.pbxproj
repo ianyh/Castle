@@ -3,11 +3,19 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		4009880821D8014F00EEDC30 /* URL+Clean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4009880721D8014F00EEDC30 /* URL+Clean.swift */; };
+		4034CCCB2B240362009EABA8 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCCA2B240362009EABA8 /* Alamofire */; };
+		4034CCCE2B240395009EABA8 /* Anchorage in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCCD2B240395009EABA8 /* Anchorage */; };
+		4034CCD12B240485009EABA8 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD02B240485009EABA8 /* Realm */; };
+		4034CCD32B240485009EABA8 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD22B240485009EABA8 /* RealmSwift */; };
+		4034CCD62B2404CF009EABA8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD52B2404CF009EABA8 /* Kingfisher */; };
+		4034CCD92B240558009EABA8 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD82B240558009EABA8 /* RxCocoa */; };
+		4034CCDB2B240558009EABA8 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCDA2B240558009EABA8 /* RxSwift */; };
+		4034CCDE2B2405C1009EABA8 /* CouchbaseLiteSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCDD2B2405C1009EABA8 /* CouchbaseLiteSwift */; };
 		4037B19B21442C66008EB089 /* SheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4037B19A21442C66008EB089 /* SheetCell.swift */; };
 		404DACA320634C85000C7C9A /* SheetRowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404DACA220634C85000C7C9A /* SheetRowCell.swift */; };
 		40934C00213B6E8E002079B5 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40934BFF213B6E8E002079B5 /* Sheet.swift */; };
@@ -28,7 +36,6 @@
 		40E7AF871F76C8C80032D4F2 /* SheetsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF861F76C8C80032D4F2 /* SheetsListViewController.swift */; };
 		40E7AF891F76CE5B0032D4F2 /* RowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF881F76CE5B0032D4F2 /* RowViewController.swift */; };
 		40E7AF8B1F783F5F0032D4F2 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E7AF8A1F783F5F0032D4F2 /* SettingsViewController.swift */; };
-		BDBE1FDB20B3182DD3FD12F3 /* Pods_Castle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BFA289C120DE1943654A504 /* Pods_Castle.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,8 +56,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0FB9A6F2A8A931B14760429F /* Pods-Castle.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle.release.xcconfig"; path = "Target Support Files/Pods-Castle/Pods-Castle.release.xcconfig"; sourceTree = "<group>"; };
-		3BFA289C120DE1943654A504 /* Pods_Castle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Castle.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4009880721D8014F00EEDC30 /* URL+Clean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Clean.swift"; sourceTree = "<group>"; };
 		4037B19A21442C66008EB089 /* SheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetCell.swift; sourceTree = "<group>"; };
 		404DACA220634C85000C7C9A /* SheetRowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetRowCell.swift; sourceTree = "<group>"; };
@@ -80,7 +85,6 @@
 		40E7AF861F76C8C80032D4F2 /* SheetsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetsListViewController.swift; sourceTree = "<group>"; };
 		40E7AF881F76CE5B0032D4F2 /* RowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowViewController.swift; sourceTree = "<group>"; };
 		40E7AF8A1F783F5F0032D4F2 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		BD7686CF766D02E6D46F39AA /* Pods-Castle.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Castle.debug.xcconfig"; path = "Target Support Files/Pods-Castle/Pods-Castle.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,7 +92,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BDBE1FDB20B3182DD3FD12F3 /* Pods_Castle.framework in Frameworks */,
+				4034CCD92B240558009EABA8 /* RxCocoa in Frameworks */,
+				4034CCD32B240485009EABA8 /* RealmSwift in Frameworks */,
+				4034CCDE2B2405C1009EABA8 /* CouchbaseLiteSwift in Frameworks */,
+				4034CCD12B240485009EABA8 /* Realm in Frameworks */,
+				4034CCCB2B240362009EABA8 /* Alamofire in Frameworks */,
+				4034CCCE2B240395009EABA8 /* Anchorage in Frameworks */,
+				4034CCD62B2404CF009EABA8 /* Kingfisher in Frameworks */,
+				4034CCDB2B240558009EABA8 /* RxSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,8 +171,6 @@
 				40E7AF651F71DFAC0032D4F2 /* CastleTests */,
 				40E7AF701F71DFAC0032D4F2 /* CastleUITests */,
 				40E7AF4D1F71DFAB0032D4F2 /* Products */,
-				D90EA95045369E40FD5C0CCB /* Frameworks */,
-				96E60E2E7CD39B541C997919 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -210,23 +219,6 @@
 			path = CastleUITests;
 			sourceTree = "<group>";
 		};
-		96E60E2E7CD39B541C997919 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				BD7686CF766D02E6D46F39AA /* Pods-Castle.debug.xcconfig */,
-				0FB9A6F2A8A931B14760429F /* Pods-Castle.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		D90EA95045369E40FD5C0CCB /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				3BFA289C120DE1943654A504 /* Pods_Castle.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -234,17 +226,25 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 40E7AF761F71DFAC0032D4F2 /* Build configuration list for PBXNativeTarget "Castle" */;
 			buildPhases = (
-				823D0B388598932FF1825FAB /* [CP] Check Pods Manifest.lock */,
 				40E7AF481F71DFAB0032D4F2 /* Sources */,
 				40E7AF491F71DFAB0032D4F2 /* Frameworks */,
 				40E7AF4A1F71DFAB0032D4F2 /* Resources */,
-				E4E2DFEF04BB87F38494041B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Castle;
+			packageProductDependencies = (
+				4034CCCA2B240362009EABA8 /* Alamofire */,
+				4034CCCD2B240395009EABA8 /* Anchorage */,
+				4034CCD02B240485009EABA8 /* Realm */,
+				4034CCD22B240485009EABA8 /* RealmSwift */,
+				4034CCD52B2404CF009EABA8 /* Kingfisher */,
+				4034CCD82B240558009EABA8 /* RxCocoa */,
+				4034CCDA2B240558009EABA8 /* RxSwift */,
+				4034CCDD2B2405C1009EABA8 /* CouchbaseLiteSwift */,
+			);
 			productName = Castle;
 			productReference = 40E7AF4C1F71DFAB0032D4F2 /* Castle.app */;
 			productType = "com.apple.product-type.application";
@@ -327,6 +327,14 @@
 				Base,
 			);
 			mainGroup = 40E7AF431F71DFAB0032D4F2;
+			packageReferences = (
+				4034CCC92B240362009EABA8 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				4034CCCC2B240395009EABA8 /* XCRemoteSwiftPackageReference "Anchorage" */,
+				4034CCCF2B240485009EABA8 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				4034CCD42B2404CF009EABA8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				4034CCDC2B2405C1009EABA8 /* XCRemoteSwiftPackageReference "couchbase-lite-ios" */,
+			);
 			productRefGroup = 40E7AF4D1F71DFAB0032D4F2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -365,65 +373,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		823D0B388598932FF1825FAB /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Castle-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E4E2DFEF04BB87F38494041B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
-				"${BUILT_PRODUCTS_DIR}/Anchorage/Anchorage.framework",
-				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
-				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
-				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
-				"${BUILT_PRODUCTS_DIR}/RxRelay/RxRelay.framework",
-				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/CouchbaseLite-Swift/CouchbaseLiteSwift.framework/CouchbaseLiteSwift",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Anchorage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxRelay.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CouchbaseLiteSwift.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Castle/Pods-Castle-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		40E7AF481F71DFAB0032D4F2 /* Sources */ = {
@@ -606,7 +555,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -614,7 +564,6 @@
 		};
 		40E7AF771F71DFAC0032D4F2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BD7686CF766D02E6D46F39AA /* Pods-Castle.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -625,7 +574,10 @@
 				INFOPLIST_FILE = Castle/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Castle;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.Castle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -637,7 +589,6 @@
 		};
 		40E7AF781F71DFAC0032D4F2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0FB9A6F2A8A931B14760429F /* Pods-Castle.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -648,7 +599,10 @@
 				INFOPLIST_FILE = Castle/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Castle;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.Castle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -665,7 +619,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
 				INFOPLIST_FILE = CastleTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.CastleTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -681,7 +639,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
 				INFOPLIST_FILE = CastleTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.CastleTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -696,7 +658,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
 				INFOPLIST_FILE = CastleUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.CastleUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -711,7 +677,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 82P2XLB4UH;
 				INFOPLIST_FILE = CastleUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ianyh.CastleUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -759,6 +729,100 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4034CCC92B240362009EABA8 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.8.1;
+			};
+		};
+		4034CCCC2B240395009EABA8 /* XCRemoteSwiftPackageReference "Anchorage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Rightpoint/Anchorage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.0;
+			};
+		};
+		4034CCCF2B240485009EABA8 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.44.0;
+			};
+		};
+		4034CCD42B2404CF009EABA8 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.10.0;
+			};
+		};
+		4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.6.0;
+			};
+		};
+		4034CCDC2B2405C1009EABA8 /* XCRemoteSwiftPackageReference "couchbase-lite-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/couchbase/couchbase-lite-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4034CCCA2B240362009EABA8 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCC92B240362009EABA8 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		4034CCCD2B240395009EABA8 /* Anchorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCCC2B240395009EABA8 /* XCRemoteSwiftPackageReference "Anchorage" */;
+			productName = Anchorage;
+		};
+		4034CCD02B240485009EABA8 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCCF2B240485009EABA8 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		4034CCD22B240485009EABA8 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCCF2B240485009EABA8 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		4034CCD52B2404CF009EABA8 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCD42B2404CF009EABA8 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		4034CCD82B240558009EABA8 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		4034CCDA2B240558009EABA8 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		4034CCDD2B2405C1009EABA8 /* CouchbaseLiteSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4034CCDC2B2405C1009EABA8 /* XCRemoteSwiftPackageReference "couchbase-lite-ios" */;
+			productName = CouchbaseLiteSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 40E7AF441F71DFAB0032D4F2 /* Project object */;
 }
