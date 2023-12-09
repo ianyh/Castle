@@ -109,7 +109,7 @@ class RowViewController: UITableViewController {
                         }
                     }
                     
-                    let castRegex = try NSRegularExpression(pattern: "[Cc]asts (.+?) after")
+                    let castRegex = try NSRegularExpression(pattern: "[Cc]asts (.+?) (after|when)")
                     for match in castRegex.matches(in: effect, range: NSMakeRange(0, effect.count)) {
                         let other = effect[Range(match.range(at: 1), in: effect)!]
                         let otherExpression = Expression.string(String(other))
