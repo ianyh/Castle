@@ -14,6 +14,13 @@ import RealmSwift
 import RxCocoa
 import RxSwift
 
+let pattern = ".*=image\\(\"(.+?)\".*\\).*"
+let embeddedPattern = ".*=image\\(\"(.+?)\".*?&.*?(\\w+).*?&.*?\"(.+?)\"\\).*"
+let concatPattern = ".*=image\\(concatenate\\((.*?)\\).*?\\).*"
+let regex = try! NSRegularExpression(pattern: pattern, options: [])
+let embeddedRegex = try! NSRegularExpression(pattern: embeddedPattern, options: [])
+let concatRegex = try! NSRegularExpression(pattern: concatPattern, options: [])
+
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {
@@ -209,6 +216,62 @@ class SpreadsheetsClient {
     func clearImageCache() {
         KingfisherManager.shared.cache.clearDiskCache()
     }
+
+    func extractImageURL(from value: RawValue, rawRow: [RawValue]) -> String? {
+        var imageURL: String? = nil
+
+        guard case .some(let normalized) = value, normalized.lowercased().hasPrefix("=image") else {
+            return nil
+        }
+
+        let lowerNormalized = normalized.lowercased()
+        let range = NSRange(lowerNormalized.startIndex..<lowerNormalized.endIndex, in: lowerNormalized)
+        let embeddedMatches = embeddedRegex.matches(in: lowerNormalized, options: [], range: range)
+        let concatMatches = concatRegex.matches(in: lowerNormalized, options: [], range: range)
+        let matches = regex.matches(in: lowerNormalized, options: [], range: range)
+        
+        if
+            let match = embeddedMatches.first, match.numberOfRanges == 4,
+            let prefix = Range(match.range(at: 1), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) }),
+            let column = Range(match.range(at: 2), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) }),
+            let suffix = Range(match.range(at: 3), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) })
+        {
+            let columnIndex = Int(column.first!.asciiValue! - Character("a").asciiValue!)
+            if columnIndex < rawRow.count, case let .some(columnValue) = rawRow[columnIndex] {
+                imageURL = "\(prefix)\(columnValue)\(suffix)"
+            }
+        } else if
+            let match = concatMatches.first, match.numberOfRanges == 2,
+            let argumentsString = Range(match.range(at: 1), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) })
+        {
+            let arguments = argumentsString.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            imageURL = arguments.reduce("") { string, arg -> String in
+                if arg.isEmpty {
+                    return string
+                } else if arg.hasPrefix("\"") && arg.hasSuffix("\"") {
+                    let startIndex = arg.index(after: arg.startIndex)
+                    let lastIndex = arg.index(before: arg.endIndex)
+                    return string + arg[startIndex..<lastIndex]
+                } else {
+                    let alphabetic = arg.trimmingCharacters(in: .decimalDigits)
+                    let columnIndex: Int
+                    if alphabetic.count > 1 {
+                        columnIndex = 26 + Int(alphabetic.last!.asciiValue! - Character("a").asciiValue!)
+                    } else {
+                        columnIndex = Int(arg.first!.asciiValue! - Character("a").asciiValue!)
+                    }
+                    if columnIndex < rawRow.count, case .some(let columnValue) = rawRow[columnIndex] {
+                        return string + columnValue
+                    }
+                    return string
+                }
+            }
+        } else if let match = matches.first, match.numberOfRanges == 2 {
+            let range = match.range(at: 1)
+            imageURL = Range(range, in: lowerNormalized).flatMap { String(normalized[$0]) }
+        }
+        return imageURL
+    }
     
     func object(for sheet: Sheet, values: SpreadsheetRange, rawValues: SpreadsheetRawRange) throws -> SpreadsheetObject {
         let headers = values.rows[0]
@@ -227,39 +290,12 @@ class SpreadsheetsClient {
         let nameColumn = columns.first { $0.title.hasSuffix("Name") }
         let otherColumns = columns.filter { $0 != nameColumn }
         let sortedColumns = nameColumn.flatMap { [$0] + otherColumns } ?? otherColumns
-        
-        let pattern = ".*=image\\(\"(.+?)\".*\\).*"
-        let embeddedPattern = ".*=image\\(\"(.+?)\".*?&.*?(\\w+).*?&.*?\"(.+?)\"\\).*"
-        let regex = try! NSRegularExpression(pattern: pattern, options: [])
-        let embeddedRegex = try! NSRegularExpression(pattern: embeddedPattern, options: [])
 
         let rows = zip(values.rows[1...], rawValues.rows[1...]).map { (row, rawRow) -> RowObject in
             let rowObject = RowObject()
             let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValueObject in
                 let normalized = value.1
-                var imageURL: String? = nil
-
-                if case let .some(normalized) = normalized, normalized.lowercased().hasPrefix("=image") {
-                    let lowerNormalized = normalized.lowercased()
-                    let range = NSRange(lowerNormalized.startIndex..<lowerNormalized.endIndex, in: lowerNormalized)
-                    let embeddedMatches = embeddedRegex.matches(in: lowerNormalized, options: [], range: range)
-                    let matches = regex.matches(in: lowerNormalized, options: [], range: range)
-                    
-                    if
-                        let match = embeddedMatches.first, match.numberOfRanges == 4,
-                        let prefix = Range(match.range(at: 1), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) }),
-                        let column = Range(match.range(at: 2), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) }),
-                        let suffix = Range(match.range(at: 3), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) })
-                    {
-                        let columnIndex = Int(column.first!.asciiValue! - Character("a").asciiValue!)
-                        if columnIndex < rawRow.count, case let .some(columnValue) = rawRow[columnIndex] {
-                            imageURL = "\(prefix)\(columnValue)\(suffix)"
-                        }
-                    } else if let match = matches.first, match.numberOfRanges == 2 {
-                        let range = match.range(at: 1)
-                        imageURL = Range(range, in: lowerNormalized).flatMap { String(normalized[$0]) }
-                    }
-                }
+                var imageURL: String? = self.extractImageURL(from: normalized, rawRow: rawRow)
                 
                 let rowValue = RowValueObject()
                 rowValue.column = columns.first { $0.title == headers[index] }
