@@ -146,6 +146,10 @@ class SpreadsheetsClient {
                                         for column in sheet.columns.filter({ $0.isColumnFrozen == true }) where !column.title.isEmpty {
                                             ftsIndices.insert(column.title)
                                         }
+                                        
+                                        if let nameJPColumn = sheet.columns.first(where: { $0.title == "Name (JP)" }) {
+                                            ftsIndices.insert(nameJPColumn.title)
+                                        }
                                     }
                                 }
                             } catch {

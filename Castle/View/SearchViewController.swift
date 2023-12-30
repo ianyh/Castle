@@ -122,7 +122,7 @@ extension SearchViewController: UISearchResultsUpdating {
                     "Magicite"
                 ].map { Expression.string($0) }
                 let index = Expression.fullTextIndex("searchIndex")
-                let queryString = "(Name:'\(text)*') OR (Common Name:'\(text)*') OR '\(text)'"
+                let queryString = "(Name:'\(text)*') OR (Common Name:'\(text)*') OR (Name (JP):'\(text)*') OR '\(text)'"
                 let search = FullTextFunction.match(index, query: queryString)
                 let query = QueryBuilder
                     .select(
