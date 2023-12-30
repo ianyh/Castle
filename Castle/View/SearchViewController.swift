@@ -110,31 +110,33 @@ extension SearchViewController: UISearchResultsUpdating {
                 }
             }
             
-            let database = try! Database(name: "search")
-            let searchableSheets = [
-                "Characters",
-                "Abilities",
-                "Soul Breaks",
-                "Limit Breaks",
-                "Status",
-                "Other",
-                "Magicite"
-            ].map { Expression.string($0) }
-            let search = FullTextFunction.match(indexName: "searchIndex", query: "(Name:'\(text)*') OR (Common Name:'\(text)*') OR '\(text)'")
-            let query = QueryBuilder
-                .select(
-                    SelectResult.expression(Meta.id),
-                    SelectResult.property("Name"),
-                    SelectResult.property("Common Name"),
-                    SelectResult.property("_sheetTitle"),
-                    SelectResult.property("_imageURL")
-                )
-                .from(DataSource.database(database))
-                .where(Expression.property("_sheetTitle").in(searchableSheets).and(search))
-                .orderBy(Ordering.expression(FullTextFunction.rank("searchIndex")).descending())
-                .limit(Expression.int(50))
-            
             do {
+                let database = try Database(name: "search")
+                let searchableSheets = [
+                    "Characters",
+                    "Abilities",
+                    "Soul Breaks",
+                    "Limit Breaks",
+                    "Status",
+                    "Other",
+                    "Magicite"
+                ].map { Expression.string($0) }
+                let index = Expression.fullTextIndex("searchIndex")
+                let queryString = "(Name:'\(text)*') OR (Common Name:'\(text)*') OR '\(text)'"
+                let search = FullTextFunction.match(index, query: queryString)
+                let query = QueryBuilder
+                    .select(
+                        SelectResult.expression(Meta.id),
+                        SelectResult.property("Name"),
+                        SelectResult.property("Common Name"),
+                        SelectResult.property("_sheetTitle"),
+                        SelectResult.property("_imageURL")
+                    )
+                    .from(try DataSource.collection(database.defaultCollection()))
+                    .where(Expression.property("_sheetTitle").in(searchableSheets).and(search))
+                    .orderBy(Ordering.expression(FullTextFunction.rank(index)).descending())
+                    .limit(Expression.int(50))
+
                 var rows: [Row] = []
                 for result in try query.execute() {
                     guard let name = (result.string(at: 1) ?? result.string(at: 2)) else {

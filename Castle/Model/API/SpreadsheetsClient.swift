@@ -134,13 +134,13 @@ class SpreadsheetsClient {
                                 try database.inBatch {
                                     for sheet in spreadsheets {
                                         for row in sheet.rows {
-                                            let document = database.document(withID: row.id)?.toMutable() ?? MutableDocument(id: row.id)
+                                            let document = try database.defaultCollection().document(id: row.id)?.toMutable() ?? MutableDocument(id: row.id)
                                             document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
                                             document.setString(sheet.title, forKey: "_sheetTitle")
                                             for value in row.values where !value.value.isEmpty && !value.title.isEmpty {
                                                 document.setString(value.value, forKey: value.title)
                                             }
-                                            try database.saveDocument(document)
+                                            try database.defaultCollection().save(document: document)
                                         }
                                         
                                         for column in sheet.columns.filter({ $0.isColumnFrozen == true }) where !column.title.isEmpty {
@@ -155,7 +155,7 @@ class SpreadsheetsClient {
 
                             let index = IndexBuilder.fullTextIndex(items: ftsIndices.map { FullTextIndexItem.property($0) })
                             do {
-                                try database.createIndex(index, withName: "searchIndex")
+                                try database.defaultCollection().createIndex(index, name: "searchIndex")
                             } catch {
                                 print(error)
                                 throw error
@@ -296,7 +296,7 @@ class SpreadsheetsClient {
             let rowObject = RowObject()
             let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValueObject in
                 let normalized = value.1
-                var imageURL: String? = self.extractImageURL(from: normalized, rawRow: rawRow)
+                let imageURL: String? = self.extractImageURL(from: normalized, rawRow: rawRow)
                 
                 let rowValue = RowValueObject()
                 rowValue.column = columns.first { $0.title == headers[index] }

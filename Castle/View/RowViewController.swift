@@ -71,7 +71,7 @@ class RowViewController: UITableViewController {
                         SelectResult.expression(Meta.id),
                         SelectResult.property("_sheetTitle")
                     )
-                    .from(DataSource.database(database))
+                    .from(try DataSource.collection(database.defaultCollection()))
                     .where(
                         relationExpression
                     )
@@ -95,7 +95,7 @@ class RowViewController: UITableViewController {
                                 SelectResult.expression(Meta.id),
                                 SelectResult.property("_sheetTitle")
                             )
-                            .from(DataSource.database(database))
+                            .from(try DataSource.collection(database.defaultCollection()))
                             .where(
                                 Expression.property("Common Name").equalTo(statusExpression)
                                     .or(Expression.property("Name").equalTo(statusExpression))
@@ -115,7 +115,7 @@ class RowViewController: UITableViewController {
                         let otherExpression = Expression.string(String(other))
                         let otherQuery = QueryBuilder
                             .select(SelectResult.expression(Meta.id))
-                            .from(DataSource.database(database))
+                            .from(try DataSource.collection(database.defaultCollection()))
                             .where(Expression.property("_sheetTitle").equalTo(Expression.string("Other"))
                                 .and(Expression.property("Name").equalTo(otherExpression))
                             )

@@ -59,7 +59,8 @@ class SpecialsViewController: UITableViewController {
                 "Soul Breaks",
                 "Limit Breaks"
             ].map { Expression.string($0) }
-            let search = FullTextFunction.match(indexName: "searchIndex", query: statusQuery)
+            let index = Expression.fullTextIndex("searchIndex")
+            let search = FullTextFunction.match(index, query: statusQuery)
             let query = QueryBuilder
                 .select(
                     SelectResult.expression(Meta.id),
@@ -70,7 +71,7 @@ class SpecialsViewController: UITableViewController {
                 )
                 .from(try DataSource.collection(database.defaultCollection()))
                 .where(Expression.property("_sheetTitle").in(searchableSheets).and(search))
-                .orderBy(Ordering.expression(FullTextFunction.rank("searchIndex")).descending())
+                .orderBy(Ordering.expression(FullTextFunction.rank(index)).descending())
 
             for result in try query.execute() {
                 guard let name = (result.string(at: 1) ?? result.string(at: 2)) else {
