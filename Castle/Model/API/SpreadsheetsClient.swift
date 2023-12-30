@@ -21,6 +21,10 @@ let regex = try! NSRegularExpression(pattern: pattern, options: [])
 let embeddedRegex = try! NSRegularExpression(pattern: embeddedPattern, options: [])
 let concatRegex = try! NSRegularExpression(pattern: concatPattern, options: [])
 
+private let forceFrozenColumns = Set([
+    "Effects"
+])
+
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {
@@ -143,9 +147,8 @@ class SpreadsheetsClient {
                                             try database.defaultCollection().save(document: document)
                                         }
                                         
-                                        for column in sheet.columns.filter({ $0.isColumnFrozen == true }) where !column.title.isEmpty {
-                                            ftsIndices.insert(column.title)
-                                        }
+                                        let frozenColumns = sheet.columns.filter({ $0.isColumnFrozen && !$0.title.isEmpty }).map { $0.title }
+                                        ftsIndices.formUnion(frozenColumns)
                                         
                                         if let nameJPColumn = sheet.columns.first(where: { $0.title == "Name (JP)" }) {
                                             ftsIndices.insert(nameJPColumn.title)
@@ -287,7 +290,7 @@ class SpreadsheetsClient {
 
             let column = ColumnObject()
             column.key = "\(sheet.properties.id)-\(value)"
-            column.isColumnFrozen = index < frozenColumnCount
+            column.isColumnFrozen = index < frozenColumnCount || forceFrozenColumns.contains(value)
             column.title = value
             return column
         }
@@ -321,9 +324,9 @@ class SpreadsheetsClient {
         }
         
         rows.enumerated().forEach { index, row in
-            row.id = "\(sheet.properties.title)-\(index)"
+            row.id = "\(sheet.properties.title)-\(String(format: "%05d", index))"
             row.values.enumerated().forEach { valueIndex, value in
-                value.id = "\(row.id)-\(valueIndex)"
+                value.id = "\(row.id)-\(String(format: "%05d", valueIndex))"
             }
         }
         

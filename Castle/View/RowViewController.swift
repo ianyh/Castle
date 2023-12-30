@@ -160,11 +160,9 @@ extension RowViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let frozenCount = row.values.filter { $0.column?.isColumnFrozen ?? true }.count
-        
         switch indexPath.section {
         case 0:
-            return cell(for: row.values[indexPath.row], at: indexPath, tableView: tableView)
+            return cell(for: value(forIndexPath: indexPath), at: indexPath, tableView: tableView)
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
             let relationship = relationships[indexPath.row]
@@ -172,7 +170,7 @@ extension RowViewController {
             cell.textLabel?.text = relationship.title
             return cell
         case 2:
-            return cell(for: row.values[indexPath.row + frozenCount], at: indexPath, tableView: tableView)
+            return cell(for: value(forIndexPath: indexPath), at: indexPath, tableView: tableView)
         default:
             fatalError()
         }
@@ -193,6 +191,14 @@ extension RowViewController {
             cell.valueLabel.text = value.value
             return cell
         }
+    }
+    
+    private func value(forIndexPath indexPath: IndexPath) -> RowValueObject {
+        var values = Array(row.values)
+        let pivot = values.partition { !($0.column?.isColumnFrozen ?? true) }
+        let frozenValues = values[..<pivot].sorted { $0.id < $1.id }
+        let normalValues = values[pivot..<values.endIndex].sorted { $0.id < $1.id }
+        return indexPath.section < 1 ? frozenValues[indexPath.row] : normalValues[indexPath.row]
     }
 }
 
