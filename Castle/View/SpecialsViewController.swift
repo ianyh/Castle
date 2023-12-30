@@ -57,7 +57,8 @@ class SpecialsViewController: UITableViewController {
             let database = try Database(name: "search")
             let searchableSheets = [
                 "Soul Breaks",
-                "Limit Breaks"
+                "Limit Breaks",
+                "Other"
             ].map { Expression.string($0) }
             let index = Expression.fullTextIndex("searchIndex")
             let search = FullTextFunction.match(index, query: statusQuery)
