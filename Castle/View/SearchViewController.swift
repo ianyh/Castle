@@ -22,7 +22,7 @@ private class Cell: UITableViewCell {
 }
 
 class SearchViewController: UITableViewController {
-    private struct Row {
+    struct Row {
         let id: String
         let name: String
         let type: String
@@ -37,8 +37,17 @@ class SearchViewController: UITableViewController {
         return placeholder
     }()
 
-    private var rows: [Row] = []
-        
+    private(set) var rows: [Row] = []
+    
+    init(rows: [Row]) {
+        self.rows = rows
+        super.init(style: .plain)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
@@ -78,7 +87,8 @@ class SearchViewController: UITableViewController {
             }
 
             let rowViewController = RowViewController(sheet: spreadsheetObject, row: rowObject)
-            parent?.presentingViewController?.navigationController?.pushViewController(rowViewController, animated: true)
+            let presenter = (parent?.presentingViewController ?? self).navigationController
+            presenter?.pushViewController(rowViewController, animated: true)
         } catch {
             print(error)
         }

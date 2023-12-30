@@ -21,7 +21,7 @@ class SheetsListViewController: UITableViewController {
     }
     private var token: NotificationToken?
     
-    private let searchViewController = SearchViewController()
+    private let searchViewController = SearchViewController(rows: [])
     private lazy var searchController = UISearchController(searchResultsController: self.searchViewController)
         
     init() {

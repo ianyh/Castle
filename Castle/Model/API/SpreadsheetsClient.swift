@@ -288,6 +288,7 @@ class SpreadsheetsClient {
             return column
         }
         let nameColumn = columns.first { $0.title.hasSuffix("Name") }
+        let idColumn = columns.first { $0.title == "ID" }
         let otherColumns = columns.filter { $0 != nameColumn }
         let sortedColumns = nameColumn.flatMap { [$0] + otherColumns } ?? otherColumns
 
@@ -302,6 +303,11 @@ class SpreadsheetsClient {
                 rowValue.title = headers[index]
                 rowValue.value = value.0
                 rowValue.imageURL = imageURL
+                
+                if rowValue.column == idColumn {
+                    rowObject.dbID = "\(sheet.properties.title)-\(value.0)"
+                }
+
                 return rowValue
             }
 

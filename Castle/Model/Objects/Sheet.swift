@@ -51,6 +51,7 @@ class RowValueObject: Object {
 
 class RowObject: Object {
     @objc dynamic var id: String = ""
+    @objc dynamic var dbID: String = ""
     let values = List<RowValueObject>()
     
     override static func primaryKey() -> String? {

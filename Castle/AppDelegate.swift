@@ -43,8 +43,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             image: UIImage(named: "settings"),
             selectedImage: UIImage(named: "settings-selected")
         )
+        
+        let specialsViewController = SpecialsViewController()
+        let specialsNavigationController = UINavigationController(rootViewController: specialsViewController)
+        
+        specialsNavigationController.tabBarItem = UITabBarItem(title: "Specials", image: nil, selectedImage: nil)
 
-        tabBarController.viewControllers = [sheetsNavigationController, settingsNavigationController]
+        tabBarController.viewControllers = [sheetsNavigationController, settingsNavigationController, specialsNavigationController]
         
         DispatchQueue.main.async {
             guard (try? LastUpdateObject.lastUpdate()) == nil else {
