@@ -24,6 +24,6 @@ class IconCell: UITableViewCell {
     private func initializeViews() {
         iconImageView.contentMode = .scaleAspectFit
         contentView.addSubview(iconImageView)
-        iconImageView.edgeAnchors == contentView.edgeAnchors + 8
+        iconImageView.edgeAnchors == contentView.edgeAnchors + 4
     }
 }

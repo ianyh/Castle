@@ -211,6 +211,19 @@ extension RowViewController {
         return "Relationships"
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch indexPath.section {
+        case 0, 2:
+            let value = value(forIndexPath: indexPath)
+            if value.title == "Img" {
+                return 128
+            }
+            return UITableView.automaticDimension
+        default:
+            return UITableView.automaticDimension
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0, 2:
