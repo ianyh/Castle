@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         specialsNavigationController.tabBarItem = UITabBarItem(title: "Specials", image: nil, selectedImage: nil)
 
-        tabBarController.viewControllers = [sheetsNavigationController, settingsNavigationController, specialsNavigationController]
+        tabBarController.viewControllers = [sheetsNavigationController, specialsNavigationController, settingsNavigationController]
         
         DispatchQueue.main.async {
             guard (try? LastUpdateObject.lastUpdate()) == nil else {
