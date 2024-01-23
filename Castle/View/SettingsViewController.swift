@@ -152,7 +152,7 @@ class SettingsViewController: UITableViewController {
             cell.selectionStyle = .none
         case .sync:
             cell.textLabel?.text = isReloading ? "Syncing" : "Sync"
-            cell.textLabel?.textColor = isReloading ? .lightGray : .blue
+            cell.textLabel?.textColor = isReloading ? .lightText : .systemBlue
             cell.detailTextLabel?.text = nil
             cell.selectionStyle = isReloading ? .none : .default
             if isReloading {
@@ -169,12 +169,12 @@ class SettingsViewController: UITableViewController {
             cell.accessoryType = .disclosureIndicator
         case .cacheImages:
             cell.textLabel?.text = imageLoadProgress != nil ? "Downloading" : "Download images"
-            cell.textLabel?.textColor = imageLoadProgress != nil ? .lightGray : .blue
+            cell.textLabel?.textColor = imageLoadProgress != nil ? .lightText : .systemBlue
             cell.detailTextLabel?.text = imageLoadProgress
             cell.selectionStyle = imageLoadProgress != nil ? .none : .default
         case .clearImageCache:
             cell.textLabel?.text = "Clear image cache"
-            cell.textLabel?.textColor = .blue
+            cell.textLabel?.textColor = .systemBlue
             cell.detailTextLabel?.text = nil
             cell.selectionStyle = .default
         case .empty:

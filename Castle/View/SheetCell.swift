@@ -27,7 +27,7 @@ class SheetCell: UITableViewCell {
         private func initializeViews() {
             titleLabel.font = .preferredFont(forTextStyle: .caption1)
             titleLabel.numberOfLines = 0
-            titleLabel.textColor = .lightGray
+            titleLabel.textColor = .lightText
             
             valueLabel.font = .preferredFont(forTextStyle: .body)
             valueLabel.numberOfLines = 0
@@ -68,7 +68,7 @@ class SheetCell: UITableViewCell {
         
         titleLabel.font = .preferredFont(forTextStyle: .caption1)
         titleLabel.numberOfLines = 0
-        titleLabel.textColor = .lightGray
+        titleLabel.textColor = .lightText
         
         valueLabel.font = .preferredFont(forTextStyle: .body)
         valueLabel.numberOfLines = 0
