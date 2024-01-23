@@ -24,7 +24,7 @@ class SpecialsViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Special Types"
+        title = "Featured"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
     }
 

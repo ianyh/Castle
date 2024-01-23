@@ -47,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let specialsViewController = SpecialsViewController()
         let specialsNavigationController = UINavigationController(rootViewController: specialsViewController)
         
-        specialsNavigationController.tabBarItem = UITabBarItem(title: "Specials", image: nil, selectedImage: nil)
+        specialsNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .featured, tag: 0)
 
         tabBarController.viewControllers = [sheetsNavigationController, specialsNavigationController, settingsNavigationController]
         
