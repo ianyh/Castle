@@ -261,12 +261,7 @@ class SpreadsheetsClient {
                     return string + arg[startIndex..<lastIndex]
                 } else {
                     let alphabetic = arg.trimmingCharacters(in: .decimalDigits)
-                    let columnIndex: Int
-                    if alphabetic.count > 1 {
-                        columnIndex = 26 + Int(alphabetic.last!.asciiValue! - Character("a").asciiValue!)
-                    } else {
-                        columnIndex = Int(arg.first!.asciiValue! - Character("a").asciiValue!)
-                    }
+                    let columnIndex = self.columnToIndex(alphabetic)
                     if columnIndex < rawRow.count, case .some(let columnValue) = rawRow[columnIndex] {
                         return string + columnValue
                     }
@@ -336,5 +331,14 @@ class SpreadsheetsClient {
         sheetObject.rows.append(objectsIn: rows)
         
         return sheetObject
+    }
+    
+    private func columnToIndex(_ column: String) -> Int {
+        var result = 0
+        for columnChar in column {
+            result *= 26
+            result += Int(columnChar.asciiValue! - Character("a").asciiValue!) + 1
+        }
+        return result - 1
     }
 }
