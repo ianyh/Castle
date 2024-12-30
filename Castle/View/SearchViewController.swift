@@ -119,7 +119,8 @@ extension SearchViewController: UISearchResultsUpdating {
                     "Limit Breaks",
                     "Status",
                     "Other",
-                    "Magicite"
+                    "Magicite",
+                    "Hero Abilities"
                 ].map { Expression.string($0) }
                 let index = Expression.fullTextIndex("searchIndex")
                 let queryString = "(Name:'\(text)*') OR (Common Name:'\(text)*') OR (Name (JP):'\(text)*') OR '\(text)'"
