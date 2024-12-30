@@ -15,7 +15,7 @@ import RxCocoa
 import RxSwift
 
 let pattern = ".*=image\\(\"(.+?)\".*\\).*"
-let embeddedPattern = ".*=image\\(\"(.+?)\".*?&.*?(\\w+).*?&.*?\"(.+?)\"\\).*"
+let embeddedPattern = "\"([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]*)\"|&\\s*([a-zA-Z0-9_]+)"
 let concatPattern = ".*=image\\(concatenate\\((.*?)\\).*?\\).*"
 let regex = try! NSRegularExpression(pattern: pattern, options: [])
 let embeddedRegex = try! NSRegularExpression(pattern: embeddedPattern, options: [])
@@ -238,16 +238,6 @@ class SpreadsheetsClient {
         let matches = regex.matches(in: lowerNormalized, options: [], range: range)
         
         if
-            let match = embeddedMatches.first, match.numberOfRanges == 4,
-            let prefix = Range(match.range(at: 1), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) }),
-            let column = Range(match.range(at: 2), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) }),
-            let suffix = Range(match.range(at: 3), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) })
-        {
-            let columnIndex = Int(column.first!.asciiValue! - Character("a").asciiValue!)
-            if columnIndex < rawRow.count, case let .some(columnValue) = rawRow[columnIndex] {
-                imageURL = "\(prefix)\(columnValue)\(suffix)"
-            }
-        } else if
             let match = concatMatches.first, match.numberOfRanges == 2,
             let argumentsString = Range(match.range(at: 1), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) })
         {
@@ -268,6 +258,24 @@ class SpreadsheetsClient {
                     return string
                 }
             }
+        } else if !embeddedMatches.isEmpty {
+            var strings: [String] = []
+            for match in embeddedMatches {
+                if let range = Range(match.range, in: lowerNormalized) {
+                    let substring = lowerNormalized[range]
+                    if substring.contains("\"") {
+                        strings.append(String(substring.dropFirst().dropLast()))
+                    } else {
+                        let column = substring.replacingOccurrences(of: "&", with: "").trimmingCharacters(in: .whitespaces)
+                        let alphabetic = column.trimmingCharacters(in: .decimalDigits)
+                        let columnIndex = self.columnToIndex(alphabetic)
+                        if columnIndex < rawRow.count, case let .some(columnValue) = rawRow[columnIndex] {
+                            strings.append(columnValue)
+                        }
+                    }
+                }
+            }
+            imageURL = strings.joined(separator: "")
         } else if let match = matches.first, match.numberOfRanges == 2 {
             let range = match.range(at: 1)
             imageURL = Range(range, in: lowerNormalized).flatMap { String(normalized[$0]) }
