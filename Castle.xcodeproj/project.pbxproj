@@ -10,7 +10,6 @@
 		4009880821D8014F00EEDC30 /* URL+Clean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4009880721D8014F00EEDC30 /* URL+Clean.swift */; };
 		4034CCCB2B240362009EABA8 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCCA2B240362009EABA8 /* Alamofire */; };
 		4034CCCE2B240395009EABA8 /* Anchorage in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCCD2B240395009EABA8 /* Anchorage */; };
-		4034CCD12B240485009EABA8 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD02B240485009EABA8 /* Realm */; };
 		4034CCD32B240485009EABA8 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD22B240485009EABA8 /* RealmSwift */; };
 		4034CCD62B2404CF009EABA8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD52B2404CF009EABA8 /* Kingfisher */; };
 		4034CCD92B240558009EABA8 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD82B240558009EABA8 /* RxCocoa */; };
@@ -99,7 +98,6 @@
 				4034CCD92B240558009EABA8 /* RxCocoa in Frameworks */,
 				4034CCD32B240485009EABA8 /* RealmSwift in Frameworks */,
 				4034CCDE2B2405C1009EABA8 /* CouchbaseLiteSwift in Frameworks */,
-				4034CCD12B240485009EABA8 /* Realm in Frameworks */,
 				4034CCCB2B240362009EABA8 /* Alamofire in Frameworks */,
 				4034CCCE2B240395009EABA8 /* Anchorage in Frameworks */,
 				4034CCD62B2404CF009EABA8 /* Kingfisher in Frameworks */,
@@ -244,7 +242,6 @@
 			packageProductDependencies = (
 				4034CCCA2B240362009EABA8 /* Alamofire */,
 				4034CCCD2B240395009EABA8 /* Anchorage */,
-				4034CCD02B240485009EABA8 /* Realm */,
 				4034CCD22B240485009EABA8 /* RealmSwift */,
 				4034CCD52B2404CF009EABA8 /* Kingfisher */,
 				4034CCD82B240558009EABA8 /* RxCocoa */,
@@ -798,11 +795,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4034CCCC2B240395009EABA8 /* XCRemoteSwiftPackageReference "Anchorage" */;
 			productName = Anchorage;
-		};
-		4034CCD02B240485009EABA8 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4034CCCF2B240485009EABA8 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
 		};
 		4034CCD22B240485009EABA8 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;

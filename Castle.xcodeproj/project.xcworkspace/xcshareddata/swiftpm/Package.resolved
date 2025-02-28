@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/couchbase/couchbase-lite-ios.git",
       "state" : {
-        "revision" : "dcc7f86bbc51900ffde226d46fa2ab9f4f192faa",
-        "version" : "3.1.3"
+        "revision" : "f2d4fbab5108dad93f619cc51f3c311e8ae33565",
+        "version" : "3.2.1"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core.git",
       "state" : {
-        "revision" : "c569bec4d04da84030d94f376437bc4efda3686b",
-        "version" : "13.23.1"
+        "revision" : "85eeca41654cc9070ad81a21a4b1d153ad467c33",
+        "version" : "14.13.1"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-swift.git",
       "state" : {
-        "revision" : "fd199ce07edb4db69e862f74151b95602aad3b43",
-        "version" : "10.44.0"
+        "revision" : "a3abcdf95a3176f5ad990239920aad4ef86e00de",
+        "version" : "10.54.2"
       }
     },
     {
