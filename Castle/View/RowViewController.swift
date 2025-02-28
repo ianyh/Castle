@@ -60,11 +60,9 @@ class RowViewController: UITableViewController {
                 let database = try Database(name: "search")
                 var relationExpression = Expression.property(normalizedSheetTitle).equalTo(Expression.string(normalizedName))
                 
-                if normalizedSheetTitle == "Soul Break" {
-                    relationExpression = relationExpression.or(
-                        Expression.property("Source").equalTo(Expression.string(normalizedName))
-                    )
-                }
+                relationExpression = relationExpression.or(
+                    Expression.property("Source").equalTo(Expression.string(normalizedName))
+                )
 
                 let query = QueryBuilder
                     .select(
@@ -106,24 +104,6 @@ class RowViewController: UITableViewController {
                             var sheetRelationships = relationships[sheetTitle] ?? []
                             sheetRelationships.append(id)
                             relationships[sheetTitle] = sheetRelationships
-                        }
-                    }
-                    
-                    let castRegex = try NSRegularExpression(pattern: "[Cc]asts (.+?) (after|when)")
-                    for match in castRegex.matches(in: effect, range: NSMakeRange(0, effect.count)) {
-                        let other = effect[Range(match.range(at: 1), in: effect)!]
-                        let otherExpression = Expression.string(String(other))
-                        let otherQuery = QueryBuilder
-                            .select(SelectResult.expression(Meta.id))
-                            .from(try DataSource.collection(database.defaultCollection()))
-                            .where(Expression.property("_sheetTitle").equalTo(Expression.string("Other"))
-                                .and(Expression.property("Name").equalTo(otherExpression))
-                            )
-                        for result in try otherQuery.execute() {
-                            let id = result.string(at: 0)!
-                            var sheetRelationships = relationships["Other"] ?? []
-                            sheetRelationships.append(id)
-                            relationships["Other"] = sheetRelationships
                         }
                     }
                 }
