@@ -7,7 +7,6 @@
 //
 
 import RealmSwift
-import RxSwift
 import UIKit
 
 enum Row {
@@ -100,7 +99,8 @@ private class Cell: UITableViewCell {
 
 class SettingsViewController: UITableViewController {
     private let client = SpreadsheetsClient()
-    private let disposeBag = DisposeBag()
+    private var syncTask: Task<Void, Never>?
+    private var imageTask: Task<Void, Never>?
     private let dateFormatter = DateFormatter()
     
     private var isReloading = false {
@@ -235,38 +235,29 @@ class SettingsViewController: UITableViewController {
     
     private func refreshData() {
         isReloading = true
-
-        client.sync()
-            .observe(on: MainScheduler.instance)
-            .subscribe(
-                onError: { [weak self] error in
-                    self?.present(error: error)
-                    self?.isReloading = false
-                },
-                onCompleted: { [weak self] in
-                    self?.isReloading = false
-                }
-            )
-            .disposed(by: disposeBag)
+        syncTask = Task { [weak self] in
+            do {
+                try await self?.client.sync()
+            } catch {
+                self?.present(error: error)
+            }
+            self?.isReloading = false
+        }
     }
-    
+
     private func loadImages() {
         imageLoadProgress = ""
-        
-        client.preloadImages()
-            .subscribe(
-                onNext: { [weak self] progress in
-                    self?.imageLoadProgress = progress
-                },
-                onError: { [weak self] error in
-                    self?.present(error: error)
-                    self?.imageLoadProgress = nil
-                },
-                onCompleted: { [weak self] in
-                    self?.imageLoadProgress = nil
+        imageTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                for try await progress in client.preloadImages() {
+                    imageLoadProgress = progress
                 }
-            )
-            .disposed(by: disposeBag)
+            } catch {
+                present(error: error)
+            }
+            imageLoadProgress = nil
+        }
     }
     
     private func present(error: Error) {
