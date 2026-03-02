@@ -8,7 +8,6 @@
 
 import Kingfisher
 import RealmSwift
-import RxSwift
 import UIKit
 
 @UIApplicationMain
@@ -16,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var window: UIWindow?
     
     private let client = SpreadsheetsClient()
-    private let disposeBag = DisposeBag()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         Realm.Configuration.defaultConfiguration.deleteRealmIfMigrationNeeded = true
@@ -69,7 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 return
             }
     
-            self.client.sync().subscribe().disposed(by: self.disposeBag)
+            Task { try? await self.client.sync() }
         }
         
         alertController.addAction(confirmAction)

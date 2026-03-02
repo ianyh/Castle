@@ -11,8 +11,6 @@ import CouchbaseLiteSwift
 import Foundation
 import Kingfisher
 import RealmSwift
-import RxCocoa
-import RxSwift
 
 let pattern = ".*=image\\(\"(.+?)\".*\\).*"
 let embeddedPattern = "\"([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]*)\"|&\\s*([a-zA-Z0-9_]+)"
@@ -33,193 +31,177 @@ extension Array {
     }
 }
 
+private actor ImageCounter {
+    private(set) var count = 0
+    func increment() -> Int {
+        count += 1
+        return count
+    }
+}
+
 class SpreadsheetsClient {
     enum Error: Swift.Error {
         case failedSync
     }
-    
-    private let reloadQueue = DispatchQueue(label: "com.ianyh.Castle.reload")
+
     private let session = URLSession(configuration: URLSession.shared.configuration)
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
     private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions", "Crystal Reqs"]
-    
+
     init() {
         session.configuration.timeoutIntervalForRequest = 120
         session.configuration.timeoutIntervalForResource = 120
     }
-    
-    func sync() -> Observable<Void> {
+
+    @MainActor
+    func sync() async throws {
         guard
             let infoPath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
             let info = NSDictionary(contentsOf: URL(fileURLWithPath: infoPath)),
             let key = info["API_KEY"] as? String
         else {
-            return .just(())
+            return
         }
-        
+
         let spreadsheetID = SpreadsheetsClient.spreadsheetID
-        let scheduler = SerialDispatchQueueScheduler(queue: reloadQueue, internalSerialQueueName: reloadQueue.label)
         var urlComponents = URLComponents(string: "https://sheets.googleapis.com/v4/spreadsheets/\(spreadsheetID)")!
         urlComponents.queryItems = [
             URLQueryItem(name: "key", value: key),
             URLQueryItem(name: "fields", value: "sheets.properties")
         ]
-        let request = URLRequest(url: urlComponents.url!)
 
-        return session.rx.data(request: request)
-            .observe(on: scheduler)
-            .flatMap { [weak self] response -> Observable<Void> in
-                guard let `self` = self else {
-                    return .just(())
-                }
-                
-                let spreadsheet = try JSONDecoder().decode(Spreadsheet.self, from: response)
-                let sheets = spreadsheet.sheets.filter {
-                    $0.properties.gridProperties.columnCount > 1
-                        && !SpreadsheetsClient.ignoredSheets.contains($0.properties.title)
-                        && !$0.properties.title.lowercased().contains("(old)")
-                }
-                let encoder = URLEncodedFormParameterEncoder(encoder: URLEncodedFormEncoder(arrayEncoding: .noBrackets))
-                let urlComponents = URLComponents(
-                    string: "https://sheets.googleapis.com/v4/spreadsheets/\(spreadsheetID)/values:batchGet"
-                )!
-                let request = try! encoder.encode(["ranges": sheets.map { $0.properties.title }], into: URLRequest(url: urlComponents.url!))
+        let (responseData, _) = try await session.data(for: URLRequest(url: urlComponents.url!))
 
-                let valuesParameters = [
-                    "valueRenderOption": "FORMATTED_VALUE",
-                    "key": key
-                ]
-                let valuesRequest = try! encoder.encode(valuesParameters, into: request)
-                
-                let rawValuesParameters = [
-                    "valueRenderOption": "FORMULA",
-                    "key": key
-                ]
-                let rawValuesRequest = try! encoder.encode(rawValuesParameters, into: request)
+        let spreadsheet = try JSONDecoder().decode(Spreadsheet.self, from: responseData)
+        let sheets = spreadsheet.sheets.filter {
+            $0.properties.gridProperties.columnCount > 1
+                && !SpreadsheetsClient.ignoredSheets.contains($0.properties.title)
+                && !$0.properties.title.lowercased().contains("(old)")
+        }
 
-                let valuesRequests = Observable.zip([
-                    self.session.rx.data(request: valuesRequest),
-                    self.session.rx.data(request: rawValuesRequest)
-                ]) { ($0[0], $0[1]) }
+        let encoder = URLEncodedFormParameterEncoder(encoder: URLEncodedFormEncoder(arrayEncoding: .noBrackets))
+        let valuesURLComponents = URLComponents(
+            string: "https://sheets.googleapis.com/v4/spreadsheets/\(spreadsheetID)/values:batchGet"
+        )!
+        let baseRequest = try! encoder.encode(
+            ["ranges": sheets.map { $0.properties.title }],
+            into: URLRequest(url: valuesURLComponents.url!)
+        )
+        let valuesRequest = try! encoder.encode(["valueRenderOption": "FORMATTED_VALUE", "key": key], into: baseRequest)
+        let rawValuesRequest = try! encoder.encode(["valueRenderOption": "FORMULA", "key": key], into: baseRequest)
 
-                return valuesRequests
-                    .map { [weak self] responses -> [SpreadsheetObject] in
-                        guard let `self` = self else {
-                            throw Error.failedSync
+        async let valuesResult = session.data(for: valuesRequest)
+        async let rawValuesResult = session.data(for: rawValuesRequest)
+        let ((valuesData, _), (rawValuesData, _)) = try await (valuesResult, rawValuesResult)
+
+        let ranges = try JSONDecoder().decode(SpreadsheetValues.self, from: valuesData).ranges
+        let rawRanges = try JSONDecoder().decode(SpreadsheetRawValues.self, from: rawValuesData).ranges
+
+        let spreadsheets = try zip(ranges, rawRanges).compactMap { range, rawRange -> SpreadsheetObject? in
+            guard let sheet = sheets.first(where: {
+                range.range.hasPrefix($0.properties.title) || range.range.hasPrefix("'\($0.properties.title)'")
+            }) else {
+                return nil
+            }
+            return try object(for: sheet, values: range, rawValues: rawRange)
+        }
+
+        let realm = try await Realm()
+        try realm.write {
+            realm.add(spreadsheets, update: .modified)
+        }
+        try LastUpdateObject.markUpdate()
+
+        var ftsIndices = Set(["Effects", "Element", "Tier"])
+        do {
+            try Database(name: "search").delete()
+        } catch {
+            print("failed to delete")
+        }
+
+        let database = try Database(name: "search")
+        do {
+            try database.inBatch {
+                for sheet in spreadsheets {
+                    for row in sheet.rows {
+                        let document = try database.defaultCollection().document(id: row.id)?.toMutable() ?? MutableDocument(id: row.id)
+                        document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
+                        document.setString(sheet.title, forKey: "_sheetTitle")
+                        for value in row.values where !value.value.isEmpty && !value.title.isEmpty {
+                            document.setString(value.value, forKey: value.title)
                         }
-                        
-                        let ranges = try JSONDecoder().decode(SpreadsheetValues.self, from: responses.0).ranges
-                        let rawRanges = try JSONDecoder().decode(SpreadsheetRawValues.self, from: responses.1).ranges
+                        try database.defaultCollection().save(document: document)
+                    }
 
-                        return try zip(ranges, rawRanges).compactMap { range, rawRange -> SpreadsheetObject? in
-                            guard let sheet = sheets.first(where: { range.range.hasPrefix($0.properties.title) || range.range.hasPrefix("'\($0.properties.title)'") }) else {
-                                return nil
+                    let frozenColumns = sheet.columns.filter({ $0.isColumnFrozen && !$0.title.isEmpty }).map { $0.title }
+                    ftsIndices.formUnion(frozenColumns)
+
+                    if let nameJPColumn = sheet.columns.first(where: { $0.title == "Name (JP)" }) {
+                        ftsIndices.insert(nameJPColumn.title)
+                    }
+                }
+            }
+        } catch {
+            print(error)
+            throw error
+        }
+
+        let index = IndexBuilder.fullTextIndex(items: ftsIndices.map { FullTextIndexItem.property($0) })
+        do {
+            try database.defaultCollection().createIndex(index, name: "searchIndex")
+        } catch {
+            print(error)
+            throw error
+        }
+    }
+
+    @MainActor
+    func preloadImages() -> AsyncThrowingStream<String, Swift.Error> {
+        AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    let realm = try await Realm()
+                    let urls = Array(
+                        realm.objects(RowValueObject.self).filter("imageURL != nil")
+                            .compactMap { $0.imageURL }
+                            .sorted()
+                            .compactMap { URL(string: $0)?.cleaned() }
+                    )
+                    let urlCount = urls.count
+                    let urlChunks = urls.chunked(into: urlCount / 10)
+                    continuation.yield("0/\(urlCount)")
+
+                    let counter = ImageCounter()
+                    await withTaskGroup(of: Void.self) { group in
+                        for chunk in urlChunks {
+                            group.addTask {
+                                for url in chunk {
+                                    await self.preloadImage(with: url)
+                                    let count = await counter.increment()
+                                    continuation.yield("\(count)/\(urlCount)")
+                                }
                             }
-                            return try self.object(for: sheet, values: range, rawValues: rawRange)
                         }
                     }
-                    .do(
-                        onNext: { spreadsheets in
-                            let realm = try Realm()
-                            try realm.write {
-                                realm.add(spreadsheets, update: .modified)
-                            }
-                            try LastUpdateObject.markUpdate()
-
-                            var ftsIndices = Set(["Effects", "Element", "Tier"])
-                            do {
-                                try Database(name: "search").delete()
-                            } catch {
-                                print("failed to delete")
-                            }
-
-                            let database = try Database(name: "search")
-                            do {
-                                try database.inBatch {
-                                    for sheet in spreadsheets {
-                                        for row in sheet.rows {
-                                            let document = try database.defaultCollection().document(id: row.id)?.toMutable() ?? MutableDocument(id: row.id)
-                                            document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
-                                            document.setString(sheet.title, forKey: "_sheetTitle")
-                                            for value in row.values where !value.value.isEmpty && !value.title.isEmpty {
-                                                document.setString(value.value, forKey: value.title)
-                                            }
-                                            try database.defaultCollection().save(document: document)
-                                        }
-                                        
-                                        let frozenColumns = sheet.columns.filter({ $0.isColumnFrozen && !$0.title.isEmpty }).map { $0.title }
-                                        ftsIndices.formUnion(frozenColumns)
-                                        
-                                        if let nameJPColumn = sheet.columns.first(where: { $0.title == "Name (JP)" }) {
-                                            ftsIndices.insert(nameJPColumn.title)
-                                        }
-                                    }
-                                }
-                            } catch {
-                                print(error)
-                                throw error
-                            }
-
-                            let index = IndexBuilder.fullTextIndex(items: ftsIndices.map { FullTextIndexItem.property($0) })
-                            do {
-                                try database.defaultCollection().createIndex(index, name: "searchIndex")
-                            } catch {
-                                print(error)
-                                throw error
-                            }
-                        }
-                    )
-                    .map { _ in }
-            }
-    }
-    
-    func preloadImages() -> Observable<String> {
-        do {
-            let realm = try Realm()
-            let urls = Array(
-                realm.objects(RowValueObject.self).filter("imageURL != nil")
-                    .compactMap { $0.imageURL }
-                    .sorted()
-                    .compactMap { URL(string: $0)?.cleaned() }
-            )
-            let urlCount = urls.count
-            let urlChunks = urls.chunked(into: urlCount / 10)
-            let downloads = Observable.merge(urlChunks.map { chunk in
-                return Observable.concat(chunk.map { self.preloadImage(with: $0) })
-            })
-            
-            return downloads
-                .scan(0) { count, _ -> Int in count + 1 }
-                .map { "\($0)/\(urlCount)" }
-                .startWith("0/\(urlCount)")
-        } catch {
-            return .error(error)
-        }
-    }
-    
-    func preloadImage(with url: URL) -> Observable<Void> {
-        return Observable<Void>.create { observer in
-            guard KingfisherManager.shared.cache.imageCachedType(forKey: url.cleaned().cacheKey) != .disk else {
-                DispatchQueue.main.async {
-                    observer.on(.next(()))
-                    observer.on(.completed)
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
-                return Disposables.create()
-            }
-            
-            let task = KingfisherManager.shared.retrieveImage(with: url, options: nil, progressBlock: nil) { _ in
-                DispatchQueue.main.async {
-                    observer.on(.next(()))
-                    observer.on(.completed)
-                }
-            }
-            
-            return Disposables.create {
-                task?.cancel()
             }
         }
     }
-    
+
+    func preloadImage(with url: URL) async {
+        guard KingfisherManager.shared.cache.imageCachedType(forKey: url.cleaned().cacheKey) != .disk else {
+            return
+        }
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            KingfisherManager.shared.retrieveImage(with: url, options: nil, progressBlock: nil) { _ in
+                continuation.resume()
+            }
+        }
+    }
+
     func clearImageCache() {
         KingfisherManager.shared.cache.clearDiskCache()
     }
@@ -236,7 +218,7 @@ class SpreadsheetsClient {
         let embeddedMatches = embeddedRegex.matches(in: lowerNormalized, options: [], range: range)
         let concatMatches = concatRegex.matches(in: lowerNormalized, options: [], range: range)
         let matches = regex.matches(in: lowerNormalized, options: [], range: range)
-        
+
         if
             let match = concatMatches.first, match.numberOfRanges == 2,
             let argumentsString = Range(match.range(at: 1), in: lowerNormalized).flatMap({ String(lowerNormalized[$0]) })
@@ -282,7 +264,7 @@ class SpreadsheetsClient {
         }
         return imageURL
     }
-    
+
     func object(for sheet: Sheet, values: SpreadsheetRange, rawValues: SpreadsheetRawRange) throws -> SpreadsheetObject {
         let headers = values.rows[0]
         let frozenColumnCount = sheet.properties.gridProperties.frozenColumnCount ?? 0
@@ -307,13 +289,13 @@ class SpreadsheetsClient {
             let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValueObject in
                 let normalized = value.1
                 let imageURL: String? = self.extractImageURL(from: normalized, rawRow: rawRow)
-                
+
                 let rowValue = RowValueObject()
                 rowValue.column = columns.first { $0.title == headers[index] }
                 rowValue.title = headers[index]
                 rowValue.value = value.0
                 rowValue.imageURL = imageURL
-                
+
                 if rowValue.column == idColumn {
                     rowObject.dbID = "\(sheet.properties.title)-\(value.0)"
                 }
@@ -322,25 +304,25 @@ class SpreadsheetsClient {
             }
 
             rowObject.values.append(objectsIn: rowValues)
-            
+
             return rowObject
         }
-        
+
         rows.enumerated().forEach { index, row in
             row.id = "\(sheet.properties.title)-\(String(format: "%05d", index))"
             row.values.enumerated().forEach { valueIndex, value in
                 value.id = "\(row.id)-\(String(format: "%05d", valueIndex))"
             }
         }
-        
+
         let sheetObject = SpreadsheetObject()
         sheetObject.title = sheet.properties.title
         sheetObject.columns.append(objectsIn: sortedColumns)
         sheetObject.rows.append(objectsIn: rows)
-        
+
         return sheetObject
     }
-    
+
     private func columnToIndex(_ column: String) -> Int {
         var result = 0
         for columnChar in column {

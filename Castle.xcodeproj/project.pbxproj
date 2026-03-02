@@ -12,8 +12,6 @@
 		4034CCCE2B240395009EABA8 /* Anchorage in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCCD2B240395009EABA8 /* Anchorage */; };
 		4034CCD32B240485009EABA8 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD22B240485009EABA8 /* RealmSwift */; };
 		4034CCD62B2404CF009EABA8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD52B2404CF009EABA8 /* Kingfisher */; };
-		4034CCD92B240558009EABA8 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCD82B240558009EABA8 /* RxCocoa */; };
-		4034CCDB2B240558009EABA8 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCDA2B240558009EABA8 /* RxSwift */; };
 		4034CCDE2B2405C1009EABA8 /* CouchbaseLiteSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4034CCDD2B2405C1009EABA8 /* CouchbaseLiteSwift */; };
 		4037B19B21442C66008EB089 /* SheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4037B19A21442C66008EB089 /* SheetCell.swift */; };
 		404C99CB2B3927F800F0F22A /* SpecialsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404C99CA2B3927F800F0F22A /* SpecialsViewController.swift */; };
@@ -110,13 +108,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4034CCD92B240558009EABA8 /* RxCocoa in Frameworks */,
 				4034CCD32B240485009EABA8 /* RealmSwift in Frameworks */,
 				4034CCDE2B2405C1009EABA8 /* CouchbaseLiteSwift in Frameworks */,
 				4034CCCB2B240362009EABA8 /* Alamofire in Frameworks */,
 				4034CCCE2B240395009EABA8 /* Anchorage in Frameworks */,
 				4034CCD62B2404CF009EABA8 /* Kingfisher in Frameworks */,
-				4034CCDB2B240558009EABA8 /* RxSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,8 +256,6 @@
 				4034CCCD2B240395009EABA8 /* Anchorage */,
 				4034CCD22B240485009EABA8 /* RealmSwift */,
 				4034CCD52B2404CF009EABA8 /* Kingfisher */,
-				4034CCD82B240558009EABA8 /* RxCocoa */,
-				4034CCDA2B240558009EABA8 /* RxSwift */,
 				4034CCDD2B2405C1009EABA8 /* CouchbaseLiteSwift */,
 			);
 			productName = Castle;
@@ -352,7 +346,6 @@
 				4034CCCC2B240395009EABA8 /* XCRemoteSwiftPackageReference "Anchorage" */,
 				4034CCCF2B240485009EABA8 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				4034CCD42B2404CF009EABA8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				4034CCDC2B2405C1009EABA8 /* XCRemoteSwiftPackageReference "couchbase-lite-ios" */,
 			);
 			productRefGroup = 40E7AF4D1F71DFAB0032D4F2 /* Products */;
@@ -779,14 +772,6 @@
 				minimumVersion = 8.0.0;
 			};
 		};
-		4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.6.0;
-			};
-		};
 		4034CCDC2B2405C1009EABA8 /* XCRemoteSwiftPackageReference "couchbase-lite-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/couchbase/couchbase-lite-ios.git";
@@ -817,16 +802,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4034CCD42B2404CF009EABA8 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
-		};
-		4034CCD82B240558009EABA8 /* RxCocoa */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxCocoa;
-		};
-		4034CCDA2B240558009EABA8 /* RxSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4034CCD72B240558009EABA8 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxSwift;
 		};
 		4034CCDD2B2405C1009EABA8 /* CouchbaseLiteSwift */ = {
 			isa = XCSwiftPackageProductDependency;
