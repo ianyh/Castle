@@ -1,31 +1,13 @@
 {
-  "originHash" : "1fccf72f51306986ec9f0b55618a809745ffe313f58a07df981e4eff2642cb01",
+  "originHash" : "37985e5d3ab7293b6593ba1b71bb11bf4d97ee8bd6032061fea651ad67b274ee",
   "pins" : [
     {
-      "identity" : "alamofire",
+      "identity" : "grdb.swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Alamofire/Alamofire",
+      "location" : "https://github.com/groue/GRDB.swift",
       "state" : {
-        "revision" : "3f99050e75bbc6fe71fc323adabb039756680016",
-        "version" : "5.11.1"
-      }
-    },
-    {
-      "identity" : "anchorage",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Rightpoint/Anchorage",
-      "state" : {
-        "revision" : "23a6dd0ccf9529d2750d8679a2e74a161cff2f16",
-        "version" : "4.5.0"
-      }
-    },
-    {
-      "identity" : "couchbase-lite-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/couchbase/couchbase-lite-ios.git",
-      "state" : {
-        "revision" : "73ec4d4f049d493e7b9321f24ad179a46cea9e9f",
-        "version" : "3.3.2"
+        "revision" : "2cf6c756e1e5ef6901ebae16576a7e4e4b834622",
+        "version" : "6.29.3"
       }
     },
     {
@@ -35,24 +17,6 @@
       "state" : {
         "revision" : "e227df15448d2ad1a5d4e4c49722a71c68f9058a",
         "version" : "8.7.0"
-      }
-    },
-    {
-      "identity" : "realm-core",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/realm/realm-core.git",
-      "state" : {
-        "revision" : "15493076ad9fef22c16cc64cbfbf9e5b65c385f9",
-        "version" : "20.1.0"
-      }
-    },
-    {
-      "identity" : "realm-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/realm/realm-swift.git",
-      "state" : {
-        "revision" : "f8d74e90eafa2ac0e760bc674b49f40b593b1483",
-        "version" : "20.0.2"
       }
     }
   ],

@@ -46,7 +46,7 @@ struct Sheet: Decodable {
     let properties: SheetProperties
 }
 
-struct Spreadsheet: Decodable {
+struct SpreadsheetAPIResponse: Decodable {
     let sheets: [Sheet]
 }
 

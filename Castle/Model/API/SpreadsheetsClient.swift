@@ -6,11 +6,9 @@
 //  Copyright © 2018 Ian Ynda-Hummel. All rights reserved.
 //
 
-import Alamofire
-import CouchbaseLiteSwift
 import Foundation
+import GRDB
 import Kingfisher
-import RealmSwift
 
 let pattern = ".*=image\\(\"(.+?)\".*\\).*"
 let embeddedPattern = "\"([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]*)\"|&\\s*([a-zA-Z0-9_]+)"
@@ -45,16 +43,17 @@ class SpreadsheetsClient {
     }
 
     private let session = URLSession(configuration: URLSession.shared.configuration)
+    private let db: DatabaseQueue
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
     private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions", "Crystal Reqs"]
 
-    init() {
+    init(db: DatabaseQueue) {
+        self.db = db
         session.configuration.timeoutIntervalForRequest = 120
         session.configuration.timeoutIntervalForResource = 120
     }
 
-    @MainActor
-    func sync() async throws {
+    func sync(searchIndex: SearchIndex) async throws {
         guard
             let infoPath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
             let info = NSDictionary(contentsOf: URL(fileURLWithPath: infoPath)),
@@ -72,23 +71,24 @@ class SpreadsheetsClient {
 
         let (responseData, _) = try await session.data(for: URLRequest(url: urlComponents.url!))
 
-        let spreadsheet = try JSONDecoder().decode(Spreadsheet.self, from: responseData)
+        let spreadsheet = try JSONDecoder().decode(SpreadsheetAPIResponse.self, from: responseData)
         let sheets = spreadsheet.sheets.filter {
             $0.properties.gridProperties.columnCount > 1
                 && !SpreadsheetsClient.ignoredSheets.contains($0.properties.title)
                 && !$0.properties.title.lowercased().contains("(old)")
         }
 
-        let encoder = URLEncodedFormParameterEncoder(encoder: URLEncodedFormEncoder(arrayEncoding: .noBrackets))
-        let valuesURLComponents = URLComponents(
+        var valuesComponents = URLComponents(
             string: "https://sheets.googleapis.com/v4/spreadsheets/\(spreadsheetID)/values:batchGet"
         )!
-        let baseRequest = try! encoder.encode(
-            ["ranges": sheets.map { $0.properties.title }],
-            into: URLRequest(url: valuesURLComponents.url!)
-        )
-        let valuesRequest = try! encoder.encode(["valueRenderOption": "FORMATTED_VALUE", "key": key], into: baseRequest)
-        let rawValuesRequest = try! encoder.encode(["valueRenderOption": "FORMULA", "key": key], into: baseRequest)
+        let rangeItems = sheets.map { URLQueryItem(name: "ranges", value: $0.properties.title) }
+        let commonItems = rangeItems + [URLQueryItem(name: "key", value: key)]
+
+        valuesComponents.queryItems = commonItems + [URLQueryItem(name: "valueRenderOption", value: "FORMATTED_VALUE")]
+        let valuesRequest = URLRequest(url: valuesComponents.url!)
+
+        valuesComponents.queryItems = commonItems + [URLQueryItem(name: "valueRenderOption", value: "FORMULA")]
+        let rawValuesRequest = URLRequest(url: valuesComponents.url!)
 
         async let valuesResult = session.data(for: valuesRequest)
         async let rawValuesResult = session.data(for: rawValuesRequest)
@@ -97,78 +97,69 @@ class SpreadsheetsClient {
         let ranges = try JSONDecoder().decode(SpreadsheetValues.self, from: valuesData).ranges
         let rawRanges = try JSONDecoder().decode(SpreadsheetRawValues.self, from: rawValuesData).ranges
 
-        let spreadsheets = try zip(ranges, rawRanges).compactMap { range, rawRange -> SpreadsheetObject? in
+        // Clear existing data before inserting fresh.
+        try await db.write { db in
+            try db.execute(sql: "DELETE FROM spreadsheets")
+            try db.execute(sql: "DELETE FROM spreadsheet_rows")
+            try db.execute(sql: "DELETE FROM last_update")
+        }
+
+        // Begin the search index transaction that will span all sheets.
+        try await searchIndex.beginRebuild()
+
+        // Process one sheet at a time. Each sheet is written in its own DB transaction
+        // so memory for that sheet's rows can be released before the next sheet is built.
+        for (range, rawRange) in zip(ranges, rawRanges) {
             guard let sheet = sheets.first(where: {
                 range.range.hasPrefix($0.properties.title) || range.range.hasPrefix("'\($0.properties.title)'")
             }) else {
-                return nil
+                continue
             }
-            return try object(for: sheet, values: range, rawValues: rawRange)
-        }
 
-        let realm = try await Realm()
-        try realm.write {
-            realm.add(spreadsheets, update: .modified)
-        }
-        try LastUpdateObject.markUpdate()
+            let (spreadsheet, rows) = try object(for: sheet, values: range, rawValues: rawRange)
 
-        var ftsIndices = Set(["Effects", "Element", "Tier"])
-        do {
-            try Database(name: "search").delete()
-        } catch {
-            print("failed to delete")
-        }
+            let indexRows = rows.map { row in
+                (
+                    id: row.id,
+                    dbID: row.dbID,
+                    imageURL: row.values.first(where: { $0.imageURL != nil })?.imageURL,
+                    values: row.values.map { (title: $0.title, value: $0.value) }
+                )
+            }
+            try await searchIndex.indexSheet(title: spreadsheet.title, rows: indexRows)
 
-        let database = try Database(name: "search")
-        do {
-            try database.inBatch {
-                for sheet in spreadsheets {
-                    for row in sheet.rows {
-                        let document = try database.defaultCollection().document(id: row.id)?.toMutable() ?? MutableDocument(id: row.id)
-                        document.setString(row.values.first { $0.imageURL != nil }?.imageURL, forKey: "_imageURL")
-                        document.setString(sheet.title, forKey: "_sheetTitle")
-                        for value in row.values where !value.value.isEmpty && !value.title.isEmpty {
-                            document.setString(value.value, forKey: value.title)
-                        }
-                        try database.defaultCollection().save(document: document)
-                    }
-
-                    let frozenColumns = sheet.columns.filter({ $0.isColumnFrozen && !$0.title.isEmpty }).map { $0.title }
-                    ftsIndices.formUnion(frozenColumns)
-
-                    if let nameJPColumn = sheet.columns.first(where: { $0.title == "Name (JP)" }) {
-                        ftsIndices.insert(nameJPColumn.title)
-                    }
+            try await db.write { db in
+                try spreadsheet.insert(db, onConflict: .replace)
+                for row in rows {
+                    try row.insert(db, onConflict: .replace)
                 }
             }
-        } catch {
-            print(error)
-            throw error
         }
 
-        let index = IndexBuilder.fullTextIndex(items: ftsIndices.map { FullTextIndexItem.property($0) })
-        do {
-            try database.defaultCollection().createIndex(index, name: "searchIndex")
-        } catch {
-            print(error)
-            throw error
+        try await searchIndex.commitRebuild()
+
+        try await db.write { db in
+            try LastUpdate(date: Date()).insert(db, onConflict: .replace)
         }
     }
 
-    @MainActor
     func preloadImages() -> AsyncThrowingStream<String, Swift.Error> {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    let realm = try await Realm()
-                    let urls = Array(
-                        realm.objects(RowValueObject.self).filter("imageURL != nil")
-                            .compactMap { $0.imageURL }
-                            .sorted()
-                            .compactMap { URL(string: $0)?.cleaned() }
-                    )
+                    let rows = try await self.db.read { try SpreadsheetRow.fetchAll($0) }
+                    let urls = rows
+                        .flatMap { $0.values }
+                        .compactMap { $0.imageURL }
+                        .sorted()
+                        .compactMap { URL(string: $0)?.cleaned() }
+
                     let urlCount = urls.count
-                    let urlChunks = urls.chunked(into: urlCount / 10)
+                    guard urlCount > 0 else {
+                        continuation.finish()
+                        return
+                    }
+                    let urlChunks = urls.chunked(into: max(1, urlCount / 10))
                     continuation.yield("0/\(urlCount)")
 
                     let counter = ImageCounter()
@@ -234,7 +225,7 @@ class SpreadsheetsClient {
                 } else {
                     let alphabetic = arg.trimmingCharacters(in: .decimalDigits)
                     let columnIndex = self.columnToIndex(alphabetic)
-                    if columnIndex < rawRow.count, case .some(let columnValue) = rawRow[columnIndex] {
+                    if columnIndex >= 0, columnIndex < rawRow.count, case .some(let columnValue) = rawRow[columnIndex] {
                         return string + columnValue
                     }
                     return string
@@ -251,7 +242,7 @@ class SpreadsheetsClient {
                         let column = substring.replacingOccurrences(of: "&", with: "").trimmingCharacters(in: .whitespaces)
                         let alphabetic = column.trimmingCharacters(in: .decimalDigits)
                         let columnIndex = self.columnToIndex(alphabetic)
-                        if columnIndex < rawRow.count, case let .some(columnValue) = rawRow[columnIndex] {
+                        if columnIndex >= 0, columnIndex < rawRow.count, case let .some(columnValue) = rawRow[columnIndex] {
                             strings.append(columnValue)
                         }
                     }
@@ -265,69 +256,65 @@ class SpreadsheetsClient {
         return imageURL
     }
 
-    func object(for sheet: Sheet, values: SpreadsheetRange, rawValues: SpreadsheetRawRange) throws -> SpreadsheetObject {
+    func object(for sheet: Sheet, values: SpreadsheetRange, rawValues: SpreadsheetRawRange) throws -> (Spreadsheet, [SpreadsheetRow]) {
         let headers = values.rows[0]
         let frozenColumnCount = sheet.properties.gridProperties.frozenColumnCount ?? 0
-        let columns = headers.enumerated().compactMap { index, value -> ColumnObject? in
-            guard value != "Img" else {
-                return nil
-            }
-
-            let column = ColumnObject()
-            column.key = "\(sheet.properties.id)-\(value)"
-            column.isColumnFrozen = index < frozenColumnCount || forceFrozenColumns.contains(value)
-            column.title = value
-            return column
+        let columns = headers.enumerated().compactMap { index, value -> SpreadsheetColumn? in
+            guard value != "Img" else { return nil }
+            return SpreadsheetColumn(
+                key: "\(sheet.properties.id)-\(value)",
+                isColumnFrozen: index < frozenColumnCount || forceFrozenColumns.contains(value),
+                title: value
+            )
         }
         let nameColumn = columns.first { $0.title.hasSuffix("Name") }
         let idColumn = columns.first { $0.title == "ID" }
-        let otherColumns = columns.filter { $0 != nameColumn }
+        let otherColumns = columns.filter { $0.key != nameColumn?.key }
         let sortedColumns = nameColumn.flatMap { [$0] + otherColumns } ?? otherColumns
 
-        let rows = zip(values.rows[1...], rawValues.rows[1...]).map { (row, rawRow) -> RowObject in
-            let rowObject = RowObject()
-            let rowValues = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, value) -> RowValueObject in
-                let normalized = value.1
-                let imageURL: String? = self.extractImageURL(from: normalized, rawRow: rawRow)
+        let rows = zip(values.rows[1...], rawValues.rows[1...]).enumerated().map { (rowIndex, pair) -> SpreadsheetRow in
+            let (row, rawRow) = pair
+            let rowID = "\(sheet.properties.title)-\(String(format: "%05d", rowIndex))"
 
-                let rowValue = RowValueObject()
-                rowValue.column = columns.first { $0.title == headers[index] }
-                rowValue.title = headers[index]
-                rowValue.value = value.0
-                rowValue.imageURL = imageURL
-
-                if rowValue.column == idColumn {
-                    rowObject.dbID = "\(sheet.properties.title)-\(value.0)"
-                }
-
-                return rowValue
+            let rowValues: [RowValue] = zip(row, rawRow).prefix(headers.count).enumerated().map { (index, valuePair) in
+                let (formattedValue, rawValue) = valuePair
+                let imageURL = self.extractImageURL(from: rawValue, rawRow: Array(rawRow))
+                let matchingColumn = columns.first { $0.title == headers[index] }
+                return RowValue(
+                    id: "\(rowID)-\(String(format: "%05d", index))",
+                    columnKey: matchingColumn?.key,
+                    columnTitle: headers[index],
+                    isColumnFrozen: matchingColumn?.isColumnFrozen ?? false,
+                    title: headers[index],
+                    value: formattedValue,
+                    imageURL: imageURL
+                )
             }
 
-            rowObject.values.append(objectsIn: rowValues)
-
-            return rowObject
-        }
-
-        rows.enumerated().forEach { index, row in
-            row.id = "\(sheet.properties.title)-\(String(format: "%05d", index))"
-            row.values.enumerated().forEach { valueIndex, value in
-                value.id = "\(row.id)-\(String(format: "%05d", valueIndex))"
+            let dbID: String
+            if let idColKey = idColumn?.key,
+               let idValue = rowValues.first(where: { $0.columnKey == idColKey }) {
+                dbID = "\(sheet.properties.title)-\(idValue.value)"
+            } else {
+                dbID = ""
             }
+
+            return SpreadsheetRow(id: rowID, dbID: dbID, spreadsheetTitle: sheet.properties.title, values: rowValues)
         }
 
-        let sheetObject = SpreadsheetObject()
-        sheetObject.title = sheet.properties.title
-        sheetObject.columns.append(objectsIn: sortedColumns)
-        sheetObject.rows.append(objectsIn: rows)
-
-        return sheetObject
+        let spreadsheetObj = Spreadsheet(title: sheet.properties.title, columns: sortedColumns)
+        return (spreadsheetObj, rows)
     }
 
+    // Returns 0-based column index from a spreadsheet column letter ("a"→0, "b"→1, "aa"→26).
+    // Returns -1 for empty input or any non-lowercase-letter character (bare numbers, $, etc.).
     private func columnToIndex(_ column: String) -> Int {
+        guard !column.isEmpty else { return -1 }
+        let aValue = Int(Character("a").asciiValue!)
         var result = 0
         for columnChar in column {
-            result *= 26
-            result += Int(columnChar.asciiValue! - Character("a").asciiValue!) + 1
+            guard let ascii = columnChar.asciiValue, ascii >= 97, ascii <= 122 else { return -1 }
+            result = result * 26 + (Int(ascii) - aValue + 1)
         }
         return result - 1
     }
