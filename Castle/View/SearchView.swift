@@ -11,7 +11,7 @@ import SwiftUI
 struct SearchView: View {
     @Environment(AppStore.self) private var store
     @State private var searchText = ""
-    @State private var results: [SearchResult] = []
+    @State private var results = SearchResults(sections: [], rest: [])
 
     private static let searchableSheets = [
         "Characters", "Abilities", "Soul Breaks",
@@ -19,39 +19,60 @@ struct SearchView: View {
     ]
 
     var body: some View {
-        List(results, id: \.id) { result in
-            NavigationLink {
-                LazyRowDetailLoader(rowID: result.id, sheetTitle: result.sheetTitle)
-            } label: {
-                HStack(spacing: 12) {
-                    if let imageURL = result.imageURL {
-                        KFImage(imageURL)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 44, height: 44)
+        List {
+            ForEach(results.sections, id: \.sheetTitle) { section in
+                Section(section.sheetTitle) {
+                    ForEach(section.results, id: \.id) { result in
+                        resultRow(for: result, showSheetTitle: false)
                     }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(result.name)
-                            .font(.body)
-                        Text(result.sheetTitle)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                }
+            }
+            if !results.rest.isEmpty {
+                Section {
+                    ForEach(results.rest, id: \.id) { result in
+                        resultRow(for: result, showSheetTitle: true)
                     }
                 }
             }
         }
         .navigationTitle("Search")
+        .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search all sheets")
         .task(id: searchText) {
             guard searchText.count > 2 else {
-                results = []
+                results = SearchResults(sections: [], rest: [])
                 return
             }
             do {
                 results = try await store.searchIndex.search(query: searchText, sheets: Self.searchableSheets)
             } catch {
                 print("Search error: \(error)")
-                results = []
+                results = SearchResults(sections: [], rest: [])
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func resultRow(for result: SearchResult, showSheetTitle: Bool) -> some View {
+        NavigationLink {
+            LazyRowDetailLoader(rowID: result.id, sheetTitle: result.sheetTitle)
+        } label: {
+            HStack(spacing: 12) {
+                if let imageURL = result.imageURL {
+                    KFImage(imageURL)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 44, height: 44)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(result.name)
+                        .font(.body)
+                    if showSheetTitle {
+                        Text(result.sheetTitle)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
         }
     }
