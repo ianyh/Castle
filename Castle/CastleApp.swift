@@ -71,26 +71,11 @@ private struct MainTabs: View {
     @State private var stateLoaded = false
 
     var body: some View {
-        TabView {
-            NavigationStack {
-                SpreadsheetListView()
-            }
-            .tabItem {
-                Label("Archive", image: "categories")
-            }
-
-            NavigationStack {
-                SpecialsView()
-            }
-            .tabItem {
-                Label("Featured", systemImage: "star.fill")
-            }
-
-            NavigationStack {
-                SettingsView()
-            }
-            .tabItem {
-                Label("Settings", image: "settings")
+        Group {
+            if #available(iOS 18.0, *) {
+                modernTabs
+            } else {
+                legacyTabs
             }
         }
         .alert(
@@ -109,6 +94,37 @@ private struct MainTabs: View {
             if store.lastUpdate == nil {
                 showFirstSyncAlert = true
             }
+        }
+    }
+
+    @available(iOS 18.0, *)
+    private var modernTabs: some View {
+        TabView {
+            Tab("Archive", image: "categories") {
+                NavigationStack { SpreadsheetListView() }
+            }
+            Tab("Featured", systemImage: "star.fill") {
+                NavigationStack { SpecialsView() }
+            }
+            Tab("Settings", image: "settings") {
+                NavigationStack { SettingsView() }
+            }
+            Tab(role: .search) {
+                NavigationStack { SearchView() }
+            }
+        }
+    }
+
+    private var legacyTabs: some View {
+        TabView {
+            NavigationStack { SpreadsheetListView() }
+                .tabItem { Label("Archive", image: "categories") }
+            NavigationStack { SearchView() }
+                .tabItem { Label("Search", systemImage: "magnifyingglass") }
+            NavigationStack { SpecialsView() }
+                .tabItem { Label("Featured", systemImage: "star.fill") }
+            NavigationStack { SettingsView() }
+                .tabItem { Label("Settings", image: "settings") }
         }
     }
 }
