@@ -23,10 +23,12 @@ final class AppStore {
     let client: SpreadsheetsClient
     let searchIndex: SearchIndex
 
-    init(db: DatabaseQueue) {
+    init(db: DatabaseQueue, sheets: [Spreadsheet] = [], lastUpdate: Date? = nil) {
         self.db = db
         self.searchIndex = SearchIndex(db: db)
         self.client = SpreadsheetsClient(db: db)
+        self.sheets = sheets
+        self.lastUpdate = lastUpdate
     }
 
     // MARK: - Database setup

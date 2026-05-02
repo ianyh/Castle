@@ -146,3 +146,12 @@ struct LazyRowDetailLoader: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    NavigationStack {
+        RowDetailView(sheet: .preview, row: .preview)
+    }
+    .environment(AppStore.preview)
+}
+#endif

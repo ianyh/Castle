@@ -37,3 +37,20 @@ struct SearchResultsView: View {
         .navigationTitle(title)
     }
 }
+
+#if DEBUG
+#Preview {
+    NavigationStack {
+        SearchResultsView(
+            results: [
+                SearchResult(id: "Soul Breaks-00001", name: "Omnislash",
+                             sheetTitle: "Soul Breaks", imageURL: nil),
+                SearchResult(id: "Soul Breaks-00002", name: "Final Heaven",
+                             sheetTitle: "Soul Breaks", imageURL: nil)
+            ],
+            title: "Featured"
+        )
+    }
+    .environment(AppStore.preview)
+}
+#endif

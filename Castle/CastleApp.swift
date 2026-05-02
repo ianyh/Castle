@@ -103,9 +103,6 @@ private struct MainTabs: View {
             Tab("Archive", image: "categories") {
                 NavigationStack { SpreadsheetListView() }
             }
-            Tab("Featured", systemImage: "star.fill") {
-                NavigationStack { SpecialsView() }
-            }
             Tab("Settings", image: "settings") {
                 NavigationStack { SettingsView() }
             }
@@ -121,8 +118,6 @@ private struct MainTabs: View {
                 .tabItem { Label("Archive", image: "categories") }
             NavigationStack { SearchView() }
                 .tabItem { Label("Search", systemImage: "magnifyingglass") }
-            NavigationStack { SpecialsView() }
-                .tabItem { Label("Featured", systemImage: "star.fill") }
             NavigationStack { SettingsView() }
                 .tabItem { Label("Settings", image: "settings") }
         }

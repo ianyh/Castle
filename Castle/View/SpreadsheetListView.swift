@@ -19,5 +19,15 @@ struct SpreadsheetListView: View {
             }
         }
         .navigationTitle("Archive")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
+
+#if DEBUG
+#Preview {
+    NavigationStack {
+        SpreadsheetListView()
+    }
+    .environment(AppStore.preview)
+}
+#endif

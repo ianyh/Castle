@@ -105,3 +105,12 @@ struct SettingsView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    NavigationStack {
+        SettingsView()
+    }
+    .environment(AppStore.preview)
+}
+#endif

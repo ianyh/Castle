@@ -56,3 +56,12 @@ struct SearchView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    NavigationStack {
+        SearchView()
+    }
+    .environment(AppStore.preview)
+}
+#endif

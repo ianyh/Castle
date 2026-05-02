@@ -60,6 +60,7 @@ struct SpreadsheetView: View {
             }
         }
         .navigationTitle(sheet.title)
+        .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText)
         .searchScopes($selectedScope, scopes: {
             if scopeTitles.count > 1 {
@@ -104,3 +105,12 @@ struct SpreadsheetView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    NavigationStack {
+        SpreadsheetView(sheet: .preview)
+    }
+    .environment(AppStore.preview)
+}
+#endif
