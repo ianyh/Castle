@@ -280,11 +280,12 @@ class SpreadsheetsClient {
                 let (formattedValue, rawValue) = valuePair
                 let imageURL = self.extractImageURL(from: rawValue, rawRow: Array(rawRow))
                 let matchingColumn = columns.first { $0.title == headers[index] }
+                let isFrozen = imageURL != nil || (matchingColumn?.isColumnFrozen ?? false)
                 return RowValue(
                     id: "\(rowID)-\(String(format: "%05d", index))",
                     columnKey: matchingColumn?.key,
                     columnTitle: headers[index],
-                    isColumnFrozen: matchingColumn?.isColumnFrozen ?? false,
+                    isColumnFrozen: isFrozen,
                     title: headers[index],
                     value: formattedValue,
                     imageURL: imageURL

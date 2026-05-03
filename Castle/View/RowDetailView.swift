@@ -64,10 +64,14 @@ struct RowDetailView: View {
     @ViewBuilder
     private func rowValueRow(_ value: RowValue) -> some View {
         if let urlString = value.imageURL, let url = URL(string: urlString) {
-            KFImage(url)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 128)
+            HStack {
+                Spacer()
+                KFImage(url)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 128)
+                Spacer()
+            }
         } else {
             HStack {
                 Text(value.title)
