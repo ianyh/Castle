@@ -63,25 +63,31 @@ struct RowDetailView: View {
 
     @ViewBuilder
     private func rowValueRow(_ value: RowValue) -> some View {
-        if let urlString = value.imageURL, let url = URL(string: urlString) {
-            HStack {
-                Spacer()
+        let isFrozen = value.isColumnFrozen
+        let stackAlignment: HorizontalAlignment = isFrozen ? .center : .leading
+        let textAlignment: TextAlignment = isFrozen ? .center : .leading
+        let frameAlignment: Alignment = isFrozen ? .center : .leading
+
+        Group {
+            if let urlString = value.imageURL, let url = URL(string: urlString) {
                 KFImage(url)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: 128)
-                Spacer()
-            }
-        } else {
-            HStack {
-                Text(value.title)
-                    .font(value.isColumnFrozen ? .headline : .body)
-                    .foregroundStyle(value.isColumnFrozen ? .primary : .secondary)
-                Spacer()
-                Text(value.value)
-                    .multilineTextAlignment(.trailing)
+                    .frame(maxWidth: .infinity, maxHeight: 128)
+            } else {
+                VStack(alignment: stackAlignment, spacing: 4) {
+                    Text(value.title)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(textAlignment)
+                    Text(value.value)
+                        .font(isFrozen ? .title3 : .body)
+                        .multilineTextAlignment(textAlignment)
+                }
+                .frame(maxWidth: .infinity, alignment: frameAlignment)
             }
         }
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 
     private func loadRelationships() async {
