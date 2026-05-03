@@ -43,11 +43,29 @@ struct SearchView: View {
                 results = SearchResults(sections: [], rest: [])
                 return
             }
+            let sheets = SearchIndex.sheets(matchingPrefixIn: searchText) ?? Self.searchableSheets
             do {
-                results = try await store.searchIndex.search(query: searchText, sheets: Self.searchableSheets)
+                results = try await store.searchIndex.search(query: searchText, sheets: sheets)
             } catch {
                 print("Search error: \(error)")
                 results = SearchResults(sections: [], rest: [])
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    ForEach(SearchIndex.prefixGroups, id: \.sheet) { group in
+                        Section(group.sheet) {
+                            ForEach(group.prefixes, id: \.self) { prefix in
+                                Button(prefix.uppercased()) {
+                                    searchText = "\(prefix) "
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                }
             }
         }
     }

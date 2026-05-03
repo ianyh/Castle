@@ -47,14 +47,94 @@ actor SearchIndex {
         "Hero Abilities"
     ]
 
+    /**
+     Tier-shorthand definition. Each tier may have multiple aliases; e.g. `?zsb`, `?uasb`, `?z`, `?ua` all mean the same thing. The `canonical` form is what we substitute into the FTS query so short aliases like `z` don't over-match (a wildcard prefix on `z` would hit Zell, Zidane, zone…).
+     */
+    private struct Tier {
+        let aliases: Set<String>
+        let canonical: String
+        let sheet: String
+    }
+
+    private static let tiers: [Tier] = [
+        Tier(aliases: ["zsb", "uasb", "z", "ua"], canonical: "zsb", sheet: "Soul Breaks"),
+        Tier(aliases: ["sb"], canonical: "sb", sheet: "Soul Breaks"),
+        Tier(aliases: ["ssb"], canonical: "ssb", sheet: "Soul Breaks"),
+        Tier(aliases: ["burst"], canonical: "bsb", sheet: "Soul Breaks"),
+        Tier(aliases: ["osb"], canonical: "osb", sheet: "Soul Breaks"),
+        Tier(aliases: ["usb"], canonical: "usb", sheet: "Soul Breaks"),
+        Tier(aliases: ["glint"], canonical: "glint", sheet: "Soul Breaks"),
+        Tier(aliases: ["aosb"], canonical: "aosb", sheet: "Soul Breaks"),
+        Tier(aliases: ["aasb", "aa"], canonical: "aasb", sheet: "Soul Breaks"),
+        Tier(aliases: ["sasb", "sa"], canonical: "sasb", sheet: "Soul Breaks"),
+        Tier(aliases: ["adsb"], canonical: "adsb", sheet: "Soul Breaks"),
+        Tier(aliases: ["dasb", "da"], canonical: "dasb", sheet: "Soul Breaks"),
+        Tier(aliases: ["lbg"], canonical: "lbg", sheet: "Soul Breaks"),
+        Tier(aliases: ["casb", "ca"], canonical: "casb", sheet: "Soul Breaks"),
+        Tier(aliases: ["ozsb"], canonical: "ozsb", sheet: "Soul Breaks"),
+        Tier(aliases: ["masb", "ma"], canonical: "masb", sheet: "Soul Breaks"),
+        Tier(aliases: ["asb"], canonical: "asb", sheet: "Soul Breaks"),
+        Tier(aliases: ["lbc"], canonical: "lbc", sheet: "Soul Breaks"),
+        Tier(aliases: ["lbo"], canonical: "lbo", sheet: "Soul Breaks"),
+        Tier(aliases: ["csb"], canonical: "csb", sheet: "Soul Breaks"),
+        Tier(aliases: ["tasb", "ta", "tact", "tactical"], canonical: "tasb", sheet: "Soul Breaks"),
+        Tier(aliases: ["lbsd", "sd"], canonical: "lbsd", sheet: "Soul Breaks"),
+        Tier(aliases: ["lbgs"], canonical: "lbgs", sheet: "Soul Breaks"),
+        Tier(aliases: ["bsb", "b"], canonical: "buster", sheet: "Soul Breaks"),
+        Tier(aliases: ["lbgs"], canonical: "lbgs", sheet: "Soul Breaks"),
+        Tier(aliases: ["ha"], canonical: "ha", sheet: "Hero Abilities")
+    ]
+
+    /// Flat alias → tier lookup, derived from `tiers` once.
+    private static let aliasLookup: [String: Tier] = {
+        var dict: [String: Tier] = [:]
+        for tier in tiers {
+            for alias in tier.aliases {
+                dict[alias.lowercased()] = tier
+            }
+        }
+        return dict
+    }()
+
+    /**
+     Menu-friendly grouping by sheet, listing the canonical form of each tier. Used by `SearchView`'s prefix Menu — aliases stay typing-only to avoid cluttering the menu with duplicates.
+     */
+    static let prefixGroups: [(sheet: String, prefixes: [String])] = {
+        Dictionary(grouping: tiers, by: \.sheet)
+            .map { sheet, group in
+                (sheet: sheet, prefixes: group.map(\.canonical).sorted())
+            }
+            .sorted { $0.sheet < $1.sheet }
+    }()
+
+    /**
+     Returns the sheet list mapped to the first token of `query`, or nil if the first token isn't a known tier alias. Lookup is case-insensitive.
+     */
+    static func sheets(matchingPrefixIn query: String) -> [String]? {
+        guard let first = query.split(whereSeparator: { $0.isWhitespace }).first else {
+            return nil
+        }
+        return aliasLookup[String(first).lowercased()].map { [$0.sheet] }
+    }
+
+    /**
+     If the first token of `query` is a known alias, returns `query` with the first token replaced by the tier's canonical form. Otherwise returns `query` unchanged. This prevents short aliases (e.g. `z`) from over-matching unrelated tokens once the FTS prefix wildcard is applied.
+     */
+    static func canonicalize(_ query: String) -> String {
+        let parts = query.split(whereSeparator: { $0.isWhitespace }).map(String.init)
+        guard let first = parts.first?.lowercased(),
+              let tier = aliasLookup[first],
+              tier.canonical != first else {
+            return query
+        }
+        return ([tier.canonical] + parts.dropFirst()).joined(separator: " ")
+    }
+
     private let db: DatabaseQueue
 
     init(db: DatabaseQueue) {
         self.db = db
     }
-
-    // Call beginRebuild, then indexSheet for each sheet, then commitRebuild.
-    // Each sheet write is its own transaction so row objects can be freed between sheets.
 
     func beginRebuild() throws {
         try db.write { db in
@@ -86,14 +166,13 @@ actor SearchIndex {
         }
     }
 
-    /// Full-text search. Priority sheets are grouped into capped sections in declared
-    /// order; everything else is returned as a single flat list ordered by FTS rank.
-    ///
-    /// SQL is bounded: one query per priority sheet (LIMIT `perSectionLimit`) so each
-    /// priority section is guaranteed its top N regardless of how dominant other sheets
-    /// are, plus one query for the rest (LIMIT `restLimit`).
+    /**
+     Full-text search. Priority sheets are grouped into capped sections in declared order; everything else is returned as a single flat list ordered by FTS rank.
+     
+     SQL is bounded: one query per priority sheet (LIMIT `perSectionLimit`) so each priority section is guaranteed its top N regardless of how dominant other sheets are, plus one query for the rest (LIMIT `restLimit`).
+     */
     func search(query: String, sheets: [String]? = nil, perSectionLimit: Int = 8, restLimit: Int = 200) throws -> SearchResults {
-        guard let ftsQuery = Self.buildFTSQuery(from: query) else {
+        guard let ftsQuery = Self.buildFTSQuery(from: Self.canonicalize(query)) else {
             return SearchResults(sections: [], rest: [])
         }
 
@@ -158,27 +237,6 @@ actor SearchIndex {
         }
     }
 
-    /// Find rows matching specific dbIDs (for Specials).
-    func search(dbIDs: [String], sheets: [String]? = nil) throws -> [SearchResult] {
-        guard !dbIDs.isEmpty else {
-            return []
-        }
-        return try db.read { db in
-            let idPlaceholders = dbIDs.map { _ in "?" }.joined(separator: ", ")
-            var sql = "SELECT row_id, name, sheet_title, image_url FROM \(ftsTable) WHERE db_id IN (\(idPlaceholders))"
-            var arguments = StatementArguments(dbIDs)
-
-            if let sheets = sheets, !sheets.isEmpty {
-                let placeholders = sheets.map { _ in "?" }.joined(separator: ", ")
-                sql += " AND sheet_title IN (\(placeholders))"
-                arguments += StatementArguments(sheets)
-            }
-            sql += ";"
-
-            return try Row.fetchAll(db, sql: sql, arguments: arguments).map { collectResult(from: $0) }
-        }
-    }
-
     /// Search for Effects content matching a status query string (for Specials effects lookup).
     func searchEffects(matchQuery: String, sheets: [String]) throws -> [SearchResult] {
         guard !matchQuery.isEmpty else {
@@ -239,10 +297,11 @@ actor SearchIndex {
         }
     }
 
-    /// Splits a free-text query on whitespace and turns each token into a quoted FTS5
-    /// prefix term, joined by spaces (implicit AND). Returns nil if no usable tokens.
-    /// Example: "cloud dasb" → `"cloud"* "dasb"*` — matches rows containing both tokens
-    /// in any order.
+    /**
+     Splits a free-text query on whitespace and turns each token into a quoted FTS5 prefix term, joined by spaces (implicit AND). Returns nil if no usable tokens.
+     
+     Example: "cloud dasb" → `"cloud"* "dasb"*` — matches rows containing both tokens in any order.
+     */
     static func buildFTSQuery(from query: String) -> String? {
         let tokens = query
             .split(whereSeparator: { $0.isWhitespace })

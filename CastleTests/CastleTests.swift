@@ -201,6 +201,101 @@ final class CastleTests: XCTestCase {
         XCTAssertEqual(reverse.sections.flatMap(\.results).map(\.id), ["Soul Breaks-00001"])
     }
 
+    func testTierPrefixDetection() {
+        XCTAssertNil(SearchIndex.sheets(matchingPrefixIn: ""))
+        XCTAssertNil(SearchIndex.sheets(matchingPrefixIn: "   "))
+        XCTAssertNil(SearchIndex.sheets(matchingPrefixIn: "cloud"))
+        XCTAssertNil(SearchIndex.sheets(matchingPrefixIn: "cloud dasb"))
+        XCTAssertEqual(SearchIndex.sheets(matchingPrefixIn: "dasb"), ["Soul Breaks"])
+        XCTAssertEqual(SearchIndex.sheets(matchingPrefixIn: "dasb cloud"), ["Soul Breaks"])
+        XCTAssertEqual(SearchIndex.sheets(matchingPrefixIn: "DASB cloud"), ["Soul Breaks"])
+        XCTAssertEqual(SearchIndex.sheets(matchingPrefixIn: "Dasb cloud"), ["Soul Breaks"])
+        XCTAssertEqual(SearchIndex.sheets(matchingPrefixIn: "ha cloud"), ["Hero Abilities"])
+    }
+
+    func testTierAliasCanonicalization() {
+        // Aliased tier: zsb / uasb / z / ua all resolve to canonical "zsb".
+        XCTAssertEqual(SearchIndex.canonicalize("zsb cloud"), "zsb cloud")
+        XCTAssertEqual(SearchIndex.canonicalize("uasb cloud"), "zsb cloud")
+        XCTAssertEqual(SearchIndex.canonicalize("z cloud"), "zsb cloud")
+        XCTAssertEqual(SearchIndex.canonicalize("ua cloud"), "zsb cloud")
+        XCTAssertEqual(SearchIndex.canonicalize("Z cloud"), "zsb cloud")
+        XCTAssertEqual(SearchIndex.canonicalize("UA cloud"), "zsb cloud")
+
+        // No rewrite when first token already is the canonical.
+        XCTAssertEqual(SearchIndex.canonicalize("dasb cloud"), "dasb cloud")
+
+        // Only first token is checked; aliases mid-query are left alone.
+        XCTAssertEqual(SearchIndex.canonicalize("cloud z"), "cloud z")
+
+        // Unknown first token: no change.
+        XCTAssertEqual(SearchIndex.canonicalize("foo cloud"), "foo cloud")
+
+        // Empty / whitespace-only.
+        XCTAssertEqual(SearchIndex.canonicalize(""), "")
+        XCTAssertEqual(SearchIndex.canonicalize("   "), "   ")
+    }
+
+    func testFTS5AliasResolvesToCanonical() async throws {
+        let queue = try makeQueue()
+        let index = SearchIndex(db: queue)
+
+        try await index.beginRebuild()
+        try await index.indexSheet(title: "Soul Breaks", rows: [
+            (id: "Soul Breaks-00001", dbID: "SB-1", imageURL: nil,
+             values: [(title: "Name", value: "Cloud ZSB"),
+                      (title: "Character", value: "Cloud"),
+                      (title: "Tier", value: "ZSB")])
+        ])
+        // Decoy: Zell row with Cloud not appearing — without canonicalization, the
+        // short alias "z cloud" via prefix wildcard could match "Zell" tokens.
+        try await index.indexSheet(title: "Characters", rows: [
+            (id: "Characters-00001", dbID: "Characters-1", imageURL: nil,
+             values: [(title: "Name", value: "Zell"), (title: "Realm", value: "VIII")])
+        ])
+        try await index.commitRebuild()
+
+        let viaShortAlias = try await index.search(query: "z cloud", sheets: ["Soul Breaks"])
+        let viaCanonical = try await index.search(query: "zsb cloud", sheets: ["Soul Breaks"])
+        let viaOtherAlias = try await index.search(query: "ua cloud", sheets: ["Soul Breaks"])
+        let viaOtherCanonical = try await index.search(query: "uasb cloud", sheets: ["Soul Breaks"])
+
+        let expected = ["Soul Breaks-00001"]
+        XCTAssertEqual((viaShortAlias.sections.flatMap(\.results) + viaShortAlias.rest).map(\.id), expected)
+        XCTAssertEqual((viaCanonical.sections.flatMap(\.results) + viaCanonical.rest).map(\.id), expected)
+        XCTAssertEqual((viaOtherAlias.sections.flatMap(\.results) + viaOtherAlias.rest).map(\.id), expected)
+        XCTAssertEqual((viaOtherCanonical.sections.flatMap(\.results) + viaOtherCanonical.rest).map(\.id), expected)
+    }
+
+    func testFTS5DasbCloudFindsSoulBreak() async throws {
+        let queue = try makeQueue()
+        let index = SearchIndex(db: queue)
+
+        try await index.beginRebuild()
+        try await index.indexSheet(title: "Characters", rows: [
+            (id: "Characters-00001", dbID: "Characters-1", imageURL: nil,
+             values: [(title: "Name", value: "Cloud"), (title: "Realm", value: "VII")])
+        ])
+        try await index.indexSheet(title: "Soul Breaks", rows: [
+            (id: "Soul Breaks-00001", dbID: "SB-1", imageURL: nil,
+             values: [(title: "Name", value: "Cloud DASB"),
+                      (title: "Character", value: "Cloud"),
+                      (title: "Tier", value: "DASB")]),
+            (id: "Soul Breaks-00002", dbID: "SB-2", imageURL: nil,
+             values: [(title: "Name", value: "Cloud OSB"),
+                      (title: "Character", value: "Cloud"),
+                      (title: "Tier", value: "OSB")])
+        ])
+        try await index.commitRebuild()
+
+        let sheets = try XCTUnwrap(SearchIndex.sheets(matchingPrefixIn: "dasb cloud"))
+        let results = try await index.search(query: "dasb cloud", sheets: sheets)
+
+        // Restricted to Soul Breaks; the Cloud Characters row should not appear, nor Cloud OSB.
+        let allResults = results.sections.flatMap(\.results) + results.rest
+        XCTAssertEqual(allResults.map(\.id), ["Soul Breaks-00001"])
+    }
+
     func testFTS5BuildFTSQuery() {
         // Direct unit test of the query builder so future regressions are obvious.
         XCTAssertNil(SearchIndex.buildFTSQuery(from: ""))

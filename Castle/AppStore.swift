@@ -130,18 +130,6 @@ final class AppStore {
         }
     }
 
-    func fetchRows(dbIDs: [String]) async throws -> [SpreadsheetRow] {
-        guard !dbIDs.isEmpty else { return [] }
-        return try await db.read { db in
-            let placeholders = dbIDs.map { _ in "?" }.joined(separator: ", ")
-            return try SpreadsheetRow.fetchAll(
-                db,
-                sql: "SELECT * FROM spreadsheet_rows WHERE db_id IN (\(placeholders))",
-                arguments: StatementArguments(dbIDs)
-            )
-        }
-    }
-
     func fetchSpreadsheet(title: String) async throws -> Spreadsheet? {
         try await db.read { db in
             try Spreadsheet.fetchOne(
