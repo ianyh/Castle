@@ -45,7 +45,19 @@ class SpreadsheetsClient {
     private let session = URLSession(configuration: URLSession.shared.configuration)
     private let db: DatabaseQueue
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
-    private static let ignoredSheets = ["Header", "Calculator", "Experience", "Events", "Missions", "Crystal Reqs"]
+    private static let ignoredSheets = [
+        "Header",
+        "Calculator",
+        "Experience",
+        "Events",
+        "Missions",
+        "Crystal Reqs",
+        "Artifacts",
+        "Record Boards",
+        "Record Spheres",
+        "Relics",
+        "SB/LB Honing Effect Details"
+    ]
 
     init(db: DatabaseQueue) {
         self.db = db
