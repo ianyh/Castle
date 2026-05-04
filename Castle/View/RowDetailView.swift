@@ -17,6 +17,12 @@ struct RowDetailView: View {
     @State private var relationships: [RelationshipGroup] = []
     @State private var navigationTargets: [String: (sheet: Spreadsheet, rows: [SpreadsheetRow])] = [:]
 
+    /// Sheets whose related rows should render inline as their own sections
+    /// instead of collapsing into a single "Relationships" navigation link.
+    /// Reserved for sheets where the result count is typically small enough
+    /// to scan in place (Other, Status).
+    private static let inlineRelationshipSheets: Set<String> = ["Other", "Status"]
+
     private var frozenValues: [RowValue] {
         row.values.filter { $0.isColumnFrozen }.sorted { $0.id < $1.id }
     }
@@ -33,9 +39,12 @@ struct RowDetailView: View {
                 }
             }
 
-            if !relationships.isEmpty {
+            let linkedGroups = relationships.filter { !Self.inlineRelationshipSheets.contains($0.sheetTitle) }
+            let inlinedGroups = relationships.filter { Self.inlineRelationshipSheets.contains($0.sheetTitle) }
+
+            if !linkedGroups.isEmpty {
                 Section("Relationships") {
-                    ForEach(relationships, id: \.sheetTitle) { group in
+                    ForEach(linkedGroups, id: \.sheetTitle) { group in
                         NavigationLink(group.sheetTitle) {
                             if let target = navigationTargets[group.sheetTitle] {
                                 SpreadsheetView(sheet: target.sheet, explicitRows: target.rows)
@@ -43,6 +52,20 @@ struct RowDetailView: View {
                         }
                         .task(id: group.sheetTitle) {
                             await loadNavigationTarget(for: group)
+                        }
+                    }
+                }
+            }
+
+            ForEach(inlinedGroups, id: \.sheetTitle) { group in
+                if let target = navigationTargets[group.sheetTitle] {
+                    Section(group.sheetTitle) {
+                        ForEach(target.rows, id: \.id) { row in
+                            NavigationLink {
+                                RowDetailView(sheet: target.sheet, row: row)
+                            } label: {
+                                inlineRelationshipRow(row)
+                            }
                         }
                     }
                 }
@@ -90,6 +113,31 @@ struct RowDetailView: View {
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 
+    @ViewBuilder
+    private func inlineRelationshipRow(_ row: SpreadsheetRow) -> some View {
+        HStack(spacing: 12) {
+            if let urlString = row.values.first(where: { $0.imageURL != nil })?.imageURL,
+               let url = URL(string: urlString)?.cleaned() {
+                KFImage(url)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 44, height: 44)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                if let name = row.normalizedName {
+                    Text(name).font(.body)
+                }
+                if let effect = row.effect {
+                    Text(effect)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
+                }
+            }
+        }
+        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
+
     private func loadRelationships() async {
         guard let name = row.normalizedName else {
             return
@@ -100,6 +148,11 @@ struct RowDetailView: View {
                 currentRowID: row.id,
                 effect: row.effect
             )
+            // Eagerly fetch the rows for inline-rendered relationship sections so
+            // they appear without needing the user to tap-through first.
+            for group in relationships where Self.inlineRelationshipSheets.contains(group.sheetTitle) {
+                await loadNavigationTarget(for: group)
+            }
         } catch {
             print("Relationship load error: \(error)")
         }
