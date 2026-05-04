@@ -97,7 +97,7 @@ struct RowDetailView: View {
         do {
             relationships = try await store.searchIndex.findRelated(
                 rowName: name,
-                sheetNormalizedName: sheet.normalizedName,
+                currentRowID: row.id,
                 effect: row.effect
             )
         } catch {

@@ -59,6 +59,20 @@ final class AppStore {
                 t.column("content")
             }
         }
+        migrator.registerMigration("v2_create_row_values") { db in
+            // Normalized per-cell table used for exact-match cross-sheet lookups
+            // (RowDetailView's Relationships section). Independent of FTS5 — this is
+            // structured data, not full-text-indexed.
+            try db.create(table: "row_values", ifNotExists: true) { t in
+                t.column("row_id", .text).notNull()
+                t.column("sheet_title", .text).notNull()
+                t.column("column_title", .text).notNull()
+                t.column("value", .text).notNull()
+                t.primaryKey(["row_id", "column_title"])
+            }
+            try db.create(index: "idx_row_values_value", on: "row_values", columns: ["value"])
+            try db.create(index: "idx_row_values_sheet_value", on: "row_values", columns: ["sheet_title", "value"])
+        }
         return migrator
     }
 

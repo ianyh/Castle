@@ -257,44 +257,46 @@ actor SearchIndex {
         }
     }
 
-    /// Find related rows for a given row (used in RowDetailView relationships section).
-    func findRelated(rowName: String, sheetNormalizedName: String, effect: String?) throws -> [RelationshipGroup] {
-        let contentQuery = "content: \"\(rowName.replacingOccurrences(of: "\"", with: "\"\""))\""
-        var grouped: [String: [String]] = [:]
-
-        let contentRows = try db.read { db in
-            try Row.fetchAll(db, sql: "SELECT row_id, sheet_title FROM \(ftsTable) WHERE \(ftsTable) MATCH ?;", arguments: [contentQuery])
-        }
-        for row in contentRows {
-            let id: String = row["row_id"]
-            let sheetTitle: String = row["sheet_title"]
-            grouped[sheetTitle, default: []].append(id)
-        }
-
-        if let effect = effect {
+    /// Find related rows for a given row (used in RowDetailView's Relationships section).
+    /// Cross-references are resolved by exact value equality on the normalized
+    /// `row_values` table — names across the dataset are well-formed and unique, so
+    /// no FTS / tokenization is involved here. The current row is excluded so it
+    /// doesn't appear as related to itself.
+    func findRelated(rowName: String, currentRowID: String, effect: String?) throws -> [RelationshipGroup] {
+        var lookupNames: Set<String> = [rowName]
+        if let effect {
             let statusRegex = try NSRegularExpression(pattern: "\\[(.+?)\\]")
             for match in statusRegex.matches(in: effect, range: NSRange(effect.startIndex..., in: effect)) {
                 guard let range = Range(match.range(at: 1), in: effect) else {
                     continue
                 }
-                let status = String(effect[range])
-                let statusResults = try searchByName(status)
-                for result in statusResults {
-                    grouped[result.sheetTitle, default: []].append(result.id)
-                }
+                lookupNames.insert(String(effect[range]))
+            }
+        }
+
+        var grouped: [String: [String]] = [:]
+        try db.read { db in
+            let placeholders = lookupNames.map { _ in "?" }.joined(separator: ", ")
+            var arguments = StatementArguments(Array(lookupNames))
+            arguments += [currentRowID]
+            let rows = try Row.fetchAll(
+                db,
+                sql: """
+                    SELECT DISTINCT row_id, sheet_title FROM row_values
+                    WHERE value IN (\(placeholders)) AND row_id != ?;
+                    """,
+                arguments: arguments
+            )
+            for row in rows {
+                let id: String = row["row_id"]
+                let sheetTitle: String = row["sheet_title"]
+                grouped[sheetTitle, default: []].append(id)
             }
         }
 
         return grouped
             .map { RelationshipGroup(sheetTitle: $0.key, rowIDs: $0.value) }
             .sorted { $0.sheetTitle < $1.sheetTitle }
-    }
-
-    private func searchByName(_ name: String) throws -> [(id: String, sheetTitle: String)] {
-        return try db.read { db in
-            try Row.fetchAll(db, sql: "SELECT row_id, sheet_title FROM \(ftsTable) WHERE name = ?;", arguments: [name])
-                .map { (id: $0["row_id"] as String, sheetTitle: $0["sheet_title"] as String) }
-        }
     }
 
     /**

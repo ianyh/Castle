@@ -56,7 +56,21 @@ class SpreadsheetsClient {
         "Record Boards",
         "Record Spheres",
         "Relics",
-        "SB/LB Honing Effect Details"
+        "SB/LB Honing Effect Details",
+        "Legend Spheres"
+    ]
+    private static let relationshipExclusions = [
+        "Abilities",
+        "Magicite Skills",
+        "Hero Artifact Set Bonuses",
+        "Hero Artifacts",
+        "Historia Crystals",
+        "Historia Crystal Passives",
+        "Historia Links",
+        "Magicite",
+        "Magicite Passives",
+        "Magicite Skills",
+        "Record Materia"
     ]
 
     init(db: DatabaseQueue) {
@@ -113,6 +127,7 @@ class SpreadsheetsClient {
         try await db.write { db in
             try db.execute(sql: "DELETE FROM spreadsheets")
             try db.execute(sql: "DELETE FROM spreadsheet_rows")
+            try db.execute(sql: "DELETE FROM row_values")
             try db.execute(sql: "DELETE FROM last_update")
         }
 
@@ -140,10 +155,19 @@ class SpreadsheetsClient {
             }
             try await searchIndex.indexSheet(title: spreadsheet.title, rows: indexRows)
 
-            try await db.write { db in
-                try spreadsheet.insert(db, onConflict: .replace)
-                for row in rows {
-                    try row.insert(db, onConflict: .replace)
+            if !Self.relationshipExclusions.contains(spreadsheet.title) {
+                try await db.write { db in
+                    try spreadsheet.insert(db, onConflict: .replace)
+                    let valueStmt = try db.makeStatement(sql: """
+                        INSERT OR REPLACE INTO row_values (row_id, sheet_title, column_title, value)
+                        VALUES (?, ?, ?, ?);
+                        """)
+                    for row in rows {
+                        try row.insert(db, onConflict: .replace)
+                        for value in row.values where !value.value.isEmpty {
+                            try valueStmt.execute(arguments: [row.id, row.spreadsheetTitle, value.columnTitle, value.value])
+                        }
+                    }
                 }
             }
         }
