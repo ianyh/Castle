@@ -17,11 +17,24 @@ struct RowDetailView: View {
     @State private var relationships: [RelationshipGroup] = []
     @State private var navigationTargets: [String: (sheet: Spreadsheet, rows: [SpreadsheetRow])] = [:]
 
-    /// Sheets whose related rows should render inline as their own sections
-    /// instead of collapsing into a single "Relationships" navigation link.
-    /// Reserved for sheets where the result count is typically small enough
-    /// to scan in place (Other, Status).
-    private static let inlineRelationshipSheets: Set<String> = ["Other", "Status"]
+    /// Sheets whose related rows render inline (each as its own section), keyed by
+    /// the columns through which a match qualifies for inlining. A row in a target
+    /// sheet only inlines if at least one of its matching columns is in the set —
+    /// e.g. a Crystal Force Ability inlines when its `Source` matched (viewing the
+    /// Soul Break it derives from) but NOT when its `Character` matched (viewing
+    /// the character would otherwise spam every CFA they have).
+    /// Sheets not in this map fall through to the existing single-link Relationships
+    /// section. Sheets in this map with no matches via allowed columns are dropped.
+    private static let inlineRelationshipColumns: [String: Set<String>] = [
+        "Brave": ["Source"],
+        "Burst": ["Source"],
+        "Crystal Force Abilities": ["Source"],
+        "Other": ["Source"],
+        "Status": ["Source", "Name"],
+        "Synchro": ["Source"],
+        "Zenith SB Abilities": ["Source"],
+        "Hero Abilities": ["Character"]
+    ]
 
     private var frozenValues: [RowValue] {
         row.values.filter { $0.isColumnFrozen }.sorted { $0.id < $1.id }
@@ -39,8 +52,9 @@ struct RowDetailView: View {
                 }
             }
 
-            let linkedGroups = relationships.filter { !Self.inlineRelationshipSheets.contains($0.sheetTitle) }
-            let inlinedGroups = relationships.filter { Self.inlineRelationshipSheets.contains($0.sheetTitle) }
+            let display = displayedRelationships
+            let linkedGroups = display.linked
+            let inlinedGroups = display.inlined
 
             if !linkedGroups.isEmpty {
                 Section("Relationships") {
@@ -138,6 +152,44 @@ struct RowDetailView: View {
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 
+    /// `"Name"` in an allowlist is a sentinel that matches any column whose title
+    /// ends in `"Name"` or equals `"Common Name"` — mirroring the name-column
+    /// convention in `SearchIndex.indexSheet`. Other allowlist entries match the
+    /// `column_title` literally.
+    private static func columnIsAllowed(_ columnTitle: String, allowedColumns: Set<String>) -> Bool {
+        if allowedColumns.contains(columnTitle) {
+            return true
+        }
+        if allowedColumns.contains("Name"),
+           columnTitle.hasSuffix("Name") || columnTitle == "Common Name" {
+            return true
+        }
+        return false
+    }
+
+    /// Splits `relationships` into two display buckets, applying per-target column
+    /// allowlists. A target sheet listed in `inlineRelationshipColumns` is inlined
+    /// only by the matches whose column is in the allowed set; matches via other
+    /// columns are dropped (not surfaced as links). Sheets absent from the map
+    /// stay as the existing single navigation link.
+    private var displayedRelationships: (linked: [RelationshipGroup], inlined: [RelationshipGroup]) {
+        var linked: [RelationshipGroup] = []
+        var inlined: [RelationshipGroup] = []
+        for group in relationships {
+            if let allowedColumns = Self.inlineRelationshipColumns[group.sheetTitle] {
+                let filtered = group.matches.filter {
+                    Self.columnIsAllowed($0.columnTitle, allowedColumns: allowedColumns)
+                }
+                if !filtered.isEmpty {
+                    inlined.append(RelationshipGroup(sheetTitle: group.sheetTitle, matches: filtered))
+                }
+            } else {
+                linked.append(group)
+            }
+        }
+        return (linked, inlined)
+    }
+
     private func loadRelationships() async {
         guard let name = row.normalizedName else {
             return
@@ -148,9 +200,10 @@ struct RowDetailView: View {
                 currentRowID: row.id,
                 effect: row.effect
             )
-            // Eagerly fetch the rows for inline-rendered relationship sections so
-            // they appear without needing the user to tap-through first.
-            for group in relationships where Self.inlineRelationshipSheets.contains(group.sheetTitle) {
+            // Eagerly fetch rows for inline-rendered sections so they appear without
+            // a tap-through. Use the post-filter inlined groups so we only fetch the
+            // row ids that will actually be rendered.
+            for group in displayedRelationships.inlined {
                 await loadNavigationTarget(for: group)
             }
         } catch {

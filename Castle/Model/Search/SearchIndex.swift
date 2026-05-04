@@ -30,9 +30,25 @@ struct SearchResults {
     var isEmpty: Bool { sections.isEmpty && rest.isEmpty }
 }
 
+struct RelationshipMatch {
+    let rowID: String
+    let columnTitle: String
+}
+
 struct RelationshipGroup {
     let sheetTitle: String
-    let rowIDs: [String]
+    let matches: [RelationshipMatch]
+
+    /// Deduplicated row ids — convenience for callers that only care about which rows
+    /// matched (e.g. for fetching their full data), not which columns matched.
+    var rowIDs: [String] {
+        var seen: Set<String> = []
+        var ordered: [String] = []
+        for match in matches where seen.insert(match.rowID).inserted {
+            ordered.append(match.rowID)
+        }
+        return ordered
+    }
 }
 
 // FTS5 table name — lives in the shared castle.db alongside the data tables.
@@ -274,7 +290,7 @@ actor SearchIndex {
             }
         }
 
-        var grouped: [String: [String]] = [:]
+        var grouped: [String: [RelationshipMatch]] = [:]
         try db.read { db in
             let placeholders = lookupNames.map { _ in "?" }.joined(separator: ", ")
             var arguments = StatementArguments(Array(lookupNames))
@@ -282,7 +298,7 @@ actor SearchIndex {
             let rows = try Row.fetchAll(
                 db,
                 sql: """
-                    SELECT DISTINCT row_id, sheet_title FROM row_values
+                    SELECT DISTINCT row_id, sheet_title, column_title FROM row_values
                     WHERE value IN (\(placeholders)) AND row_id != ?;
                     """,
                 arguments: arguments
@@ -290,12 +306,15 @@ actor SearchIndex {
             for row in rows {
                 let id: String = row["row_id"]
                 let sheetTitle: String = row["sheet_title"]
-                grouped[sheetTitle, default: []].append(id)
+                let columnTitle: String = row["column_title"]
+                grouped[sheetTitle, default: []].append(
+                    RelationshipMatch(rowID: id, columnTitle: columnTitle)
+                )
             }
         }
 
         return grouped
-            .map { RelationshipGroup(sheetTitle: $0.key, rowIDs: $0.value) }
+            .map { RelationshipGroup(sheetTitle: $0.key, matches: $0.value) }
             .sorted { $0.sheetTitle < $1.sheetTitle }
     }
 
