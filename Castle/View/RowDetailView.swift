@@ -17,14 +17,9 @@ struct RowDetailView: View {
     @State private var relationships: [RelationshipGroup] = []
     @State private var navigationTargets: [String: (sheet: Spreadsheet, rows: [SpreadsheetRow])] = [:]
 
-    /// Sheets whose related rows render inline (each as its own section), keyed by
-    /// the columns through which a match qualifies for inlining. A row in a target
-    /// sheet only inlines if at least one of its matching columns is in the set —
-    /// e.g. a Crystal Force Ability inlines when its `Source` matched (viewing the
-    /// Soul Break it derives from) but NOT when its `Character` matched (viewing
-    /// the character would otherwise spam every CFA they have).
-    /// Sheets not in this map fall through to the existing single-link Relationships
-    /// section. Sheets in this map with no matches via allowed columns are dropped.
+    /**
+     Sheets whose related rows render inline (each as its own section), keyed by the columns through which a match qualifies for inlining. A row in a target sheet only inlines if at least one of its matching columns is in the set — e.g. a Crystal Force Ability inlines when its `Source` matched (viewing the Soul Break it derives from) but NOT when its `Character` matched (viewing the character would otherwise spam every CFA they have). Sheets not in this map fall through to the existing single-link Relationships section. Sheets in this map with no matches via allowed columns are dropped.
+     */
     private static let inlineRelationshipColumns: [String: Set<String>] = [
         "Brave": ["Source"],
         "Burst": ["Source"],
@@ -152,10 +147,9 @@ struct RowDetailView: View {
         .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 
-    /// `"Name"` in an allowlist is a sentinel that matches any column whose title
-    /// ends in `"Name"` or equals `"Common Name"` — mirroring the name-column
-    /// convention in `SearchIndex.indexSheet`. Other allowlist entries match the
-    /// `column_title` literally.
+    /**
+     `"Name"` in an allowlist is a sentinel that matches any column whose title ends in `"Name"` or equals `"Common Name"` — mirroring the name-column convention in `SearchIndex.indexSheet`. Other allowlist entries match the `column_title` literally.
+     */
     private static func columnIsAllowed(_ columnTitle: String, allowedColumns: Set<String>) -> Bool {
         if allowedColumns.contains(columnTitle) {
             return true
@@ -167,11 +161,9 @@ struct RowDetailView: View {
         return false
     }
 
-    /// Splits `relationships` into two display buckets, applying per-target column
-    /// allowlists. A target sheet listed in `inlineRelationshipColumns` is inlined
-    /// only by the matches whose column is in the allowed set; matches via other
-    /// columns are dropped (not surfaced as links). Sheets absent from the map
-    /// stay as the existing single navigation link.
+    /**
+     Splits `relationships` into two display buckets, applying per-target column allowlists. A target sheet listed in `inlineRelationshipColumns` is inlined only by the matches whose column is in the allowed set; matches via other columns are dropped (not surfaced as links). Sheets absent from the map stay as the existing single navigation link.
+     */
     private var displayedRelationships: (linked: [RelationshipGroup], inlined: [RelationshipGroup]) {
         var linked: [RelationshipGroup] = []
         var inlined: [RelationshipGroup] = []

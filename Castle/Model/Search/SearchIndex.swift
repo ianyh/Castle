@@ -39,8 +39,9 @@ struct RelationshipGroup {
     let sheetTitle: String
     let matches: [RelationshipMatch]
 
-    /// Deduplicated row ids — convenience for callers that only care about which rows
-    /// matched (e.g. for fetching their full data), not which columns matched.
+    /**
+     Deduplicated row ids — convenience for callers that only care about which rows matched (e.g. for fetching their full data), not which columns matched.
+     */
     var rowIDs: [String] {
         var seen: Set<String> = []
         var ordered: [String] = []
@@ -55,8 +56,9 @@ struct RelationshipGroup {
 private let ftsTable = "search_rows"
 
 actor SearchIndex {
-    /// Sheets listed here float to the top of `search` results in declared order.
-    /// Anything not in the list falls through to a single bucket sorted purely by FTS rank.
+    /**
+     Sheets listed here float to the top of `search` results in declared order. Anything not in the list falls through to a single bucket sorted purely by FTS rank.
+     */
     static let prioritizedSheets: [String] = [
         "Characters",
         "Soul Breaks",
@@ -273,11 +275,9 @@ actor SearchIndex {
         }
     }
 
-    /// Find related rows for a given row (used in RowDetailView's Relationships section).
-    /// Cross-references are resolved by exact value equality on the normalized
-    /// `row_values` table — names across the dataset are well-formed and unique, so
-    /// no FTS / tokenization is involved here. The current row is excluded so it
-    /// doesn't appear as related to itself.
+    /**
+     Find related rows for a given row (used in RowDetailView's Relationships section). Cross-references are resolved by exact value equality on the normalized `row_values` table — names across the dataset are well-formed and unique, so no FTS / tokenization is involved here. The current row is excluded so it doesn't appear as related to itself.
+     */
     func findRelated(rowName: String, currentRowID: String, effect: String?) throws -> [RelationshipGroup] {
         var lookupNames: Set<String> = [rowName]
         if let effect {
