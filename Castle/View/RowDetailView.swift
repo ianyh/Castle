@@ -102,10 +102,9 @@ struct RowDetailView: View {
 
         Group {
             if let urlString = value.imageURL, let url = URL(string: urlString) {
-                KFImage(url)
-                    .resizable()
+                RowImage(url: url, fallbackName: row.normalizedName ?? "", size: CGSize(width: 128, height: 128))
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: .infinity, maxHeight: 128)
+                    .frame(maxWidth: .infinity)
             } else {
                 VStack(alignment: stackAlignment, spacing: 4) {
                     Text(value.title)
@@ -125,13 +124,9 @@ struct RowDetailView: View {
     @ViewBuilder
     private func inlineRelationshipRow(_ row: SpreadsheetRow) -> some View {
         HStack(spacing: 12) {
-            if let urlString = row.values.first(where: { $0.imageURL != nil })?.imageURL,
-               let url = URL(string: urlString)?.cleaned() {
-                KFImage(url)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 44, height: 44)
-            }
+            let imageURLString = row.values.first(where: { $0.imageURL != nil })?.imageURL
+            let imageURL = imageURLString.flatMap { URL(string: $0)?.cleaned() }
+            RowImage(url: imageURL, fallbackName: row.normalizedName ?? "?")
             VStack(alignment: .leading, spacing: 4) {
                 if let name = row.normalizedName {
                     Text(name).font(.body)

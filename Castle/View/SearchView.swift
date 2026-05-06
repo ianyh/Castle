@@ -76,12 +76,7 @@ struct SearchView: View {
             LazyRowDetailLoader(rowID: result.id, sheetTitle: result.sheetTitle)
         } label: {
             HStack(spacing: 12) {
-                if let imageURL = result.imageURL {
-                    KFImage(imageURL)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 44, height: 44)
-                }
+                RowImage(url: result.imageURL, fallbackName: result.name)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(result.name)
                         .font(.body)

@@ -81,13 +81,9 @@ struct SpreadsheetView: View {
     @ViewBuilder
     private func rowLabel(for row: SpreadsheetRow) -> some View {
         HStack(spacing: 12) {
-            if let urlString = row.values.first(where: { $0.imageURL != nil })?.imageURL,
-               let url = URL(string: urlString)?.cleaned() {
-                KFImage(url)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 44, height: 44)
-            }
+            let imageURLString = row.values.first(where: { $0.imageURL != nil })?.imageURL
+            let imageURL = imageURLString.flatMap { URL(string: $0)?.cleaned() }
+            RowImage(url: imageURL, fallbackName: row.normalizedName ?? sheet.title)
             VStack(alignment: .leading, spacing: 4) {
                 let displayValues = frozenColumns.isEmpty ? [] : frozenColumns.compactMap { col in
                     row.values.first(where: { $0.columnTitle == col.title })
