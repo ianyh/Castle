@@ -114,6 +114,7 @@ struct RowDetailView: View {
                     Text(value.value)
                         .font(isFrozen ? .title3 : .body)
                         .multilineTextAlignment(textAlignment)
+                        .textSelection(.enabled)
                 }
                 .frame(maxWidth: .infinity, alignment: frameAlignment)
             }
