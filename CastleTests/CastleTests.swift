@@ -332,6 +332,73 @@ final class CastleTests: XCTestCase {
         XCTAssertEqual(SearchIndex.buildFTSQuery(from: "cloud\"strife"), "\"cloud\"\"strife\"*")
     }
 
+    // MARK: - Recent search rows
+
+    private func seedSpreadsheetRow(_ queue: DatabaseQueue, id: String, sheet: String = "Soul Breaks", name: String = "Row") throws {
+        let row = SpreadsheetRow(
+            id: id,
+            dbID: id,
+            spreadsheetTitle: sheet,
+            values: [
+                RowValue(
+                    id: "\(id)-0", columnKey: nil, columnTitle: "Name",
+                    isColumnFrozen: true, title: "Name", value: name, imageURL: nil
+                )
+            ]
+        )
+        try queue.write { try row.insert($0) }
+    }
+
+    @MainActor
+    func testRecentRowsRoundTrip() async throws {
+        let queue = try makeQueue()
+        let store = AppStore(db: queue)
+        try seedSpreadsheetRow(queue, id: "Soul Breaks-00001", name: "Omnislash")
+
+        await store.recordSearchTap(rowID: "Soul Breaks-00001", sheetTitle: "Soul Breaks")
+
+        XCTAssertEqual(store.recentSearchRows.map(\.id), ["Soul Breaks-00001"])
+        XCTAssertEqual(store.recentSearchRows.first?.normalizedName, "Omnislash")
+    }
+
+    @MainActor
+    func testRecentRowsLRUEviction() async throws {
+        let queue = try makeQueue()
+        let store = AppStore(db: queue)
+        for i in 1...25 {
+            try seedSpreadsheetRow(queue, id: "Soul Breaks-\(String(format: "%05d", i))", name: "Row \(i)")
+        }
+
+        for i in 1...25 {
+            await store.recordSearchTap(
+                rowID: "Soul Breaks-\(String(format: "%05d", i))",
+                sheetTitle: "Soul Breaks"
+            )
+        }
+
+        XCTAssertEqual(store.recentSearchRows.count, 20)
+        // Most recent first; rows 6..25 should be present (1..5 evicted).
+        XCTAssertEqual(store.recentSearchRows.first?.id, "Soul Breaks-00025")
+        XCTAssertEqual(store.recentSearchRows.last?.id, "Soul Breaks-00006")
+        let ids = Set(store.recentSearchRows.map(\.id))
+        XCTAssertFalse(ids.contains("Soul Breaks-00001"))
+        XCTAssertFalse(ids.contains("Soul Breaks-00005"))
+    }
+
+    @MainActor
+    func testRecentRowsRevisitBumpsOrder() async throws {
+        let queue = try makeQueue()
+        let store = AppStore(db: queue)
+        try seedSpreadsheetRow(queue, id: "A", name: "A")
+        try seedSpreadsheetRow(queue, id: "B", name: "B")
+
+        await store.recordSearchTap(rowID: "A", sheetTitle: "Soul Breaks")
+        await store.recordSearchTap(rowID: "B", sheetTitle: "Soul Breaks")
+        await store.recordSearchTap(rowID: "A", sheetTitle: "Soul Breaks")
+
+        XCTAssertEqual(store.recentSearchRows.map(\.id), ["A", "B"])
+    }
+
     func testFTS5RestLimit() async throws {
         let queue = try makeQueue()
         let index = SearchIndex(db: queue)

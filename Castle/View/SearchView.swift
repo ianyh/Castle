@@ -38,6 +38,22 @@ struct SearchView: View {
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search all sheets")
+        .searchSuggestions {
+            if searchText.isEmpty && !store.recentSearchRows.isEmpty {
+                Section("Recent") {
+                    ForEach(store.recentSearchRows, id: \.id) { row in
+                        NavigationLink {
+                            LazyRowDetailLoader(rowID: row.id, sheetTitle: row.spreadsheetTitle)
+                        } label: {
+                            recentRowLabel(row)
+                        }
+                        .simultaneousGesture(TapGesture().onEnded {
+                            Task { await store.recordSearchTap(rowID: row.id, sheetTitle: row.spreadsheetTitle) }
+                        })
+                    }
+                }
+            }
+        }
         .task(id: searchText) {
             guard searchText.count > 2 else {
                 results = SearchResults(sections: [], rest: [])
@@ -86,6 +102,26 @@ struct SearchView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+            }
+        }
+        .simultaneousGesture(TapGesture().onEnded {
+            Task { await store.recordSearchTap(rowID: result.id, sheetTitle: result.sheetTitle) }
+        })
+    }
+
+    @ViewBuilder
+    private func recentRowLabel(_ row: SpreadsheetRow) -> some View {
+        HStack(spacing: 12) {
+            let imageURLString = row.values.first(where: { $0.imageURL != nil })?.imageURL
+            let imageURL = imageURLString.flatMap { URL(string: $0)?.cleaned() }
+            RowImage(url: imageURL, fallbackName: row.normalizedName ?? "?")
+            VStack(alignment: .leading, spacing: 2) {
+                if let name = row.normalizedName {
+                    Text(name).font(.body)
+                }
+                Text(row.spreadsheetTitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }
