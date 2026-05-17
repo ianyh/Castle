@@ -136,16 +136,24 @@ actor SearchIndex {
     }
 
     /**
-     If the first token of `query` is a known alias, returns `query` with the first token replaced by the tier's canonical form. Otherwise returns `query` unchanged. This prevents short aliases (e.g. `z`) from over-matching unrelated tokens once the FTS prefix wildcard is applied.
+     Substitutes aliases in `query` so the FTS layer sees canonical forms instead of shorthands. Tier aliases (e.g. `z`, `ua`) only substitute at the first token — they're meant as a leading sheet-scope marker. Character aliases substitute at any position. Tokens not in either map pass through unchanged. This prevents short aliases (e.g. `z`) from over-matching unrelated tokens once the FTS prefix wildcard is applied, and lets multi-word character names like "Gogo V" expand cleanly.
      */
-    static func canonicalize(_ query: String) -> String {
+    static func canonicalize(_ query: String, characterAliases: [String: String] = [:]) -> String {
         let parts = query.split(whereSeparator: { $0.isWhitespace }).map(String.init)
-        guard let first = parts.first?.lowercased(),
-              let tier = aliasLookup[first],
-              tier.canonical != first else {
-            return query
+        var result: [String] = []
+        for (index, part) in parts.enumerated() {
+            let lower = part.lowercased()
+            if index == 0, let tier = aliasLookup[lower], tier.canonical != lower {
+                result.append(tier.canonical)
+                continue
+            }
+            if let canonical = characterAliases[lower] {
+                result.append(canonical)
+                continue
+            }
+            result.append(part)
         }
-        return ([tier.canonical] + parts.dropFirst()).joined(separator: " ")
+        return result.joined(separator: " ")
     }
 
     private let db: DatabaseQueue
@@ -190,7 +198,8 @@ actor SearchIndex {
      SQL is bounded: one query per priority sheet (LIMIT `perSectionLimit`) so each priority section is guaranteed its top N regardless of how dominant other sheets are, plus one query for the rest (LIMIT `restLimit`).
      */
     func search(query: String, sheets: [String]? = nil, perSectionLimit: Int = 8, restLimit: Int = 200) throws -> SearchResults {
-        guard let ftsQuery = Self.buildFTSQuery(from: Self.canonicalize(query)) else {
+        let characterAliases = try db.read(Self.loadCharacterAliases)
+        guard let ftsQuery = Self.buildFTSQuery(from: Self.canonicalize(query, characterAliases: characterAliases)) else {
             return SearchResults(sections: [], rest: [])
         }
 
@@ -319,8 +328,22 @@ actor SearchIndex {
     }
 
     /**
+     Loads the alias → canonical mapping from the `character_aliases` table — refreshed at sync time from the upstream Discord-bot file. Called once per `search` invocation.
+     */
+    static func loadCharacterAliases(_ db: Database) throws -> [String: String] {
+        var dict: [String: String] = [:]
+        let rows = try Row.fetchAll(db, sql: "SELECT alias, canonical FROM character_aliases")
+        for row in rows {
+            let alias: String = row["alias"]
+            let canonical: String = row["canonical"]
+            dict[alias] = canonical
+        }
+        return dict
+    }
+
+    /**
      Splits a free-text query on whitespace and turns each token into a quoted FTS5 prefix term, joined by spaces (implicit AND). Returns nil if no usable tokens.
-     
+
      Example: "cloud dasb" → `"cloud"* "dasb"*` — matches rows containing both tokens in any order.
      */
     static func buildFTSQuery(from query: String) -> String? {

@@ -73,6 +73,14 @@ final class AppStore {
             try db.create(index: "idx_row_values_value", on: "row_values", columns: ["value"])
             try db.create(index: "idx_row_values_sheet_value", on: "row_values", columns: ["sheet_title", "value"])
         }
+        migrator.registerMigration("v3_create_character_aliases") { db in
+            // Search query shorthands pulled from the upstream Discord-bot alias file
+            // during sync. Read by SearchIndex.search to canonicalize user queries.
+            try db.create(table: "character_aliases", ifNotExists: true) { t in
+                t.column("alias", .text).primaryKey()
+                t.column("canonical", .text).notNull()
+            }
+        }
         return migrator
     }
 

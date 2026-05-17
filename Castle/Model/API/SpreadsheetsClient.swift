@@ -45,6 +45,7 @@ class SpreadsheetsClient {
     private let session = URLSession(configuration: URLSession.shared.configuration)
     private let db: DatabaseQueue
     private static let spreadsheetID = "1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk"
+    private static let aliasURL = URL(string: "https://raw.githubusercontent.com/mendicantx/ProjectNoctis/master/ProjectNoctis/UtilFiles/alias.txt")!
     private static let ignoredSheets = [
         "Header",
         "Calculator",
@@ -174,6 +175,20 @@ class SpreadsheetsClient {
 
         try await searchIndex.commitRebuild()
 
+        // Best-effort alias refresh. Failures here don't fail the whole sync — keep
+        // whatever aliases are already in the table.
+        if let aliases = try? await fetchCharacterAliases() {
+            try await db.write { db in
+                try db.execute(sql: "DELETE FROM character_aliases")
+                let stmt = try db.makeStatement(sql: """
+                    INSERT INTO character_aliases (alias, canonical) VALUES (?, ?);
+                    """)
+                for (alias, canonical) in aliases {
+                    try stmt.execute(arguments: [alias, canonical])
+                }
+            }
+        }
+
         try await db.write { db in
             try LastUpdate(date: Date()).insert(db, onConflict: .replace)
         }
@@ -231,6 +246,19 @@ class SpreadsheetsClient {
 
     func clearImageCache() {
         KingfisherManager.shared.cache.clearDiskCache()
+    }
+
+    /**
+     Fetches the upstream alias.txt (a flat JSON dict of alias → canonical name) from the ProjectNoctis Discord bot repo, so character/job shorthands stay in lockstep with what the bot accepts. Keys are lowercased and stray escaped quote characters are stripped from values so the result is FTS-tokenizer-friendly.
+     */
+    func fetchCharacterAliases() async throws -> [String: String] {
+        let (data, _) = try await session.data(for: URLRequest(url: Self.aliasURL))
+        let raw = try JSONDecoder().decode([String: String].self, from: data)
+        var normalized: [String: String] = [:]
+        for (alias, canonical) in raw {
+            normalized[alias.lowercased()] = canonical.replacingOccurrences(of: "\"", with: "")
+        }
+        return normalized
     }
 
     func extractImageURL(from value: RawValue, rawRow: [RawValue]) -> String? {

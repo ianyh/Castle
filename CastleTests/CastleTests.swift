@@ -231,9 +231,35 @@ final class CastleTests: XCTestCase {
         // Unknown first token: no change.
         XCTAssertEqual(SearchIndex.canonicalize("foo cloud"), "foo cloud")
 
-        // Empty / whitespace-only.
+        // Empty / whitespace-only. Whitespace runs collapse to "" since there are
+        // no tokens to substitute or preserve.
         XCTAssertEqual(SearchIndex.canonicalize(""), "")
-        XCTAssertEqual(SearchIndex.canonicalize("   "), "   ")
+        XCTAssertEqual(SearchIndex.canonicalize("   "), "")
+    }
+
+    func testCharacterAliasCanonicalization() {
+        let aliases = ["tgc": "orlandeau", "gogov": "gogo v"]
+
+        // Direct character alias.
+        XCTAssertEqual(SearchIndex.canonicalize("tgc", characterAliases: aliases), "orlandeau")
+        XCTAssertEqual(SearchIndex.canonicalize("TGC", characterAliases: aliases), "orlandeau")
+        XCTAssertEqual(SearchIndex.canonicalize("gogov", characterAliases: aliases), "gogo v")
+
+        // Character alias substitutes at non-first positions too.
+        XCTAssertEqual(SearchIndex.canonicalize("dasb tgc", characterAliases: aliases), "dasb orlandeau")
+        XCTAssertEqual(SearchIndex.canonicalize("cloud tgc", characterAliases: aliases), "cloud orlandeau")
+
+        // Combined tier alias (first token) + character alias (any token).
+        XCTAssertEqual(SearchIndex.canonicalize("ua tgc", characterAliases: aliases), "zsb orlandeau")
+        XCTAssertEqual(SearchIndex.canonicalize("z gogov", characterAliases: aliases), "zsb gogo v")
+
+        // Unknown tokens stay.
+        XCTAssertEqual(SearchIndex.canonicalize("zidane", characterAliases: aliases), "zidane")
+        XCTAssertEqual(SearchIndex.canonicalize("dasb zidane", characterAliases: aliases), "dasb zidane")
+
+        // No aliases passed: only tier substitution happens.
+        XCTAssertEqual(SearchIndex.canonicalize("tgc"), "tgc")
+        XCTAssertEqual(SearchIndex.canonicalize("ua tgc"), "zsb tgc")
     }
 
     func testFTS5AliasResolvesToCanonical() async throws {
