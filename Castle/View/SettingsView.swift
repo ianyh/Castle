@@ -40,6 +40,16 @@ struct SettingsView: View {
                     showSyncConfirm = true
                 }
                 .disabled(store.isSyncing)
+                .confirmationDialog(
+                    "This may take a while.",
+                    isPresented: $showSyncConfirm,
+                    titleVisibility: .visible
+                ) {
+                    Button("Sync", role: .destructive) {
+                        Task { await store.sync() }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }
 
                 Link("Go to archive", destination: URL(string: "https://docs.google.com/spreadsheets/d/1f8OJIQhpycljDQ8QNDk_va1GJ1u7RVoMaNjFcHH0LKk/")!)
             } header: {
@@ -53,6 +63,16 @@ struct SettingsView: View {
                     showImageConfirm = true
                 }
                 .disabled(imageLoadProgress != nil)
+                .confirmationDialog(
+                    "This may take a while.",
+                    isPresented: $showImageConfirm,
+                    titleVisibility: .visible
+                ) {
+                    Button("Download", role: .destructive) {
+                        startImageDownload()
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }
 
                 if let progress = imageLoadProgress {
                     LabeledContent("Progress", value: progress)
@@ -64,26 +84,6 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
-        .confirmationDialog(
-            "This may take a while.",
-            isPresented: $showSyncConfirm,
-            titleVisibility: .visible
-        ) {
-            Button("Sync", role: .destructive) {
-                Task { await store.sync() }
-            }
-            Button("Cancel", role: .cancel) {}
-        }
-        .confirmationDialog(
-            "This may take a while.",
-            isPresented: $showImageConfirm,
-            titleVisibility: .visible
-        ) {
-            Button("Download", role: .destructive) {
-                startImageDownload()
-            }
-            Button("Cancel", role: .cancel) {}
-        }
         .alert("Error", isPresented: .constant(syncError != nil)) {
             Button("OK") { syncError = nil }
         } message: {
