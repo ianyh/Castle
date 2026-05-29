@@ -223,4 +223,8 @@ final class AppStore {
             )
         }
     }
+
+    func sheet(titled title: String) -> Spreadsheet? {
+        sheets.first(where: { $0.title == title })
+    }
 }

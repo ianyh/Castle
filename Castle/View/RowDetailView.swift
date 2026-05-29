@@ -216,35 +216,42 @@ struct RowDetailView: View {
     }
 }
 
+/**
+ Pushes a `RowDetailView` for a row that hasn't been fetched yet, given its `rowID` and the already-resolved `Spreadsheet`. Callers resolve the sheet synchronously from `AppStore.sheets` (kept in memory at startup) so this only has to async-load the row itself — one DB read instead of two. For navigations where the full `SpreadsheetRow` is already available (e.g. recent searches), skip this loader entirely and push `RowDetailView` directly.
+*/
 struct LazyRowDetailLoader: View {
     let rowID: String
-    let sheetTitle: String
+    let sheet: Spreadsheet
+    /**
+     When true, records this navigation as a search-result tap once the row loads successfully. Set by SearchView's main results call site so the recent-rows history reflects only search-driven taps. Other call sites (SearchResultsView, RowDetailView's relationship rows) leave it as the default false.
+     */
+    var recordSearchTap: Bool = false
 
     @Environment(AppStore.self) private var store
-    @State private var target: (sheet: Spreadsheet, row: SpreadsheetRow)?
+    @State private var row: SpreadsheetRow?
 
     var body: some View {
         Group {
-            if let target {
-                RowDetailView(sheet: target.sheet, row: target.row)
+            if let row {
+                RowDetailView(sheet: sheet, row: row)
             } else {
                 ProgressView()
             }
         }
         .task {
-            await loadTarget()
+            await loadRow()
         }
     }
 
-    private func loadTarget() async {
+    private func loadRow() async {
         do {
-            guard
-                let row = try await store.fetchRows(ids: [rowID]).first,
-                let sheet = try await store.fetchSpreadsheet(title: sheetTitle)
-            else {
+            guard let row = try await store.fetchRows(ids: [rowID]).first else {
                 return
             }
-            target = (sheet: sheet, row: row)
+            self.row = row
+            if recordSearchTap {
+                await store.recordSearchTap(rowID: rowID, sheetTitle: sheet.title)
+            }
         } catch {
             print("LazyRowDetailLoader error: \(error)")
         }

@@ -156,15 +156,19 @@ class SpreadsheetsClient {
             }
             try await searchIndex.indexSheet(title: spreadsheet.title, rows: indexRows)
 
-            if !Self.relationshipExclusions.contains(spreadsheet.title) {
-                try await db.write { db in
-                    try spreadsheet.insert(db, onConflict: .replace)
-                    let valueStmt = try db.makeStatement(sql: """
-                        INSERT OR REPLACE INTO row_values (row_id, sheet_title, column_title, value)
-                        VALUES (?, ?, ?, ?);
-                        """)
-                    for row in rows {
-                        try row.insert(db, onConflict: .replace)
+            /**
+             `relationshipExclusions` gates writing into `row_values` only — that table powers RowDetailView's Relationships section and these sheets are intentionally kept out of it. The spreadsheet metadata and row payloads themselves are always persisted; otherwise excluded sheets would surface as FTS hits with no row to navigate to and would disappear from the archive list.
+            */
+            let recordRelationships = !Self.relationshipExclusions.contains(spreadsheet.title)
+            try await db.write { db in
+                try spreadsheet.insert(db, onConflict: .replace)
+                let valueStmt = try db.makeStatement(sql: """
+                    INSERT OR REPLACE INTO row_values (row_id, sheet_title, column_title, value)
+                    VALUES (?, ?, ?, ?);
+                    """)
+                for row in rows {
+                    try row.insert(db, onConflict: .replace)
+                    if recordRelationships {
                         for value in row.values where !value.value.isEmpty {
                             try valueStmt.execute(arguments: [row.id, row.spreadsheetTitle, value.columnTitle, value.value])
                         }

@@ -12,10 +12,20 @@ struct SearchView: View {
     @Environment(AppStore.self) private var store
     @State private var searchText = ""
     @State private var results = SearchResults(sections: [], rest: [])
+    /**
+     Full `SpreadsheetRow` payloads for the rows in `results`, keyed by row id. Filled in by the search task after results are assigned, so taps that arrive after the preload completes navigate straight into `RowDetailView` without a `ProgressView` flash. Taps that arrive before the preload finishes fall through to `LazyRowDetailLoader`, which does the same one-row fetch on its own. Cleared whenever the query changes.
+     */
+    @State private var preloadedRows: [String: SpreadsheetRow] = [:]
 
     private static let searchableSheets = [
-        "Characters", "Abilities", "Soul Breaks",
-        "Limit Breaks", "Status", "Other", "Magicite", "Hero Abilities"
+        "Characters",
+        "Abilities",
+        "Soul Breaks",
+        "Limit Breaks",
+        "Status",
+        "Other",
+        "Magicite",
+        "Hero Abilities"
     ]
 
     var body: some View {
@@ -42,14 +52,16 @@ struct SearchView: View {
             if searchText.isEmpty && !store.recentSearchRows.isEmpty {
                 Section("Recent") {
                     ForEach(store.recentSearchRows, id: \.id) { row in
-                        NavigationLink {
-                            LazyRowDetailLoader(rowID: row.id, sheetTitle: row.spreadsheetTitle)
-                        } label: {
-                            recentRowLabel(row)
+                        if let sheet = store.sheet(titled: row.spreadsheetTitle) {
+                            NavigationLink {
+                                RowDetailView(sheet: sheet, row: row)
+                                    .task {
+                                        await store.recordSearchTap(rowID: row.id, sheetTitle: row.spreadsheetTitle)
+                                    }
+                            } label: {
+                                recentRowLabel(row)
+                            }
                         }
-                        .simultaneousGesture(TapGesture().onEnded {
-                            Task { await store.recordSearchTap(rowID: row.id, sheetTitle: row.spreadsheetTitle) }
-                        })
                     }
                 }
             }
@@ -57,14 +69,23 @@ struct SearchView: View {
         .task(id: searchText) {
             guard searchText.count > 2 else {
                 results = SearchResults(sections: [], rest: [])
+                preloadedRows = [:]
                 return
             }
             let sheets = SearchIndex.sheets(matchingPrefixIn: searchText) ?? Self.searchableSheets
             do {
-                results = try await store.searchIndex.search(query: searchText, sheets: sheets)
+                let searchResults = try await store.searchIndex.search(query: searchText, sheets: sheets)
+                results = searchResults
+                preloadedRows = [:]
+                let allIDs = searchResults.sections.flatMap { $0.results.map(\.id) } + searchResults.rest.map(\.id)
+                if !allIDs.isEmpty {
+                    let rows = try await store.fetchRows(ids: allIDs)
+                    preloadedRows = Dictionary(uniqueKeysWithValues: rows.map { ($0.id, $0) })
+                }
             } catch {
                 print("Search error: \(error)")
                 results = SearchResults(sections: [], rest: [])
+                preloadedRows = [:]
             }
         }
         .toolbar {
@@ -89,7 +110,16 @@ struct SearchView: View {
     @ViewBuilder
     private func resultRow(for result: SearchResult, showSheetTitle: Bool) -> some View {
         NavigationLink {
-            LazyRowDetailLoader(rowID: result.id, sheetTitle: result.sheetTitle)
+            if let sheet = store.sheet(titled: result.sheetTitle) {
+                if let row = preloadedRows[result.id] {
+                    RowDetailView(sheet: sheet, row: row)
+                        .task {
+                            await store.recordSearchTap(rowID: result.id, sheetTitle: result.sheetTitle)
+                        }
+                } else {
+                    LazyRowDetailLoader(rowID: result.id, sheet: sheet, recordSearchTap: true)
+                }
+            }
         } label: {
             HStack(spacing: 12) {
                 RowImage(url: result.imageURL, fallbackName: result.name)
@@ -104,9 +134,6 @@ struct SearchView: View {
                 }
             }
         }
-        .simultaneousGesture(TapGesture().onEnded {
-            Task { await store.recordSearchTap(rowID: result.id, sheetTitle: result.sheetTitle) }
-        })
     }
 
     @ViewBuilder
