@@ -30,17 +30,27 @@ struct SearchView: View {
 
     var body: some View {
         List {
-            ForEach(results.sections, id: \.sheetTitle) { section in
-                Section(section.sheetTitle) {
-                    ForEach(section.results, id: \.id) { result in
-                        resultRow(for: result, showSheetTitle: false)
+            if searchText.isEmpty {
+                if !store.recentSearchRows.isEmpty {
+                    Section("Recent") {
+                        ForEach(store.recentSearchRows, id: \.id) { row in
+                            recentRow(row)
+                        }
                     }
                 }
-            }
-            if !results.rest.isEmpty {
-                Section {
-                    ForEach(results.rest, id: \.id) { result in
-                        resultRow(for: result, showSheetTitle: true)
+            } else {
+                ForEach(results.sections, id: \.sheetTitle) { section in
+                    Section(section.sheetTitle) {
+                        ForEach(section.results, id: \.id) { result in
+                            resultRow(for: result, showSheetTitle: false)
+                        }
+                    }
+                }
+                if !results.rest.isEmpty {
+                    Section {
+                        ForEach(results.rest, id: \.id) { result in
+                            resultRow(for: result, showSheetTitle: true)
+                        }
                     }
                 }
             }
@@ -48,24 +58,6 @@ struct SearchView: View {
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search all sheets")
-        .searchSuggestions {
-            if searchText.isEmpty && !store.recentSearchRows.isEmpty {
-                Section("Recent") {
-                    ForEach(store.recentSearchRows, id: \.id) { row in
-                        if let sheet = store.sheet(titled: row.spreadsheetTitle) {
-                            NavigationLink {
-                                RowDetailView(sheet: sheet, row: row)
-                                    .task {
-                                        await store.recordSearchTap(rowID: row.id, sheetTitle: row.spreadsheetTitle)
-                                    }
-                            } label: {
-                                recentRowLabel(row)
-                            }
-                        }
-                    }
-                }
-            }
-        }
         .task(id: searchText) {
             guard searchText.count > 2 else {
                 results = SearchResults(sections: [], rest: [])
@@ -137,18 +129,27 @@ struct SearchView: View {
     }
 
     @ViewBuilder
-    private func recentRowLabel(_ row: SpreadsheetRow) -> some View {
-        HStack(spacing: 12) {
-            let imageURLString = row.values.first(where: { $0.imageURL != nil })?.imageURL
-            let imageURL = imageURLString.flatMap { URL(string: $0)?.cleaned() }
-            RowImage(url: imageURL, fallbackName: row.normalizedName ?? "?")
-            VStack(alignment: .leading, spacing: 2) {
-                if let name = row.normalizedName {
-                    Text(name).font(.body)
+    private func recentRow(_ row: SpreadsheetRow) -> some View {
+        if let sheet = store.sheet(titled: row.spreadsheetTitle) {
+            NavigationLink {
+                RowDetailView(sheet: sheet, row: row)
+                    .task {
+                        await store.recordSearchTap(rowID: row.id, sheetTitle: row.spreadsheetTitle)
+                    }
+            } label: {
+                HStack(spacing: 12) {
+                    let imageURLString = row.values.first(where: { $0.imageURL != nil })?.imageURL
+                    let imageURL = imageURLString.flatMap { URL(string: $0)?.cleaned() }
+                    RowImage(url: imageURL, fallbackName: row.normalizedName ?? "?")
+                    VStack(alignment: .leading, spacing: 2) {
+                        if let name = row.normalizedName {
+                            Text(name).font(.body)
+                        }
+                        Text(row.spreadsheetTitle)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                Text(row.spreadsheetTitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
         }
     }
